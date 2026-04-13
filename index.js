@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
-// v5.0.0 — Recibos PDF, facturas de servicios, recordatorios
+// v5.3.0 — Recibos PDF, facturas de servicios, recordatorios
 //          automáticos, confirmar pagos, reclamos, comprobantes
 //          de pago, morosidad, ajustes de contrato.
 // ═══════════════════════════════════════════════════════════
@@ -23,6 +23,8 @@ const {
   SUPABASE_SERVICE_KEY,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
+  MICROSOFT_CLIENT_ID,
+  MICROSOFT_CLIENT_SECRET,
   NOTIF_SECRET,
   PORT = 3000
 } = process.env;
@@ -2748,7 +2750,7 @@ app.post('/verify-whatsapp', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// OAUTH MAIL CALLBACK — intercambiar code por tokens de Gmail
+// OAUTH MAIL CALLBACK — intercambiar code por tokens (Google / Microsoft)
 // ═══════════════════════════════════════════════════════════
 app.options('/oauth-mail-callback', (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
@@ -2767,39 +2769,73 @@ app.post('/oauth-mail-callback', async (req, res) => {
   }
 
   try {
-    const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-    const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+    let tokenData, email;
+    const finalRedirect = redirect_uri || 'https://alquil.app/index.html';
 
-    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      console.error('❌ GOOGLE_CLIENT_ID o GOOGLE_CLIENT_SECRET no configurados');
-      return res.status(500).json({ ok: false, error: 'Configuración OAuth incompleta en el servidor' });
+    if (provider === 'microsoft') {
+      // ── Microsoft OAuth ──
+      const MS_CLIENT_ID = process.env.MICROSOFT_CLIENT_ID;
+      const MS_CLIENT_SECRET = process.env.MICROSOFT_CLIENT_SECRET;
+      if (!MS_CLIENT_ID || !MS_CLIENT_SECRET) {
+        return res.status(500).json({ ok: false, error: 'Configuración OAuth Microsoft incompleta' });
+      }
+
+      const tokenResp = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code: code,
+          client_id: MS_CLIENT_ID,
+          client_secret: MS_CLIENT_SECRET,
+          redirect_uri: finalRedirect,
+          grant_type: 'authorization_code',
+          scope: 'openid email Mail.Read offline_access'
+        })
+      });
+      tokenData = await tokenResp.json();
+      if (tokenData.error) {
+        console.error('❌ Error OAuth Microsoft:', tokenData);
+        return res.json({ ok: false, error: tokenData.error_description || tokenData.error });
+      }
+
+      // Obtener email del usuario via Microsoft Graph
+      const meResp = await fetch('https://graph.microsoft.com/v1.0/me', {
+        headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
+      });
+      const meData = await meResp.json();
+      email = meData.mail || meData.userPrincipalName || 'desconocido';
+
+    } else {
+      // ── Google OAuth (default) ──
+      const G_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+      const G_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+      if (!G_CLIENT_ID || !G_CLIENT_SECRET) {
+        return res.status(500).json({ ok: false, error: 'Configuración OAuth Google incompleta' });
+      }
+
+      const tokenResp = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code: code,
+          client_id: G_CLIENT_ID,
+          client_secret: G_CLIENT_SECRET,
+          redirect_uri: finalRedirect,
+          grant_type: 'authorization_code'
+        })
+      });
+      tokenData = await tokenResp.json();
+      if (tokenData.error) {
+        console.error('❌ Error OAuth Google:', tokenData);
+        return res.json({ ok: false, error: tokenData.error_description || tokenData.error });
+      }
+
+      const userInfoResp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
+      });
+      const userInfo = await userInfoResp.json();
+      email = userInfo.email || 'desconocido';
     }
-
-    // Intercambiar code por tokens
-    const tokenResp = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        code: code,
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
-        redirect_uri: redirect_uri || 'https://alquil.app/index.html',
-        grant_type: 'authorization_code'
-      })
-    });
-
-    const tokenData = await tokenResp.json();
-    if (tokenData.error) {
-      console.error('❌ Error OAuth Google:', tokenData);
-      return res.json({ ok: false, error: tokenData.error_description || tokenData.error });
-    }
-
-    // Obtener email del usuario de Google
-    const userInfoResp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
-    });
-    const userInfo = await userInfoResp.json();
-    const email = userInfo.email || 'desconocido';
 
     // Guardar tokens en el perfil del usuario en Supabase
     const { error: dbError } = await supabase
@@ -2818,7 +2854,7 @@ app.post('/oauth-mail-callback', async (req, res) => {
       return res.json({ ok: false, error: 'Error guardando credenciales' });
     }
 
-    console.log(`✅ Mail facturas conectado: ${email} para usuario ${user_id}`);
+    console.log(`✅ Mail facturas conectado (${provider}): ${email} para usuario ${user_id}`);
     return res.json({ ok: true, email: email });
 
   } catch (err) {
@@ -2861,25 +2897,40 @@ app.post('/revisar-mail-facturas', async (req, res) => {
     }
 
     // 2. Refrescar token si tenemos refresh_token
+    const esGoogle = perfil.mail_facturas_provider === 'google';
+    const esMicrosoft = perfil.mail_facturas_provider === 'microsoft';
     let accessToken = perfil.mail_facturas_token;
+
     if (perfil.mail_facturas_refresh_token) {
-      const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-      const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
       try {
-        const refreshResp = await fetch('https://oauth2.googleapis.com/token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({
-            client_id: GOOGLE_CLIENT_ID,
-            client_secret: GOOGLE_CLIENT_SECRET,
-            refresh_token: perfil.mail_facturas_refresh_token,
-            grant_type: 'refresh_token'
-          })
-        });
+        let refreshResp;
+        if (esMicrosoft) {
+          refreshResp = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              client_id: process.env.MICROSOFT_CLIENT_ID,
+              client_secret: process.env.MICROSOFT_CLIENT_SECRET,
+              refresh_token: perfil.mail_facturas_refresh_token,
+              grant_type: 'refresh_token',
+              scope: 'openid email Mail.Read offline_access'
+            })
+          });
+        } else {
+          refreshResp = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              client_id: process.env.GOOGLE_CLIENT_ID,
+              client_secret: process.env.GOOGLE_CLIENT_SECRET,
+              refresh_token: perfil.mail_facturas_refresh_token,
+              grant_type: 'refresh_token'
+            })
+          });
+        }
         const refreshData = await refreshResp.json();
         if (refreshData.access_token) {
           accessToken = refreshData.access_token;
-          // Actualizar token en DB
           await supabase.from('profiles').update({ mail_facturas_token: accessToken }).eq('id', user_id);
         }
       } catch (refreshErr) {
@@ -2888,21 +2939,42 @@ app.post('/revisar-mail-facturas', async (req, res) => {
     }
 
     // 3. Buscar emails de empresas de servicios en los últimos 30 días
-    const empresasQuery = 'from:(epe OR edenor OR edesur OR metrogas OR aysa OR caps OR epec OR camuzzi OR litoral gas OR aguas santafesinas OR municipalidad OR abl OR arba) newer_than:30d has:attachment';
-    const searchUrl = `https://www.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(empresasQuery)}&maxResults=10`;
+    const empresasKeywords = 'epe OR edenor OR edesur OR metrogas OR aysa OR caps OR epec OR camuzzi OR litoral gas OR aguas santafesinas OR municipalidad OR abl OR arba';
+    let messages = [];
 
-    const searchResp = await fetch(searchUrl, {
-      headers: { 'Authorization': 'Bearer ' + accessToken }
-    });
+    if (esMicrosoft) {
+      // ── Microsoft Graph API ──
+      const filterDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const searchUrl = `https://graph.microsoft.com/v1.0/me/messages?$filter=hasAttachments eq true and receivedDateTime ge ${filterDate}&$search="${empresasKeywords.replace(/ OR /g, ' OR ')}"&$top=10&$select=id,subject,from,hasAttachments`;
 
-    if (searchResp.status === 401) {
-      // Token expirado y no se pudo refrescar
-      return res.json({ ok: false, error: 'Token de Gmail expirado. Reconectá tu cuenta desde el perfil.' });
+      const searchResp = await fetch(searchUrl, {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+      });
+
+      if (searchResp.status === 401) {
+        return res.json({ ok: false, error: 'Token de Outlook expirado. Reconectá tu cuenta desde el perfil.' });
+      }
+
+      const searchData = await searchResp.json();
+      messages = (searchData.value || []).map(m => ({ id: m.id, provider: 'microsoft' }));
+    } else {
+      // ── Gmail API ──
+      const empresasQuery = `from:(${empresasKeywords}) newer_than:30d has:attachment`;
+      const searchUrl = `https://www.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(empresasQuery)}&maxResults=10`;
+
+      const searchResp = await fetch(searchUrl, {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+      });
+
+      if (searchResp.status === 401) {
+        return res.json({ ok: false, error: 'Token de Gmail expirado. Reconectá tu cuenta desde el perfil.' });
+      }
+
+      const searchData = await searchResp.json();
+      messages = (searchData.messages || []).map(m => ({ id: m.id, provider: 'google' }));
     }
 
-    const searchData = await searchResp.json();
-    const messages = searchData.messages || [];
-    console.log(`📧 Encontrados ${messages.length} emails de servicios para usuario ${user_id}`);
+    console.log(`📧 Encontrados ${messages.length} emails de servicios (${perfil.mail_facturas_provider}) para usuario ${user_id}`);
 
     if (messages.length === 0) {
       await supabase.from('profiles').update({ mail_facturas_last_check: new Date().toISOString() }).eq('id', user_id);
@@ -2926,83 +2998,94 @@ app.post('/revisar-mail-facturas', async (req, res) => {
       servicios = svcs || [];
     }
 
-    // 5. Procesar cada email — buscar adjuntos PDF/imagen y analizarlos con Gemini
+    // 5. Procesar cada email — buscar adjuntos imagen y analizarlos con Gemini
     let facturasEncontradas = 0;
 
-    for (const msg of messages.slice(0, 5)) { // Limitar a 5 emails por escaneo
+    for (const msg of messages.slice(0, 5)) {
       try {
-        const msgResp = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
-          headers: { 'Authorization': 'Bearer ' + accessToken }
-        });
-        const msgData = await msgResp.json();
+        let attachments = []; // { base64Data, mime }
 
-        // Buscar adjuntos (PDF o imagen)
-        const parts = msgData.payload?.parts || [];
-        for (const part of parts) {
-          if (!part.filename || part.filename.length === 0) continue;
-          const mime = (part.mimeType || '').toLowerCase();
-          if (!mime.includes('pdf') && !mime.includes('image')) continue;
-
-          // Descargar adjunto
-          const attId = part.body?.attachmentId;
-          if (!attId) continue;
-
+        if (msg.provider === 'microsoft') {
+          // ── Microsoft Graph: obtener adjuntos ──
           const attResp = await fetch(
-            `https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}/attachments/${attId}`,
+            `https://graph.microsoft.com/v1.0/me/messages/${msg.id}/attachments`,
             { headers: { 'Authorization': 'Bearer ' + accessToken } }
           );
           const attData = await attResp.json();
-          if (!attData.data) continue;
+          for (const att of (attData.value || [])) {
+            if (!att.contentBytes) continue;
+            const mime = (att.contentType || '').toLowerCase();
+            if (!mime.includes('image')) continue;
+            attachments.push({ base64Data: att.contentBytes, mime });
+          }
+        } else {
+          // ── Gmail: obtener mensaje y adjuntos ──
+          const msgResp = await fetch(
+            `https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`,
+            { headers: { 'Authorization': 'Bearer ' + accessToken } }
+          );
+          const msgData = await msgResp.json();
+          const parts = msgData.payload?.parts || [];
 
-          // Gmail devuelve base64url, convertir a base64 standard
-          const base64Data = attData.data.replace(/-/g, '+').replace(/_/g, '/');
+          for (const part of parts) {
+            if (!part.filename || part.filename.length === 0) continue;
+            const mime = (part.mimeType || '').toLowerCase();
+            if (!mime.includes('image')) continue;
+            const attId = part.body?.attachmentId;
+            if (!attId) continue;
 
-          // Si es imagen, analizar con Gemini
-          if (mime.includes('image')) {
-            try {
-              const analisis = await analizarFacturaConGemini(base64Data, mime);
-              if (analisis && analisis.confianza >= 0.6) {
-                // Buscar servicio que coincida
-                const svcMatch = servicios.find(s => {
-                  const tipoS = (s.tipo_servicio || '').toLowerCase();
-                  const nomS = (s.nombre_servicio || '').toLowerCase();
-                  const tipoA = (analisis.tipo_servicio || '').toLowerCase();
-                  const empA = (analisis.empresa || '').toLowerCase();
-                  return tipoS.includes(tipoA) || nomS.includes(empA) || tipoA.includes(tipoS) || empA.includes(nomS);
+            const attResp = await fetch(
+              `https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}/attachments/${attId}`,
+              { headers: { 'Authorization': 'Bearer ' + accessToken } }
+            );
+            const attData = await attResp.json();
+            if (!attData.data) continue;
+            // Gmail base64url → base64 standard
+            attachments.push({ base64Data: attData.data.replace(/-/g, '+').replace(/_/g, '/'), mime });
+          }
+        }
+
+        // Analizar cada adjunto imagen con Gemini
+        for (const att of attachments) {
+          try {
+            const analisis = await analizarFacturaConGemini(att.base64Data, att.mime);
+            if (analisis && analisis.confianza >= 0.6) {
+              const svcMatch = servicios.find(s => {
+                const tipoS = (s.tipo_servicio || '').toLowerCase();
+                const nomS = (s.nombre_servicio || '').toLowerCase();
+                const tipoA = (analisis.tipo_servicio || '').toLowerCase();
+                const empA = (analisis.empresa || '').toLowerCase();
+                return tipoS.includes(tipoA) || nomS.includes(empA) || tipoA.includes(tipoS) || empA.includes(nomS);
+              });
+
+              if (svcMatch) {
+                const ext = att.mime.includes('png') ? 'png' : 'jpg';
+                const filename = `mail_${user_id}_${svcMatch.id}_${Date.now()}.${ext}`;
+                const facturaUrl = await subirFacturaAStorage(att.base64Data, att.mime, filename);
+
+                await supabase.from('servicios').update({
+                  ultima_factura_monto: analisis.monto || null,
+                  ultima_factura_vto: analisis.fecha_vencimiento || null,
+                  factura_url: facturaUrl
+                }).eq('id', svcMatch.id);
+
+                await supabase.from('facturas_servicios').insert({
+                  servicio_id: svcMatch.id,
+                  monto: analisis.monto,
+                  fecha_vencimiento: analisis.fecha_vencimiento,
+                  periodo: analisis.periodo,
+                  factura_url: facturaUrl,
+                  fuente: 'email_' + msg.provider,
+                  datos_extraidos: analisis
                 });
 
-                if (svcMatch) {
-                  // Subir factura a Storage
-                  const filename = `mail_${user_id}_${svcMatch.id}_${Date.now()}.${mime.includes('png') ? 'png' : 'jpg'}`;
-                  const facturaUrl = await subirFacturaAStorage(base64Data, mime, filename);
-
-                  // Actualizar servicio
-                  await supabase.from('servicios').update({
-                    ultima_factura_monto: analisis.monto || null,
-                    ultima_factura_vto: analisis.fecha_vencimiento || null,
-                    factura_url: facturaUrl
-                  }).eq('id', svcMatch.id);
-
-                  // Insertar en facturas_servicios
-                  await supabase.from('facturas_servicios').insert({
-                    servicio_id: svcMatch.id,
-                    monto: analisis.monto,
-                    fecha_vencimiento: analisis.fecha_vencimiento,
-                    periodo: analisis.periodo,
-                    factura_url: facturaUrl,
-                    fuente: 'email',
-                    datos_extraidos: analisis
-                  });
-
-                  facturasEncontradas++;
-                  console.log(`✅ Factura de ${analisis.empresa} cargada desde email para servicio ${svcMatch.id}`);
-                }
+                facturasEncontradas++;
+                console.log(`✅ Factura de ${analisis.empresa} cargada desde ${msg.provider} email para servicio ${svcMatch.id}`);
               }
-            } catch (gemErr) {
-              console.log('⚠️ Error analizando adjunto con Gemini:', gemErr.message);
             }
+          } catch (gemErr) {
+            console.log('⚠️ Error analizando adjunto con Gemini:', gemErr.message);
           }
-          // Para PDFs: por ahora skip (Gemini no procesa PDF directamente como imagen)
         }
       } catch (msgErr) {
         console.log('⚠️ Error procesando email:', msgErr.message);
@@ -3057,12 +3140,14 @@ app.get('/', (req, res) => {
       SUPABASE_SERVICE_KEY:  SUPABASE_SERVICE_KEY  ? 'SET' : '❌ UNSET',
       GOOGLE_CLIENT_ID:      GOOGLE_CLIENT_ID      ? 'SET' : '❌ UNSET',
       GOOGLE_CLIENT_SECRET:  GOOGLE_CLIENT_SECRET  ? 'SET' : '❌ UNSET',
+      MICROSOFT_CLIENT_ID:   MICROSOFT_CLIENT_ID   ? 'SET' : '❌ UNSET',
+      MICROSOFT_CLIENT_SECRET:MICROSOFT_CLIENT_SECRET? 'SET' : '❌ UNSET',
     }
   });
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.0.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.3.0 — Webhook activo ✅');
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -3074,7 +3159,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.0.0        ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.3.0        ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
@@ -3085,7 +3170,7 @@ if (process.env.VERCEL) {
     console.log('  POST /verify-whatsapp    → Verifica conexión al sandbox');
     console.log('  GET  /                   → Health check');
     console.log('');
-    console.log('Features (v5.0.0):');
+    console.log('Features (v5.3.0):');
     console.log('  ✅ Recibos PDF automáticos');
     console.log('  ✅ Facturas de servicios');
     console.log('  ✅ Confirmación de pago (inquilino)');
