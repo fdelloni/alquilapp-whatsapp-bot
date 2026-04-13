@@ -156,6 +156,193 @@ async function subirPDFaStorage(buffer, filename, bucket = 'recibos') {
 }
 
 // ═══════════════════════════════════════════════════════════
+// ANALIZAR FACTURA CON GEMINI VISION
+// Recibe imagen en base64, extrae datos de la factura
+// ═══════════════════════════════════════════════════════════
+async function analizarFacturaConGemini(imageBase64, mimeType) {
+  const prompt = `Analizá esta imagen de una factura de servicio domiciliario argentino.
+Extraé los siguientes datos y respondé ÚNICAMENTE con un JSON válido (sin markdown, sin texto extra):
+{
+  "empresa": "nombre de la empresa (ej: EPE, CAPS, Edenor, Metrogas, AySA)",
+  "tipo_servicio": "luz|gas|agua|internet|telefono|abl|impuesto|otro",
+  "monto": 12345.67,
+  "fecha_vencimiento": "2026-04-15",
+  "periodo": "Abril 2026",
+  "numero_cuenta": "123456",
+  "confianza": "alta|media|baja"
+}
+Si no podés leer algún campo, poné null. El monto debe ser numérico (sin $ ni puntos de miles).
+La fecha en formato YYYY-MM-DD. Si hay varios vencimientos, usá el primer vencimiento.`;
+
+  const requestBody = {
+    contents: [{
+      role: 'user',
+      parts: [
+        { text: prompt },
+        { inline_data: { mime_type: mimeType, data: imageBase64 } }
+      ]
+    }]
+  };
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) }
+    );
+
+    if (!response.ok) {
+      console.error('Gemini Vision error:', response.status);
+      return null;
+    }
+
+    const json = await response.json();
+    const text = json.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (!text) return null;
+
+    // Limpiar posible markdown (```json ... ```)
+    const clean = text.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+    const datos = JSON.parse(clean);
+    console.log('📄 Factura analizada por Gemini:', JSON.stringify(datos));
+    return datos;
+  } catch (err) {
+    console.error('Error analizando factura con Gemini:', err.message);
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// DESCARGAR IMAGEN DE TWILIO → BASE64
+// ═══════════════════════════════════════════════════════════
+async function descargarImagenBase64(mediaUrl) {
+  const imagenResp = await fetch(mediaUrl, {
+    headers: {
+      'Authorization': 'Basic ' + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64')
+    }
+  });
+  if (!imagenResp.ok) throw new Error(`Error descargando imagen: ${imagenResp.status}`);
+  const buffer = await imagenResp.arrayBuffer();
+  return Buffer.from(buffer).toString('base64');
+}
+
+// ═══════════════════════════════════════════════════════════
+// SUBIR FACTURA A SUPABASE STORAGE (bucket "facturas")
+// ═══════════════════════════════════════════════════════════
+async function subirFacturaAStorage(imageBase64, mimeType, filename) {
+  const bufferNode = Buffer.from(imageBase64, 'base64');
+  await supabase.storage.createBucket('facturas', { public: true }).catch(() => {});
+  const { data, error } = await supabase.storage
+    .from('facturas')
+    .upload(filename, bufferNode, { contentType: mimeType, upsert: true });
+  if (error) throw new Error('Error subiendo factura: ' + error.message);
+  const { data: urlData } = supabase.storage.from('facturas').getPublicUrl(filename);
+  return urlData.publicUrl;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PROCESAR FACTURA DE PROPIETARIO (imagen → Gemini → Supabase)
+// Busca el servicio correspondiente y carga la factura
+// ═══════════════════════════════════════════════════════════
+async function procesarFacturaPropietario(from, mediaUrl, mimeType, usuario) {
+  try {
+    // 1. Descargar imagen y convertir a base64
+    const imageBase64 = await descargarImagenBase64(mediaUrl);
+    console.log(`📄 Imagen descargada (${Math.round(imageBase64.length * 3/4 / 1024)} KB), analizando con Gemini...`);
+
+    // 2. Analizar con Gemini
+    const datos = await analizarFacturaConGemini(imageBase64, mimeType);
+    if (!datos || !datos.tipo_servicio) {
+      await enviarWhatsApp(from, '⚠️ No pude leer los datos de la factura. Intentá con una foto más nítida o mandala de nuevo.');
+      return;
+    }
+
+    // 3. Subir imagen a Storage
+    const timestamp = Date.now();
+    const ext = mimeType.includes('png') ? 'png' : 'jpg';
+    const filename = `factura_${from.replace(/\D/g, '')}_${timestamp}.${ext}`;
+    const facturaUrl = await subirFacturaAStorage(imageBase64, mimeType, filename);
+
+    // 4. Buscar servicios del propietario que matcheen con el tipo
+    const { data: servicios } = await supabase
+      .from('servicios')
+      .select('*')
+      .eq('propietario_id', usuario.id);
+
+    if (!servicios || servicios.length === 0) {
+      await enviarWhatsApp(from, `📄 Recibí la factura de *${datos.empresa || datos.tipo_servicio}* por *$${Number(datos.monto || 0).toLocaleString('es-AR')}*.\n\n⚠️ No tenés servicios cargados en AlquilApp. Primero agregá el servicio desde la web y después mandame la factura.`);
+      return;
+    }
+
+    // Matchear por tipo de servicio o nombre de empresa
+    const tipoNorm = (datos.tipo_servicio || '').toLowerCase();
+    const empresaNorm = (datos.empresa || '').toLowerCase();
+    const servicio = servicios.find(s => {
+      const nombre = (s.nombre || '').toLowerCase();
+      const tipo = (s.tipo || '').toLowerCase();
+      const proveedor = (s.proveedor || '').toLowerCase();
+      // Match por tipo (luz, gas, agua) o empresa exacta
+      if (tipoNorm === 'luz' && (nombre.includes('luz') || tipo.includes('luz') || nombre.includes('electr') || proveedor.includes('epe') || proveedor.includes('edenor') || proveedor.includes('edesur'))) return true;
+      if (tipoNorm === 'gas' && (nombre.includes('gas') || tipo.includes('gas') || proveedor.includes('metrogas') || proveedor.includes('naturgy') || proveedor.includes('camuzzi'))) return true;
+      if (tipoNorm === 'agua' && (nombre.includes('agua') || tipo.includes('agua') || proveedor.includes('aysa') || proveedor.includes('caps') || proveedor.includes('absa'))) return true;
+      if (tipoNorm === 'internet' && (nombre.includes('internet') || nombre.includes('wifi') || nombre.includes('cable'))) return true;
+      // Match genérico por nombre de empresa
+      if (empresaNorm && (nombre.includes(empresaNorm) || proveedor.includes(empresaNorm))) return true;
+      return false;
+    });
+
+    if (!servicio) {
+      await enviarWhatsApp(from, `📄 Recibí la factura de *${datos.empresa || datos.tipo_servicio}* pero no encontré un servicio que coincida en tu cuenta.\n\n💡 Los servicios que tenés cargados son:\n${servicios.map(s => '• ' + (s.nombre || s.tipo)).join('\n')}\n\nVerificá que el servicio esté dado de alta en la web.`);
+      return;
+    }
+
+    // 5. Actualizar el servicio con los datos de la factura
+    const updateData = {};
+    if (datos.monto) updateData.ultima_factura_monto = Number(datos.monto);
+    if (datos.fecha_vencimiento) updateData.ultima_factura_vto = datos.fecha_vencimiento;
+    if (facturaUrl) updateData.factura_url = facturaUrl;
+    if (datos.numero_cuenta && !servicio.numero_cuenta) updateData.numero_cuenta = datos.numero_cuenta;
+
+    const { error: updateErr } = await supabase
+      .from('servicios')
+      .update(updateData)
+      .eq('id', servicio.id);
+
+    if (updateErr) throw updateErr;
+
+    // 6. También insertar en facturas_servicios si la tabla existe
+    try {
+      await supabase.from('facturas_servicios').insert({
+        servicio_id: servicio.id,
+        propietario_id: usuario.id,
+        monto: Number(datos.monto || 0),
+        fecha_vto: datos.fecha_vencimiento || null,
+        periodo: datos.periodo || null,
+        factura_url: facturaUrl,
+        estado: 'pendiente'
+      });
+    } catch (e) { console.warn('No se pudo insertar en facturas_servicios:', e.message); }
+
+    // 7. Confirmar al propietario
+    const montoStr = datos.monto ? '$' + Number(datos.monto).toLocaleString('es-AR') : 'monto no detectado';
+    const vtoStr = datos.fecha_vencimiento || 'vencimiento no detectado';
+    await enviarWhatsApp(from,
+      `✅ *Factura cargada correctamente*\n\n` +
+      `📋 Servicio: *${servicio.nombre || servicio.tipo}*\n` +
+      `🏢 Empresa: *${datos.empresa || '—'}*\n` +
+      `💰 Monto: *${montoStr}*\n` +
+      `📅 Vencimiento: *${vtoStr}*\n` +
+      `📎 Período: *${datos.periodo || '—'}*\n\n` +
+      `Tu inquilino ya puede ver esta factura en la app.`
+    );
+
+    console.log(`✅ Factura cargada: ${servicio.nombre} → $${datos.monto} vto ${datos.fecha_vencimiento}`);
+
+  } catch (err) {
+    console.error('❌ Error procesando factura:', err);
+    await enviarWhatsApp(from, '⚠️ Hubo un error procesando la factura. Intentá de nuevo.').catch(() => {});
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // DESCARGAR Y SUBIR IMAGEN A SUPABASE STORAGE (comprobantes)
 // Descarga desde URL (con auth Twilio), sube a bucket "comprobantes"
 // Retorna la URL pública del archivo
@@ -859,6 +1046,17 @@ app.post('/webhook', async (req, res) => {
         })();
         return;
       }
+    }
+
+    // ── FEATURE: PROPIETARIO ENVÍA FOTO DE FACTURA DE SERVICIO ──
+    if (esImagen && usuario.rol === 'propietario') {
+      console.log('📄 Imagen de propietario → procesando como factura de servicio');
+      res.send(`<Response><Message>${escapeXml('📄 Recibido. Analizando tu factura con IA...')}</Message></Response>`);
+
+      (async () => {
+        await procesarFacturaPropietario(from, mediaUrl, mediaType, usuario);
+      })();
+      return;
     }
 
     // ── FEATURE 2: ENVIAR COMPROBANTE DE PAGO (inquilino sends image) ──
@@ -2409,6 +2607,86 @@ app.get('/notif-automaticas', async (req, res) => {
             } catch (err) {
               resultados.errores++;
             }
+          }
+        }
+      }
+    }
+
+    // ════════════════════════════════════════════════════════
+    // PARTE EXTRA: Recordatorio mensual al propietario para cargar facturas
+    // Se ejecuta los días 1 al 5 de cada mes
+    // ════════════════════════════════════════════════════════
+    const diaDelMes = hoy.getDate();
+    if (diaDelMes >= 1 && diaDelMes <= 5) {
+      console.log('📄 Enviando recordatorios de carga de facturas a propietarios...');
+
+      // Obtener todos los propietarios con WhatsApp y servicios
+      const { data: propietarios } = await supabase
+        .from('profiles')
+        .select('id, nombre, whatsapp_phone')
+        .eq('rol', 'propietario')
+        .not('whatsapp_phone', 'is', null);
+
+      if (propietarios && propietarios.length > 0) {
+        for (const prop of propietarios) {
+          // Verificar si ya se mandó este mes
+          const mesActual = hoy.toISOString().slice(0, 7); // "2026-04"
+          const claveRecordatorio = `recordatorio_facturas_${prop.id}_${mesActual}`;
+
+          const { data: yaEnviado } = await supabase
+            .from('notificaciones_wa')
+            .select('id')
+            .eq('clave_unica', claveRecordatorio)
+            .limit(1);
+
+          if (yaEnviado && yaEnviado.length > 0) continue;
+
+          // Buscar servicios de este propietario
+          const { data: servicios } = await supabase
+            .from('servicios')
+            .select('id, nombre, tipo, proveedor')
+            .eq('propietario_id', prop.id);
+
+          if (!servicios || servicios.length === 0) continue;
+
+          // Filtrar solo servicios tipo servicio (no expensas)
+          const svcsActivos = servicios.filter(s => {
+            const tipo = (s.tipo || '').toLowerCase();
+            return tipo !== 'expensas' && tipo !== 'expensa';
+          });
+
+          if (svcsActivos.length === 0) continue;
+
+          // Armar mensaje
+          const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+          const mesNombre = meses[hoy.getMonth()];
+          let listaSvcs = svcsActivos.map(s => `• ${s.nombre || s.tipo}${s.proveedor ? ' (' + s.proveedor + ')' : ''}`).join('\n');
+
+          const mensaje =
+            `📄 *Recordatorio de facturas — ${mesNombre}*\n\n` +
+            `Hola ${prop.nombre || 'propietario'}, es momento de cargar las facturas del mes. ` +
+            `Mandame una *foto de cada factura* y yo la proceso automáticamente.\n\n` +
+            `Tus servicios:\n${listaSvcs}\n\n` +
+            `📸 Solo sacale foto a la factura y mandala por este chat.`;
+
+          let numProp = (prop.whatsapp_phone || '').replace(/\D/g, '');
+          if (numProp.startsWith('0')) numProp = numProp.substring(1);
+          if (!numProp.startsWith('54')) numProp = '54' + numProp;
+          const telProp = '+' + numProp;
+
+          try {
+            await enviarWhatsApp(telProp, mensaje);
+            await supabase.from('notificaciones_wa').insert({
+              tipo: 'recordatorio_facturas',
+              telefono: telProp,
+              estado: 'enviado',
+              clave_unica: claveRecordatorio
+            });
+            resultados.enviados++;
+            resultados.detalle.push({ tipo: 'recordatorio_facturas', tel: telProp });
+          } catch (err) {
+            resultados.errores++;
+            console.error(`❌ Error enviando recordatorio facturas a ${telProp}:`, err.message);
           }
         }
       }
