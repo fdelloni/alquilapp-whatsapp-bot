@@ -21,6 +21,8 @@ const {
   GEMINI_KEY,
   SUPABASE_URL,
   SUPABASE_SERVICE_KEY,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
   NOTIF_SECRET,
   PORT = 3000
 } = process.env;
@@ -2746,13 +2748,287 @@ app.post('/verify-whatsapp', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
+// OAUTH MAIL CALLBACK — intercambiar code por tokens de Gmail
+// ═══════════════════════════════════════════════════════════
+app.options('/oauth-mail-callback', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
+app.post('/oauth-mail-callback', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+  const { code, provider, user_id, redirect_uri } = req.body;
+  if (!code || !user_id) {
+    return res.status(400).json({ ok: false, error: 'Faltan parámetros (code, user_id)' });
+  }
+
+  try {
+    const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+      console.error('❌ GOOGLE_CLIENT_ID o GOOGLE_CLIENT_SECRET no configurados');
+      return res.status(500).json({ ok: false, error: 'Configuración OAuth incompleta en el servidor' });
+    }
+
+    // Intercambiar code por tokens
+    const tokenResp = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code: code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri: redirect_uri || 'https://alquil.app/index.html',
+        grant_type: 'authorization_code'
+      })
+    });
+
+    const tokenData = await tokenResp.json();
+    if (tokenData.error) {
+      console.error('❌ Error OAuth Google:', tokenData);
+      return res.json({ ok: false, error: tokenData.error_description || tokenData.error });
+    }
+
+    // Obtener email del usuario de Google
+    const userInfoResp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
+    });
+    const userInfo = await userInfoResp.json();
+    const email = userInfo.email || 'desconocido';
+
+    // Guardar tokens en el perfil del usuario en Supabase
+    const { error: dbError } = await supabase
+      .from('profiles')
+      .update({
+        mail_facturas_email: email,
+        mail_facturas_provider: provider || 'google',
+        mail_facturas_token: tokenData.access_token,
+        mail_facturas_refresh_token: tokenData.refresh_token || null,
+        mail_facturas_last_check: null
+      })
+      .eq('id', user_id);
+
+    if (dbError) {
+      console.error('❌ Error guardando tokens en Supabase:', dbError);
+      return res.json({ ok: false, error: 'Error guardando credenciales' });
+    }
+
+    console.log(`✅ Mail facturas conectado: ${email} para usuario ${user_id}`);
+    return res.json({ ok: true, email: email });
+
+  } catch (err) {
+    console.error('❌ Error en oauth-mail-callback:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// REVISAR MAIL FACTURAS — escanear Gmail buscando facturas
+// ═══════════════════════════════════════════════════════════
+app.options('/revisar-mail-facturas', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
+app.post('/revisar-mail-facturas', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+  const { user_id } = req.body;
+  if (!user_id) return res.status(400).json({ ok: false, error: 'Falta user_id' });
+
+  try {
+    // 1. Obtener perfil con tokens de mail
+    const { data: perfil, error: perfErr } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user_id)
+      .single();
+
+    if (perfErr || !perfil) {
+      return res.json({ ok: false, error: 'Usuario no encontrado' });
+    }
+
+    if (!perfil.mail_facturas_token) {
+      return res.json({ ok: false, error: 'No hay mail conectado' });
+    }
+
+    // 2. Refrescar token si tenemos refresh_token
+    let accessToken = perfil.mail_facturas_token;
+    if (perfil.mail_facturas_refresh_token) {
+      const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+      const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+      try {
+        const refreshResp = await fetch('https://oauth2.googleapis.com/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            client_id: GOOGLE_CLIENT_ID,
+            client_secret: GOOGLE_CLIENT_SECRET,
+            refresh_token: perfil.mail_facturas_refresh_token,
+            grant_type: 'refresh_token'
+          })
+        });
+        const refreshData = await refreshResp.json();
+        if (refreshData.access_token) {
+          accessToken = refreshData.access_token;
+          // Actualizar token en DB
+          await supabase.from('profiles').update({ mail_facturas_token: accessToken }).eq('id', user_id);
+        }
+      } catch (refreshErr) {
+        console.log('⚠️ No se pudo refrescar token, usando el existente:', refreshErr.message);
+      }
+    }
+
+    // 3. Buscar emails de empresas de servicios en los últimos 30 días
+    const empresasQuery = 'from:(epe OR edenor OR edesur OR metrogas OR aysa OR caps OR epec OR camuzzi OR litoral gas OR aguas santafesinas OR municipalidad OR abl OR arba) newer_than:30d has:attachment';
+    const searchUrl = `https://www.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(empresasQuery)}&maxResults=10`;
+
+    const searchResp = await fetch(searchUrl, {
+      headers: { 'Authorization': 'Bearer ' + accessToken }
+    });
+
+    if (searchResp.status === 401) {
+      // Token expirado y no se pudo refrescar
+      return res.json({ ok: false, error: 'Token de Gmail expirado. Reconectá tu cuenta desde el perfil.' });
+    }
+
+    const searchData = await searchResp.json();
+    const messages = searchData.messages || [];
+    console.log(`📧 Encontrados ${messages.length} emails de servicios para usuario ${user_id}`);
+
+    if (messages.length === 0) {
+      await supabase.from('profiles').update({ mail_facturas_last_check: new Date().toISOString() }).eq('id', user_id);
+      return res.json({ ok: true, facturas_encontradas: 0 });
+    }
+
+    // 4. Obtener servicios del usuario para matchear
+    const { data: propiedades } = await supabase
+      .from('propiedades')
+      .select('id')
+      .eq('propietario_id', user_id);
+
+    const propIds = (propiedades || []).map(p => p.id);
+
+    let servicios = [];
+    if (propIds.length > 0) {
+      const { data: svcs } = await supabase
+        .from('servicios')
+        .select('*')
+        .in('propiedad_id', propIds);
+      servicios = svcs || [];
+    }
+
+    // 5. Procesar cada email — buscar adjuntos PDF/imagen y analizarlos con Gemini
+    let facturasEncontradas = 0;
+
+    for (const msg of messages.slice(0, 5)) { // Limitar a 5 emails por escaneo
+      try {
+        const msgResp = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
+          headers: { 'Authorization': 'Bearer ' + accessToken }
+        });
+        const msgData = await msgResp.json();
+
+        // Buscar adjuntos (PDF o imagen)
+        const parts = msgData.payload?.parts || [];
+        for (const part of parts) {
+          if (!part.filename || part.filename.length === 0) continue;
+          const mime = (part.mimeType || '').toLowerCase();
+          if (!mime.includes('pdf') && !mime.includes('image')) continue;
+
+          // Descargar adjunto
+          const attId = part.body?.attachmentId;
+          if (!attId) continue;
+
+          const attResp = await fetch(
+            `https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}/attachments/${attId}`,
+            { headers: { 'Authorization': 'Bearer ' + accessToken } }
+          );
+          const attData = await attResp.json();
+          if (!attData.data) continue;
+
+          // Gmail devuelve base64url, convertir a base64 standard
+          const base64Data = attData.data.replace(/-/g, '+').replace(/_/g, '/');
+
+          // Si es imagen, analizar con Gemini
+          if (mime.includes('image')) {
+            try {
+              const analisis = await analizarFacturaConGemini(base64Data, mime);
+              if (analisis && analisis.confianza >= 0.6) {
+                // Buscar servicio que coincida
+                const svcMatch = servicios.find(s => {
+                  const tipoS = (s.tipo_servicio || '').toLowerCase();
+                  const nomS = (s.nombre_servicio || '').toLowerCase();
+                  const tipoA = (analisis.tipo_servicio || '').toLowerCase();
+                  const empA = (analisis.empresa || '').toLowerCase();
+                  return tipoS.includes(tipoA) || nomS.includes(empA) || tipoA.includes(tipoS) || empA.includes(nomS);
+                });
+
+                if (svcMatch) {
+                  // Subir factura a Storage
+                  const filename = `mail_${user_id}_${svcMatch.id}_${Date.now()}.${mime.includes('png') ? 'png' : 'jpg'}`;
+                  const facturaUrl = await subirFacturaAStorage(base64Data, mime, filename);
+
+                  // Actualizar servicio
+                  await supabase.from('servicios').update({
+                    ultima_factura_monto: analisis.monto || null,
+                    ultima_factura_vto: analisis.fecha_vencimiento || null,
+                    factura_url: facturaUrl
+                  }).eq('id', svcMatch.id);
+
+                  // Insertar en facturas_servicios
+                  await supabase.from('facturas_servicios').insert({
+                    servicio_id: svcMatch.id,
+                    monto: analisis.monto,
+                    fecha_vencimiento: analisis.fecha_vencimiento,
+                    periodo: analisis.periodo,
+                    factura_url: facturaUrl,
+                    fuente: 'email',
+                    datos_extraidos: analisis
+                  });
+
+                  facturasEncontradas++;
+                  console.log(`✅ Factura de ${analisis.empresa} cargada desde email para servicio ${svcMatch.id}`);
+                }
+              }
+            } catch (gemErr) {
+              console.log('⚠️ Error analizando adjunto con Gemini:', gemErr.message);
+            }
+          }
+          // Para PDFs: por ahora skip (Gemini no procesa PDF directamente como imagen)
+        }
+      } catch (msgErr) {
+        console.log('⚠️ Error procesando email:', msgErr.message);
+      }
+    }
+
+    // 6. Actualizar última revisión
+    await supabase.from('profiles').update({ mail_facturas_last_check: new Date().toISOString() }).eq('id', user_id);
+
+    console.log(`📧 Revisión de mail completada: ${facturasEncontradas} facturas encontradas`);
+    return res.json({ ok: true, facturas_encontradas: facturasEncontradas });
+
+  } catch (err) {
+    console.error('❌ Error en revisar-mail-facturas:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
 // HEALTH CHECK
 // ═══════════════════════════════════════════════════════════
 app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.1.0',
+    version:   '5.2.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -2768,7 +3044,9 @@ app.get('/', (req, res) => {
       'alertas-morosidad',
       'recordatorio-ajustes',
       'factura-por-foto-propietario',
-      'recordatorio-mensual-facturas'
+      'recordatorio-mensual-facturas',
+      'mail-facturas-oauth',
+      'mail-facturas-scan'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
@@ -2777,6 +3055,8 @@ app.get('/', (req, res) => {
       GEMINI_KEY:            GEMINI_KEY            ? 'SET' : '❌ UNSET',
       SUPABASE_URL:          SUPABASE_URL          ? 'SET' : '❌ UNSET',
       SUPABASE_SERVICE_KEY:  SUPABASE_SERVICE_KEY  ? 'SET' : '❌ UNSET',
+      GOOGLE_CLIENT_ID:      GOOGLE_CLIENT_ID      ? 'SET' : '❌ UNSET',
+      GOOGLE_CLIENT_SECRET:  GOOGLE_CLIENT_SECRET  ? 'SET' : '❌ UNSET',
     }
   });
 });
