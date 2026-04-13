@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
-// v4.0 — Recibos PDF, facturas de servicios, recordatorios
+// v4.1 — Recibos PDF, facturas de servicios, recordatorios
 //         automáticos de alquiler y servicios.
 // ═══════════════════════════════════════════════════════════
 
@@ -575,8 +575,59 @@ app.post('/webhook', async (req, res) => {
       respuesta = await consultarGemini(from, text, usuario, datos);
     }
 
+    // ── 5. Verificar si Gemini incluyó un comando [CMD:...] ──
+    const { textoLimpio, comando } = procesarComandoCMD(respuesta);
+
+    if (comando) {
+      console.log(`🤖 Comando CMD detectado: ${comando.tipo} → ${comando.param}`);
+      // Enviar respuesta limpia inmediatamente
+      res.send(`<Response><Message>${escapeXml(textoLimpio)}</Message></Response>`);
+
+      // Ejecutar acción en background
+      (async () => {
+        try {
+          if (comando.tipo === 'recibo') {
+            const cobro = await buscarCobroPorPeriodo(usuario, comando.param);
+            if (!cobro) {
+              await enviarWhatsApp(from, '❌ No encontré un cobro pagado para ese período. Verificá que el pago esté registrado en AlquilApp.');
+              return;
+            }
+            await generarYEnviarRecibo(cobro, from);
+          } else if (comando.tipo === 'factura') {
+            const resultado = await buscarFacturaServicio(usuario, comando.param);
+            if (resultado.error === 'no_propiedades') {
+              await enviarWhatsApp(from, '❌ No tenés propiedades asociadas en AlquilApp.');
+              return;
+            }
+            if (resultado.error === 'no_servicio') {
+              await enviarWhatsApp(from, `❌ No encontré un servicio de *${comando.param}* registrado. Verificá en *Servicios* de alquil.app.`);
+              return;
+            }
+            if (resultado.error === 'no_factura') {
+              await enviarWhatsApp(from, `📄 Encontré el servicio de *${comando.param}*, pero no tiene factura cargada. El propietario puede subirla en *Servicios* de alquil.app.`);
+              return;
+            }
+            const servNombre = resultado.servicio.tipo || resultado.servicio.nombre || 'Servicio';
+            let montoMsg = resultado.factura?.monto ? `\n💰 Monto: *$${Number(resultado.factura.monto).toLocaleString('es-AR')}*` : '';
+            let vtoMsg = '';
+            if (resultado.factura?.fecha_vto) {
+              const d = new Date(resultado.factura.fecha_vto);
+              vtoMsg = `\n📅 Vencimiento: *${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}*`;
+            }
+            const mensaje = `📄 *AlquilApp — Factura de ${servNombre}*\n` + montoMsg + vtoMsg + '\n\n📎 Acá va la factura adjunta. 📋';
+            await enviarWhatsAppConPDF(from, mensaje, resultado.facturaUrl);
+            console.log(`✅ Factura de ${servNombre} enviada a ${from}`);
+          }
+        } catch (err) {
+          console.error('❌ Error ejecutando comando CMD:', err);
+          await enviarWhatsApp(from, '⚠️ Hubo un error procesando tu pedido. Intentá de nuevo.').catch(() => {});
+        }
+      })();
+      return;
+    }
+
     console.log(`✅ Respuesta lista para ${from}`);
-    return res.send(`<Response><Message>${escapeXml(respuesta)}</Message></Response>`);
+    return res.send(`<Response><Message>${escapeXml(textoLimpio)}</Message></Response>`);
 
   } catch (err) {
     console.error('❌ Error procesando mensaje:', err);
@@ -995,7 +1046,11 @@ El usuario puede pedir:
 • *Recibo de pago*: escribiendo algo como "mandame el recibo de marzo" o "quiero el recibo del último pago". Se genera un PDF y se envía automáticamente.
 • *Factura de servicio*: escribiendo "mandame la factura de luz" o "pasame la boleta de gas". Se envía el PDF de la última factura cargada.
 
-Si el usuario pide un recibo o factura, NO respondas vos — el sistema se encarga automáticamente de buscarlo y enviarlo. Simplemente decile que ya se está procesando si te preguntan.
+IMPORTANTE — Cuando el usuario pide un recibo de pago o una factura de servicio (ya sea por texto o por audio), DEBÉS incluir un comando especial AL INICIO de tu respuesta para que el sistema lo procese automáticamente:
+• Para recibos: empezá tu respuesta con [CMD:recibo:PERIODO] donde PERIODO es el mes (ej: "marzo 2026", "ultimo").
+• Para facturas de servicio: empezá tu respuesta con [CMD:factura:TIPO] donde TIPO es el servicio (ej: "luz", "gas", "agua").
+Después del comando, escribí un mensaje corto confirmando que se está procesando (ej: "🧾 Buscando tu recibo de marzo...").
+Ejemplos: "[CMD:recibo:marzo 2026] 🧾 Buscando tu recibo de marzo, ya te lo mando!" o "[CMD:factura:luz] 📄 Buscando la factura de luz, un momento!"
 
 *Comandos disponibles:*
 • Escribí *borrar* o *reset* para empezar una nueva conversación desde cero.
@@ -1128,6 +1183,23 @@ REGLA DE ORO: Si el dato está en la base de datos, lo das directamente. Si no e
 // ═══════════════════════════════════════════════════════════
 // FORMATEAR RESPUESTA PARA WHATSAPP
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// PROCESAR COMANDO CMD EN RESPUESTA DE GEMINI
+// Gemini incluye [CMD:recibo:periodo] o [CMD:factura:tipo]
+// cuando el usuario pide un recibo/factura por audio.
+// Retorna { textoLimpio, comando } donde comando es null si no hay CMD.
+// ═══════════════════════════════════════════════════════════
+function procesarComandoCMD(respuesta) {
+  const match = respuesta.match(/\[CMD:(recibo|factura):([^\]]+)\]/i);
+  if (!match) return { textoLimpio: respuesta, comando: null };
+
+  const tipo = match[1].toLowerCase();
+  const param = match[2].trim();
+  const textoLimpio = respuesta.replace(match[0], '').trim();
+
+  return { textoLimpio, comando: { tipo, param } };
+}
+
 function formatearParaWhatsApp(texto) {
   return texto
     .replace(/#{1,6}\s/g, '')
@@ -1619,7 +1691,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '4.0.0',
+    version:   '4.1.0',
     timestamp: new Date().toISOString(),
     features:  ['recibos-pdf', 'facturas-servicios', 'recordatorios-servicios', 'audio', 'gemini-ai'],
     env_check: {
@@ -1634,7 +1706,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v4.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v4.1 — Webhook activo ✅');
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1646,7 +1718,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v4.0          ║');
+    console.log('║   AlquilApp WhatsApp Bot v4.1          ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
