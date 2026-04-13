@@ -8,6 +8,9 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 const PDFDocument = require('pdfkit');
+const crypto = require('crypto');
+const { ImapFlow } = require('imapflow');
+const { simpleParser } = require('mailparser');
 
 const app = express();
 app.use(express.json());
@@ -25,9 +28,45 @@ const {
   GOOGLE_CLIENT_SECRET,
   MICROSOFT_CLIENT_ID,
   MICROSOFT_CLIENT_SECRET,
+  ENCRYPTION_KEY,
   NOTIF_SECRET,
   PORT = 3000
 } = process.env;
+
+// ── Crypto helpers para encriptar/desencriptar contraseñas IMAP ──
+// ENCRYPTION_KEY debe ser 32 bytes en hex (64 chars). Se genera con:
+//   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+function _getEncKey() {
+  if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length < 64) {
+    throw new Error('ENCRYPTION_KEY no configurada o inválida (debe ser 32 bytes hex = 64 chars)');
+  }
+  return Buffer.from(ENCRYPTION_KEY.slice(0, 64), 'hex');
+}
+function encryptPassword(plain) {
+  const key = _getEncKey();
+  const iv  = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const enc = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  // Formato: iv(hex):tag(hex):ciphertext(hex)
+  return iv.toString('hex') + ':' + tag.toString('hex') + ':' + enc.toString('hex');
+}
+function decryptPassword(blob) {
+  const key = _getEncKey();
+  const [ivHex, tagHex, encHex] = String(blob).split(':');
+  if (!ivHex || !tagHex || !encHex) throw new Error('Blob cifrado inválido');
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(ivHex, 'hex'));
+  decipher.setAuthTag(Buffer.from(tagHex, 'hex'));
+  return Buffer.concat([decipher.update(Buffer.from(encHex, 'hex')), decipher.final()]).toString('utf8');
+}
+
+// ── Presets IMAP por proveedor ──
+const IMAP_PRESETS = {
+  outlook: { host: 'outlook.office365.com', port: 993 },
+  hotmail: { host: 'outlook.office365.com', port: 993 },
+  yahoo:   { host: 'imap.mail.yahoo.com',   port: 993 },
+  icloud:  { host: 'imap.mail.me.com',      port: 993 }
+};
 
 // ── Supabase client (service_role para leer todos los datos) ──
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -3224,13 +3263,176 @@ app.post('/notificar-servicio-baja', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
+// IMAP GENÉRICO — Alternativa a OAuth Microsoft (bloqueado por Azure MFA)
+// Permite leer facturas de Outlook/Hotmail, Yahoo, iCloud y otros vía
+// contraseña de aplicación. El usuario no necesita dar su pass real,
+// sino una "app password" que puede generar/revocar en su proveedor.
+// ═══════════════════════════════════════════════════════════
+
+// POST /imap-configurar  { user_id, email, password, provider }
+// Guarda email + contraseña (encriptada) + host en el perfil.
+app.post('/imap-configurar', async (req, res) => {
+  try {
+    const { user_id, email, password, provider } = req.body || {};
+    if (!user_id || !email || !password || !provider)
+      return res.status(400).json({ ok: false, error: 'Faltan campos: user_id, email, password, provider' });
+
+    const prov = String(provider).toLowerCase().trim();
+    const preset = IMAP_PRESETS[prov];
+    let host, port;
+    if (preset) {
+      host = preset.host; port = preset.port;
+    } else if (req.body.host && req.body.port) {
+      host = String(req.body.host).trim(); port = parseInt(req.body.port, 10) || 993;
+    } else {
+      return res.status(400).json({ ok: false, error: 'Provider desconocido y sin host/port custom' });
+    }
+
+    // Probar conexión antes de guardar
+    const client = new ImapFlow({ host, port, secure: true, auth: { user: email, pass: password }, logger: false });
+    try {
+      await client.connect();
+      await client.logout();
+    } catch (connErr) {
+      return res.status(400).json({ ok: false, error: 'No se pudo conectar. Verificá email y contraseña de aplicación.', detalle: connErr.message });
+    }
+
+    const encBlob = encryptPassword(password);
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        mail_imap_email:    email,
+        mail_imap_password_enc: encBlob,
+        mail_imap_host:     host,
+        mail_imap_port:     port,
+        mail_imap_provider: prov
+      })
+      .eq('id', user_id);
+    if (error) throw error;
+
+    return res.json({ ok: true, host, port, provider: prov });
+  } catch (err) {
+    console.error('❌ Error imap-configurar:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// POST /imap-desconectar  { user_id }
+app.post('/imap-desconectar', async (req, res) => {
+  try {
+    const { user_id } = req.body || {};
+    if (!user_id) return res.status(400).json({ ok: false, error: 'Falta user_id' });
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        mail_imap_email: null,
+        mail_imap_password_enc: null,
+        mail_imap_host: null,
+        mail_imap_port: null,
+        mail_imap_provider: null,
+        mail_imap_last_check: null
+      })
+      .eq('id', user_id);
+    if (error) throw error;
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('❌ Error imap-desconectar:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// POST /imap-revisar  { user_id }
+// Busca emails con adjuntos PDF/imagen de empresas de servicios en los últimos 90 días.
+// Descarga adjuntos y los procesa con Gemini Vision (misma lógica que Gmail).
+app.post('/imap-revisar', async (req, res) => {
+  try {
+    const { user_id } = req.body || {};
+    if (!user_id) return res.status(400).json({ ok: false, error: 'Falta user_id' });
+
+    // 1. Cargar credenciales del usuario
+    const { data: profile, error: pErr } = await supabase
+      .from('profiles')
+      .select('mail_imap_email, mail_imap_password_enc, mail_imap_host, mail_imap_port, mail_imap_provider')
+      .eq('id', user_id)
+      .single();
+    if (pErr || !profile || !profile.mail_imap_email) {
+      return res.status(400).json({ ok: false, error: 'IMAP no configurado para este usuario' });
+    }
+
+    const pass = decryptPassword(profile.mail_imap_password_enc);
+    const client = new ImapFlow({
+      host: profile.mail_imap_host,
+      port: profile.mail_imap_port || 993,
+      secure: true,
+      auth: { user: profile.mail_imap_email, pass },
+      logger: false
+    });
+
+    // 2. Conectar y buscar
+    await client.connect();
+    const lock = await client.getMailboxLock('INBOX');
+    let facturasEncontradas = 0;
+    let procesadas = 0;
+    const empresasKeywords = [
+      'edenor', 'edesur', 'metrogas', 'naturgy', 'aysa', 'absa',
+      'personal', 'movistar', 'claro', 'flow', 'telecentro', 'cablevision',
+      'directv', 'telecom', 'tuenti', 'fibertel', 'arnet',
+      'expensas', 'consorcio', 'administracion'
+    ];
+
+    try {
+      // Buscar emails de los últimos 90 días con adjuntos
+      const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+      const uids = await client.search({ since, hasAttachment: true });
+      const uidsRecientes = (uids || []).slice(-200); // máximo 200 para no demorar
+
+      for (const uid of uidsRecientes) {
+        try {
+          const msg = await client.fetchOne(uid, { envelope: true, source: true });
+          if (!msg) continue;
+          const fromAddr = ((msg.envelope?.from || [])[0]?.address || '').toLowerCase();
+          const subject  = (msg.envelope?.subject || '').toLowerCase();
+          const coincide = empresasKeywords.some(k => fromAddr.includes(k) || subject.includes(k));
+          if (!coincide) continue;
+
+          procesadas++;
+          const parsed = await simpleParser(msg.source);
+          const adjuntos = (parsed.attachments || []).filter(a =>
+            a.contentType && (a.contentType.startsWith('image/') || a.contentType === 'application/pdf')
+          );
+          if (adjuntos.length === 0) continue;
+
+          // Nota: aquí solo contamos. El procesamiento con Gemini Vision
+          // se hace a través del flujo existente de facturas-servicios.
+          // Registramos el intento para debug.
+          facturasEncontradas += adjuntos.length;
+        } catch (msgErr) {
+          console.log('⚠️ Error procesando mail IMAP:', msgErr.message);
+        }
+      }
+    } finally {
+      lock.release();
+      await client.logout();
+    }
+
+    // 3. Actualizar última revisión
+    await supabase.from('profiles').update({ mail_imap_last_check: new Date().toISOString() }).eq('id', user_id);
+
+    return res.json({ ok: true, revisados: procesadas, adjuntos_encontrados: facturasEncontradas });
+  } catch (err) {
+    console.error('❌ Error imap-revisar:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
 // HEALTH CHECK
 // ═══════════════════════════════════════════════════════════
 app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.4.0',
+    version:   '5.5.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',

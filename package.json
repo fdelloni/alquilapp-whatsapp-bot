@@ -10,6 +10,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
     "express": "^4.18.2",
+    "imapflow": "^1.0.164",
+    "mailparser": "^3.7.1",
     "pdfkit": "^0.15.0"
   },
   "engines": {
