@@ -2752,7 +2752,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.0.0',
+    version:   '5.1.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -2766,7 +2766,9 @@ app.get('/', (req, res) => {
       'confirmar-pago-propietario',
       'resumen-mensual',
       'alertas-morosidad',
-      'recordatorio-ajustes'
+      'recordatorio-ajustes',
+      'factura-por-foto-propietario',
+      'recordatorio-mensual-facturas'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
