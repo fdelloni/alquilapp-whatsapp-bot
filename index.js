@@ -2944,7 +2944,7 @@ app.post('/revisar-mail-facturas', async (req, res) => {
 
     if (esMicrosoft) {
       // ── Microsoft Graph API ──
-      const filterDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const filterDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
       const searchUrl = `https://graph.microsoft.com/v1.0/me/messages?$filter=hasAttachments eq true and receivedDateTime ge ${filterDate}&$search="${empresasKeywords.replace(/ OR /g, ' OR ')}"&$top=10&$select=id,subject,from,hasAttachments`;
 
       const searchResp = await fetch(searchUrl, {
@@ -2959,7 +2959,7 @@ app.post('/revisar-mail-facturas', async (req, res) => {
       messages = (searchData.value || []).map(m => ({ id: m.id, provider: 'microsoft' }));
     } else {
       // ── Gmail API ──
-      const empresasQuery = `from:(${empresasKeywords}) newer_than:30d has:attachment`;
+      const empresasQuery = `from:(${empresasKeywords}) newer_than:90d has:attachment`;
       const searchUrl = `https://www.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(empresasQuery)}&maxResults=10`;
 
       const searchResp = await fetch(searchUrl, {
@@ -3111,7 +3111,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.2.0',
+    version:   '5.3.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
