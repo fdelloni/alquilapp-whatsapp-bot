@@ -34,13 +34,21 @@ const {
 } = process.env;
 
 // ── Crypto helpers para encriptar/desencriptar contraseñas IMAP ──
-// ENCRYPTION_KEY debe ser 32 bytes en hex (64 chars). Se genera con:
-//   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+// Si ENCRYPTION_KEY está configurada, se usa directamente.
+// Si no, se deriva determinísticamente de SUPABASE_SERVICE_KEY (que ya
+// está en Railway). Así el usuario no necesita setear nada extra.
+let _cachedKey = null;
 function _getEncKey() {
-  if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length < 64) {
-    throw new Error('ENCRYPTION_KEY no configurada o inválida (debe ser 32 bytes hex = 64 chars)');
+  if (_cachedKey) return _cachedKey;
+  if (ENCRYPTION_KEY && ENCRYPTION_KEY.length >= 64) {
+    _cachedKey = Buffer.from(ENCRYPTION_KEY.slice(0, 64), 'hex');
+  } else if (SUPABASE_SERVICE_KEY) {
+    // Derivar clave de 32 bytes a partir de SUPABASE_SERVICE_KEY
+    _cachedKey = crypto.createHash('sha256').update('alquilapp-imap|' + SUPABASE_SERVICE_KEY).digest();
+  } else {
+    throw new Error('No hay ENCRYPTION_KEY ni SUPABASE_SERVICE_KEY configuradas');
   }
-  return Buffer.from(ENCRYPTION_KEY.slice(0, 64), 'hex');
+  return _cachedKey;
 }
 function encryptPassword(plain) {
   const key = _getEncKey();
@@ -3432,7 +3440,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.5.0',
+    version:   '5.5.1',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
