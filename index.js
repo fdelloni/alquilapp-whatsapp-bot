@@ -328,21 +328,25 @@ async function buscarFacturaServicio(usuario, texto) {
 
   // Detectar tipo de servicio
   const textoLower = texto.toLowerCase();
+  // Mapa de keywords → nombre canónico del servicio
+  // Incluye empresas proveedoras regionales de Argentina
   const tiposMap = {
-    'luz': ['luz', 'electricidad', 'electrica', 'eléctrica', 'epec', 'edenor', 'edesur', 'enersa'],
-    'gas': ['gas', 'gasnor', 'litoral gas', 'metrogas', 'camuzzi'],
-    'agua': ['agua', 'aguas', 'assa', 'aysa', 'absa'],
-    'internet': ['internet', 'wifi', 'fibra'],
-    'cable': ['cable', 'television', 'televisión', 'tv'],
-    'telefono': ['telefono', 'teléfono', 'celular'],
-    'abl': ['abl', 'municipal', 'municipalidad', 'tasa'],
-    'expensas': ['expensas', 'consorcio']
+    'luz': ['luz', 'electricidad', 'electrica', 'eléctrica', 'epec', 'edenor', 'edesur', 'enersa', 'epe', 'edea', 'edelap', 'eden', 'energia', 'energía'],
+    'gas': ['gas', 'gasnor', 'litoral gas', 'metrogas', 'camuzzi', 'gasnea', 'ecogas'],
+    'agua': ['agua', 'aguas', 'assa', 'aysa', 'absa', 'assa', 'dipos'],
+    'internet': ['internet', 'wifi', 'fibra', 'fibertel', 'telecentro', 'personal', 'movistar', 'claro'],
+    'cable': ['cable', 'television', 'televisión', 'tv', 'directv', 'cablevision', 'cablevisión'],
+    'telefono': ['telefono', 'teléfono', 'celular', 'linea', 'línea'],
+    'abl': ['abl', 'municipal', 'municipalidad', 'tasa', 'tasas'],
+    'expensas': ['expensas', 'consorcio', 'administracion', 'administración']
   };
 
   let tipoDetectado = null;
+  let keywordsUsados = [];
   for (const [tipo, keywords] of Object.entries(tiposMap)) {
     if (keywords.some(kw => textoLower.includes(kw))) {
       tipoDetectado = tipo;
+      keywordsUsados = keywords;
       break;
     }
   }
@@ -365,20 +369,38 @@ async function buscarFacturaServicio(usuario, texto) {
 
   if (propIds.length === 0) return { error: 'no_propiedades' };
 
-  // Buscar servicios
-  let queryServ = supabase
+  // Buscar TODOS los servicios de las propiedades (sin filtrar por tipo en la query)
+  // porque el campo `tipo` puede decir "servicio" para todos
+  const { data: todosServicios } = await supabase
     .from('servicios')
     .select('*')
     .in('propiedad_id', propIds);
 
-  if (tipoDetectado) {
-    // Buscar por tipo (case insensitive via ilike)
-    queryServ = queryServ.ilike('tipo', `%${tipoDetectado}%`);
+  if (!todosServicios || todosServicios.length === 0) {
+    return { error: 'no_servicio', tipoDetectado };
   }
 
-  const { data: servicios } = await queryServ;
-  if (!servicios || servicios.length === 0) {
-    return { error: 'no_servicio', tipoDetectado };
+  // Filtrar en JS buscando por tipo Y nombre (más flexible que ilike en un solo campo)
+  let servicios = todosServicios;
+  if (tipoDetectado) {
+    servicios = todosServicios.filter(s => {
+      const tipoLower = (s.tipo || '').toLowerCase();
+      const nombreLower = (s.nombre || '').toLowerCase();
+      const combinado = tipoLower + ' ' + nombreLower;
+
+      // Match directo con el nombre canónico
+      if (combinado.includes(tipoDetectado)) return true;
+
+      // Match con cualquiera de las keywords del tipo detectado
+      if (keywordsUsados.some(kw => combinado.includes(kw))) return true;
+
+      return false;
+    });
+
+    // Si no encontró con el filtro, mostrar error
+    if (servicios.length === 0) {
+      return { error: 'no_servicio', tipoDetectado };
+    }
   }
 
   // Para cada servicio encontrado, buscar la factura más reciente en facturas_servicios
@@ -435,7 +457,7 @@ function detectarIntencion(texto) {
     return { tipo: 'factura_servicio', texto };
   }
   // "mandame la de luz/gas/agua" (sin decir factura explícitamente)
-  if (/mand|envi|pasa/.test(t) && /\b(luz|gas|agua)\b/.test(t) && !/recibo/.test(t)) {
+  if (/mand|envi|pasa/.test(t) && /\b(luz|gas|agua|epe|epec|edenor|edesur|enersa)\b/.test(t) && !/recibo/.test(t)) {
     return { tipo: 'factura_servicio', texto };
   }
 
@@ -1438,18 +1460,11 @@ app.get('/notif-automaticas', async (req, res) => {
         // Obtener servicio → propiedad → contrato → inquilino
         const { data: servicio } = await supabase
           .from('servicios')
-          .select('tipo, nombre, propiedad_id, a_cargo_de')
+          .select('tipo, nombre, propiedad_id')
           .eq('id', factura.servicio_id)
           .single();
 
         if (!servicio) continue;
-
-        // Solo notificar si está a cargo del inquilino (o si no está especificado)
-        if (servicio.a_cargo_de && servicio.a_cargo_de !== 'inquilino') {
-          resultados.omitidos++;
-          resultados.detalle.push({ factura_id: factura.id, tipo, accion: 'omitido (a cargo del propietario)' });
-          continue;
-        }
 
         // Buscar contrato activo de esta propiedad para obtener el inquilino
         const { data: contratos } = await supabase
@@ -1555,13 +1570,12 @@ app.get('/notif-automaticas', async (req, res) => {
 
       const { data: serviciosDia } = await supabase
         .from('servicios')
-        .select('id, tipo, nombre, propiedad_id, monto, dia_vto, a_cargo_de')
+        .select('id, tipo, nombre, propiedad_id, monto, dia_vto')
         .eq('dia_vto', diaTarget);
 
       if (!serviciosDia || serviciosDia.length === 0) continue;
 
       for (const srv of serviciosDia) {
-        if (srv.a_cargo_de && srv.a_cargo_de !== 'inquilino') continue;
 
         // Clave única para evitar duplicados: servicio_id + tipo + mes/año
         const mesAnio = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
@@ -1691,7 +1705,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '4.1.0',
+    version:   '4.2.0',
     timestamp: new Date().toISOString(),
     features:  ['recibos-pdf', 'facturas-servicios', 'recordatorios-servicios', 'audio', 'gemini-ai'],
     env_check: {
