@@ -16,6 +16,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Twilio envía form-urlencoded
 
+// CORS global (permite llamadas desde alquil.app y cualquier origen)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 // ── Variables de entorno ──────────────────────────────────
 const {
   TWILIO_ACCOUNT_SID,
@@ -3440,7 +3449,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.5.1',
+    version:   '5.5.2',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
