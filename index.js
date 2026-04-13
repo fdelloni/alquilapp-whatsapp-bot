@@ -3105,13 +3105,132 @@ app.post('/revisar-mail-facturas', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
+// NOTIFICAR: Inquilino creó un servicio → avisar al propietario
+// POST /notificar-servicio-creado-inquilino  { servicio_id }
+// ═══════════════════════════════════════════════════════════
+app.post('/notificar-servicio-creado-inquilino', async (req, res) => {
+  try {
+    const { servicio_id } = req.body || {};
+    if (!servicio_id) return res.status(400).json({ ok: false, error: 'Falta servicio_id' });
+
+    // 1. Cargar servicio
+    const { data: svc, error: svcErr } = await supabase
+      .from('servicios')
+      .select('id, tipo, proveedor, monto, propietario_id, propiedad_id, creado_por')
+      .eq('id', servicio_id)
+      .single();
+    if (svcErr || !svc) return res.json({ ok: false, error: 'Servicio no encontrado' });
+
+    // 2. Datos propietario (destinatario)
+    const { data: prop } = await supabase
+      .from('profiles')
+      .select('whatsapp_phone, full_name, notif_whatsapp')
+      .eq('id', svc.propietario_id)
+      .single();
+    if (!prop || !prop.whatsapp_phone) return res.json({ ok: false, error: 'Propietario sin WhatsApp' });
+    if (prop.notif_whatsapp === false) return res.json({ ok: true, skipped: 'notif_whatsapp desactivada' });
+
+    // 3. Datos inquilino (quien lo creó)
+    let inqNombre = 'el inquilino';
+    if (svc.creado_por) {
+      const { data: inq } = await supabase
+        .from('profiles').select('full_name').eq('id', svc.creado_por).single();
+      if (inq?.full_name) inqNombre = inq.full_name;
+    }
+
+    // 4. Dirección
+    let direccion = 'tu propiedad';
+    if (svc.propiedad_id) {
+      const { data: p } = await supabase
+        .from('propiedades').select('direccion').eq('id', svc.propiedad_id).single();
+      if (p?.direccion) direccion = p.direccion;
+    }
+
+    const montoFmt = svc.monto ? '$' + Number(svc.monto).toLocaleString('es-AR') : 'sin monto definido';
+    const mensaje =
+      '🏠 *AlquilApp — Nuevo servicio creado por inquilino*\n\n' +
+      `${inqNombre} registró un nuevo servicio para *${direccion}*:\n\n` +
+      `• Tipo: *${svc.tipo || '—'}*\n` +
+      (svc.proveedor ? `• Proveedor: ${svc.proveedor}\n` : '') +
+      `• Monto estimado: ${montoFmt}\n\n` +
+      'Si no estás de acuerdo con este servicio, podés *darlo de baja* desde la app indicando el motivo.\n\n' +
+      '👉 https://alquil.app';
+
+    await enviarWhatsApp(prop.whatsapp_phone, mensaje);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('❌ Error notificar-servicio-creado-inquilino:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// NOTIFICAR: Propietario dio de baja un servicio → avisar al inquilino
+// POST /notificar-servicio-baja  { servicio_id }
+// ═══════════════════════════════════════════════════════════
+app.post('/notificar-servicio-baja', async (req, res) => {
+  try {
+    const { servicio_id } = req.body || {};
+    if (!servicio_id) return res.status(400).json({ ok: false, error: 'Falta servicio_id' });
+
+    // 1. Cargar servicio (dado de baja)
+    const { data: svc, error: svcErr } = await supabase
+      .from('servicios')
+      .select('id, tipo, proveedor, propiedad_id, creado_por, baja_motivo, dado_de_baja_por')
+      .eq('id', servicio_id)
+      .single();
+    if (svcErr || !svc) return res.json({ ok: false, error: 'Servicio no encontrado' });
+    if (!svc.creado_por) return res.json({ ok: true, skipped: 'sin creado_por' });
+
+    // 2. Datos inquilino (destinatario: quien lo creó)
+    const { data: inq } = await supabase
+      .from('profiles')
+      .select('whatsapp_phone, full_name, notif_whatsapp')
+      .eq('id', svc.creado_por)
+      .single();
+    if (!inq || !inq.whatsapp_phone) return res.json({ ok: false, error: 'Inquilino sin WhatsApp' });
+    if (inq.notif_whatsapp === false) return res.json({ ok: true, skipped: 'notif_whatsapp desactivada' });
+
+    // 3. Propietario (quien dio de baja)
+    let propNombre = 'el propietario';
+    if (svc.dado_de_baja_por) {
+      const { data: p } = await supabase
+        .from('profiles').select('full_name').eq('id', svc.dado_de_baja_por).single();
+      if (p?.full_name) propNombre = p.full_name;
+    }
+
+    // 4. Dirección
+    let direccion = 'la propiedad';
+    if (svc.propiedad_id) {
+      const { data: pr } = await supabase
+        .from('propiedades').select('direccion').eq('id', svc.propiedad_id).single();
+      if (pr?.direccion) direccion = pr.direccion;
+    }
+
+    const motivo = svc.baja_motivo || 'Sin motivo especificado';
+    const mensaje =
+      '🏠 *AlquilApp — Servicio dado de baja*\n\n' +
+      `${propNombre} dio de baja el servicio *${svc.tipo || '—'}*${svc.proveedor ? ' (' + svc.proveedor + ')' : ''} de *${direccion}*.\n\n` +
+      `📝 *Motivo:* ${motivo}\n\n` +
+      'Si tenés dudas, comunicate con el propietario.\n\n' +
+      '👉 https://alquil.app';
+
+    await enviarWhatsApp(inq.whatsapp_phone, mensaje);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('❌ Error notificar-servicio-baja:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
 // HEALTH CHECK
 // ═══════════════════════════════════════════════════════════
 app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.3.0',
+    version:   '5.4.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
