@@ -1,7 +1,8 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
-// v4.1 — Recibos PDF, facturas de servicios, recordatorios
-//         automáticos de alquiler y servicios.
+// v5.0.0 — Recibos PDF, facturas de servicios, recordatorios
+//          automáticos, confirmar pagos, reclamos, comprobantes
+//          de pago, morosidad, ajustes de contrato.
 // ═══════════════════════════════════════════════════════════
 
 const express = require('express');
@@ -151,6 +152,43 @@ async function subirPDFaStorage(buffer, filename, bucket = 'recibos') {
   if (error) throw new Error('Error subiendo PDF: ' + error.message);
 
   const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filename);
+  return urlData.publicUrl;
+}
+
+// ═══════════════════════════════════════════════════════════
+// DESCARGAR Y SUBIR IMAGEN A SUPABASE STORAGE (comprobantes)
+// Descarga desde URL (con auth Twilio), sube a bucket "comprobantes"
+// Retorna la URL pública del archivo
+// ═══════════════════════════════════════════════════════════
+async function descargarYSubirImagen(mediaUrl, mediaType, filename) {
+  // Descargar imagen desde Twilio (requiere Basic Auth)
+  const imagenResp = await fetch(mediaUrl, {
+    headers: {
+      'Authorization': 'Basic ' + Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64')
+    }
+  });
+
+  if (!imagenResp.ok) {
+    throw new Error(`Error descargando imagen: ${imagenResp.status}`);
+  }
+
+  const buffer = await imagenResp.arrayBuffer();
+  const bufferNode = Buffer.from(buffer);
+
+  // Crear bucket si no existe
+  await supabase.storage.createBucket('comprobantes', { public: true }).catch(() => {});
+
+  // Subir a Supabase Storage
+  const { data, error } = await supabase.storage
+    .from('comprobantes')
+    .upload(filename, bufferNode, {
+      contentType: mediaType,
+      upsert: true
+    });
+
+  if (error) throw new Error('Error subiendo comprobante: ' + error.message);
+
+  const { data: urlData } = supabase.storage.from('comprobantes').getPublicUrl(filename);
   return urlData.publicUrl;
 }
 
@@ -461,6 +499,22 @@ function detectarIntencion(texto) {
     return { tipo: 'factura_servicio', texto };
   }
 
+  // Confirmación de pago (inquilino: "ya pagué", "pagué el alquiler", "transferí el pago")
+  if (/pague|pago|pague|transfiri|transferi|deposit|mande|mandate|envi|pasar/.test(t) &&
+      /alquiler|pago|rent/.test(t)) {
+    return { tipo: 'confirmar_pago_inquilino', texto };
+  }
+
+  // Reclamos y mantenimiento (inquilino: "reclamo", "se rompió", "arreglar", etc.)
+  if (/reclamo|se rompio|roto|arreglar|reparar|mantenimiento|problema|no funciona|rotura|perdida|gotea|filtra|humedad|grieta|fuga|gotazo/.test(t)) {
+    return { tipo: 'reclamo', texto };
+  }
+
+  // Propietario confirmando pago: "confirmar pago", "confirmá el pago", "marcar como pagado", "ya pagó"
+  if (/confirm.*pago|marca.*pagado|ya pago|sabes que pago/.test(t)) {
+    return { tipo: 'confirmar_pago_propietario', texto };
+  }
+
   return null; // No es un comando especial → va a Gemini
 }
 
@@ -478,12 +532,13 @@ app.post('/webhook', async (req, res) => {
     const mediaType = body.MediaContentType0 || '';
     const mediaUrl  = body.MediaUrl0 || '';
     const esAudio   = numMedia > 0 && mediaType.startsWith('audio/');
+    const esImagen  = numMedia > 0 && mediaType.startsWith('image/');
 
-    if (!from || (!text && !esAudio)) {
+    if (!from || (!text && !esAudio && !esImagen)) {
       return res.send('<Response></Response>');
     }
 
-    console.log(`📩 Mensaje de ${from}: ${esAudio ? `[AUDIO ${mediaType}]` : text}`);
+    console.log(`📩 Mensaje de ${from}: ${esAudio ? `[AUDIO ${mediaType}]` : esImagen ? `[IMAGEN ${mediaType}]` : text}`);
 
     // ── Comandos especiales (sin necesidad de estar registrado) ──
     const textLower = text.toLowerCase().trim();
@@ -584,6 +639,302 @@ app.post('/webhook', async (req, res) => {
         })();
         return;
       }
+
+      // FEATURE 1: CONFIRMAR PAGO POR WHATSAPP (inquilino)
+      if (intencion?.tipo === 'confirmar_pago_inquilino') {
+        console.log('💳 Intención detectada: CONFIRMAR PAGO (INQUILINO)');
+        res.send(`<Response><Message>${escapeXml('✅ Registrando tu confirmación de pago...')}</Message></Response>`);
+
+        (async () => {
+          try {
+            // Buscar el cobro pendiente más reciente del inquilino
+            const { data: contratos } = await supabase
+              .from('contratos')
+              .select('id')
+              .eq('inquilino_email', usuario.email || '');
+            if (!contratos || contratos.length === 0) {
+              await enviarWhatsApp(from, '❌ No encontré contratos asociados a tu cuenta.');
+              return;
+            }
+
+            const contratoIds = contratos.map(c => c.id);
+            const { data: cobros } = await supabase
+              .from('cobros')
+              .select('*')
+              .in('contrato_id', contratoIds)
+              .in('estado', ['pendiente', 'pendiente_confirmacion'])
+              .order('fecha_vencimiento', { ascending: false })
+              .limit(1);
+
+            if (!cobros || cobros.length === 0) {
+              await enviarWhatsApp(from, '❌ No encontré cobros pendientes para confirmar.');
+              return;
+            }
+
+            const cobro = cobros[0];
+
+            // Actualizar cobro a pendiente_confirmacion
+            const { error: updateErr } = await supabase
+              .from('cobros')
+              .update({
+                estado: 'pendiente_confirmacion',
+                fecha_pago: new Date().toISOString().split('T')[0]
+              })
+              .eq('id', cobro.id);
+
+            if (updateErr) throw updateErr;
+
+            // Notificar al propietario
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('whatsapp_phone')
+              .eq('id', cobro.propietario_id)
+              .single();
+
+            if (profile?.whatsapp_phone) {
+              let numProp = profile.whatsapp_phone.replace(/\D/g, '');
+              if (numProp.startsWith('0')) numProp = numProp.substring(1);
+              if (!numProp.startsWith('54')) numProp = '54' + numProp;
+              const propTel = '+' + numProp;
+
+              const msgProp = `🔔 El inquilino *${cobro.inquilino_nombre || 'Inquilino'}* confirmó que pagó el alquiler. Escribí *confirmar pago de ${cobro.inquilino_nombre}* para marcarlo como pagado.`;
+              await enviarWhatsApp(propTel, msgProp).catch(() => {});
+            }
+
+            await enviarWhatsApp(from, '✅ Confirmación registrada. El propietario será notificado.');
+          } catch (err) {
+            console.error('❌ Error registrando pago:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error registrando tu confirmación. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      }
+
+      // FEATURE 3: RECLAMOS Y MANTENIMIENTO (inquilino)
+      if (intencion?.tipo === 'reclamo') {
+        console.log('🔧 Intención detectada: RECLAMO');
+        res.send(`<Response><Message>${escapeXml('✅ Registrando tu reclamo...')}</Message></Response>`);
+
+        (async () => {
+          try {
+            // Obtener contrato del inquilino
+            const { data: contratos } = await supabase
+              .from('contratos')
+              .select('id, propiedad_id, propietario_id')
+              .eq('inquilino_email', usuario.email || '')
+              .limit(1);
+
+            if (!contratos || contratos.length === 0) {
+              await enviarWhatsApp(from, '❌ No encontré un contrato asociado a tu cuenta.');
+              return;
+            }
+
+            const contrato = contratos[0];
+
+            // Insertar reclamo en tabla reclamos
+            const { error: insertErr } = await supabase
+              .from('reclamos')
+              .insert({
+                propiedad_id: contrato.propiedad_id,
+                contrato_id: contrato.id,
+                inquilino_telefono: from,
+                inquilino_nombre: usuario.nombre || usuario.email,
+                propietario_id: contrato.propietario_id,
+                descripcion: text,
+                estado: 'abierto',
+                prioridad: 'normal',
+                created_at: new Date().toISOString()
+              });
+
+            if (insertErr) throw insertErr;
+
+            // Notificar al propietario
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('whatsapp_phone')
+              .eq('id', contrato.propietario_id)
+              .single();
+
+            if (profile?.whatsapp_phone) {
+              let numProp = profile.whatsapp_phone.replace(/\D/g, '');
+              if (numProp.startsWith('0')) numProp = numProp.substring(1);
+              if (!numProp.startsWith('54')) numProp = '54' + numProp;
+              const propTel = '+' + numProp;
+
+              const msgProp = `🔧 *Nuevo reclamo* del inquilino *${usuario.nombre || 'Inquilino'}*:\n\n${text}`;
+              await enviarWhatsApp(propTel, msgProp).catch(() => {});
+            }
+
+            await enviarWhatsApp(from, '✅ Tu reclamo fue registrado. El propietario va a ser notificado.');
+          } catch (err) {
+            console.error('❌ Error registrando reclamo:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error registrando tu reclamo. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      }
+
+      // FEATURE 5: MARCAR COBRO COMO PAGADO (propietario vía WhatsApp)
+      if (intencion?.tipo === 'confirmar_pago_propietario') {
+        console.log('✅ Intención detectada: CONFIRMAR PAGO (PROPIETARIO)');
+        res.send(`<Response><Message>${escapeXml('✅ Procesando confirmación de pago...')}</Message></Response>`);
+
+        (async () => {
+          try {
+            // Extraer nombre del inquilino del texto si es posible
+            let inqNombreTarget = null;
+            const matchNombre = text.match(/de\s+(\w+(?:\s+\w+)?)/i);
+            if (matchNombre) {
+              inqNombreTarget = matchNombre[1].trim();
+            }
+
+            // Buscar cobro pendiente del propietario para ese inquilino
+            const { data: cobros } = await supabase
+              .from('cobros')
+              .select('*')
+              .eq('propietario_id', usuario.id)
+              .in('estado', ['pendiente', 'pendiente_confirmacion'])
+              .order('fecha_vencimiento', { ascending: false });
+
+            let cobroTarget = null;
+            if (inqNombreTarget) {
+              cobroTarget = cobros?.find(c =>
+                c.inquilino_nombre?.toLowerCase().includes(inqNombreTarget.toLowerCase())
+              ) || cobros?.[0];
+            } else {
+              cobroTarget = cobros?.[0];
+            }
+
+            if (!cobroTarget) {
+              await enviarWhatsApp(from, '❌ No encontré un cobro pendiente para confirmar.');
+              return;
+            }
+
+            // Actualizar cobro a pagado
+            const { error: updateErr } = await supabase
+              .from('cobros')
+              .update({
+                estado: 'pagado',
+                fecha_pago: new Date().toISOString().split('T')[0]
+              })
+              .eq('id', cobroTarget.id);
+
+            if (updateErr) throw updateErr;
+
+            // Auto-generar y enviar recibo al inquilino
+            const { data: contrato } = await supabase
+              .from('contratos')
+              .select('inquilino_telefono, inquilino_email')
+              .eq('id', cobroTarget.contrato_id)
+              .single();
+
+            let telefonoInquilino = contrato?.inquilino_telefono;
+            if (!telefonoInquilino && contrato?.inquilino_email) {
+              const { data: profileInq } = await supabase
+                .from('profiles')
+                .select('whatsapp_phone')
+                .eq('email', contrato.inquilino_email)
+                .single();
+              telefonoInquilino = profileInq?.whatsapp_phone;
+            }
+
+            if (telefonoInquilino) {
+              let numInq = telefonoInquilino.replace(/\D/g, '');
+              if (numInq.startsWith('0')) numInq = numInq.substring(1);
+              if (!numInq.startsWith('54')) numInq = '54' + numInq;
+              const inqTel = '+' + numInq;
+
+              try {
+                await generarYEnviarRecibo(cobroTarget, inqTel);
+              } catch (err) {
+                console.error('❌ Error enviando recibo:', err);
+              }
+            }
+
+            await enviarWhatsApp(from, '✅ Pago confirmado. Se le envió el recibo al inquilino.');
+          } catch (err) {
+            console.error('❌ Error confirmando pago:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error procesando la confirmación. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      }
+    }
+
+    // ── FEATURE 2: ENVIAR COMPROBANTE DE PAGO (inquilino sends image) ──
+    if (esImagen && usuario.rol === 'inquilino') {
+      console.log('🖼️ Imagen detectada como comprobante de pago');
+      res.send(`<Response><Message>${escapeXml('✅ Recibido. Procesando tu comprobante...')}</Message></Response>`);
+
+      (async () => {
+        try {
+          // Descargar y subir imagen a Supabase
+          const timestamp = Date.now();
+          const filename = `comprobante_${from.replace(/\D/g, '')}_${timestamp}.jpg`;
+          const imagenUrl = await descargarYSubirImagen(mediaUrl, mediaType, filename);
+
+          // Buscar el cobro pendiente/pendiente_confirmacion más reciente del inquilino
+          const { data: contratos } = await supabase
+            .from('contratos')
+            .select('id')
+            .eq('inquilino_email', usuario.email || '');
+
+          if (!contratos || contratos.length === 0) {
+            await enviarWhatsApp(from, '❌ No encontré contratos asociados a tu cuenta.');
+            return;
+          }
+
+          const contratoIds = contratos.map(c => c.id);
+          const { data: cobros } = await supabase
+            .from('cobros')
+            .select('*')
+            .in('contrato_id', contratoIds)
+            .in('estado', ['pendiente', 'pendiente_confirmacion'])
+            .order('fecha_vencimiento', { ascending: false })
+            .limit(1);
+
+          if (!cobros || cobros.length === 0) {
+            await enviarWhatsApp(from, '❌ No encontré cobros pendientes para este comprobante.');
+            return;
+          }
+
+          const cobro = cobros[0];
+
+          // Actualizar cobro con comprobante_url
+          const { error: updateErr } = await supabase
+            .from('cobros')
+            .update({
+              comprobante_url: imagenUrl,
+              estado: 'pendiente_confirmacion'
+            })
+            .eq('id', cobro.id);
+
+          if (updateErr) throw updateErr;
+
+          // Notificar al propietario
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('whatsapp_phone')
+            .eq('id', cobro.propietario_id)
+            .single();
+
+          if (profile?.whatsapp_phone) {
+            let numProp = profile.whatsapp_phone.replace(/\D/g, '');
+            if (numProp.startsWith('0')) numProp = numProp.substring(1);
+            if (!numProp.startsWith('54')) numProp = '54' + numProp;
+            const propTel = '+' + numProp;
+
+            const msgProp = `🔔 El inquilino *${cobro.inquilino_nombre || 'Inquilino'}* envió un comprobante de pago.\n\n📎 ${imagenUrl}`;
+            await enviarWhatsApp(propTel, msgProp).catch(() => {});
+          }
+
+          await enviarWhatsApp(from, '✅ Comprobante recibido y guardado.');
+        } catch (err) {
+          console.error('❌ Error procesando comprobante:', err);
+          await enviarWhatsApp(from, '⚠️ Hubo un error guardando tu comprobante. Intentá de nuevo.').catch(() => {});
+        }
+      })();
+      return;
     }
 
     // ── 3. Cargar datos del usuario desde Supabase ────────
@@ -639,6 +990,112 @@ app.post('/webhook', async (req, res) => {
             const mensaje = `📄 *AlquilApp — Factura de ${servNombre}*\n` + montoMsg + vtoMsg + '\n\n📎 Acá va la factura adjunta. 📋';
             await enviarWhatsAppConPDF(from, mensaje, resultado.facturaUrl);
             console.log(`✅ Factura de ${servNombre} enviada a ${from}`);
+          } else if (comando.tipo === 'confirmar_pago') {
+            // [CMD:confirmar_pago:nombre_inquilino mes]
+            const { data: cobros } = await supabase
+              .from('cobros')
+              .select('*')
+              .eq('propietario_id', usuario.id)
+              .in('estado', ['pendiente', 'pendiente_confirmacion'])
+              .order('fecha_vencimiento', { ascending: false });
+
+            let cobroTarget = null;
+            if (comando.param && comando.param.trim()) {
+              cobroTarget = cobros?.find(c =>
+                c.inquilino_nombre?.toLowerCase().includes(comando.param.toLowerCase())
+              ) || cobros?.[0];
+            } else {
+              cobroTarget = cobros?.[0];
+            }
+
+            if (!cobroTarget) {
+              await enviarWhatsApp(from, '❌ No encontré un cobro pendiente para confirmar.');
+              return;
+            }
+
+            const { error: updateErr } = await supabase
+              .from('cobros')
+              .update({
+                estado: 'pagado',
+                fecha_pago: new Date().toISOString().split('T')[0]
+              })
+              .eq('id', cobroTarget.id);
+
+            if (updateErr) throw updateErr;
+
+            // Auto-enviar recibo
+            const { data: contrato } = await supabase
+              .from('contratos')
+              .select('inquilino_telefono, inquilino_email')
+              .eq('id', cobroTarget.contrato_id)
+              .single();
+
+            let telefonoInquilino = contrato?.inquilino_telefono;
+            if (!telefonoInquilino && contrato?.inquilino_email) {
+              const { data: profileInq } = await supabase
+                .from('profiles')
+                .select('whatsapp_phone')
+                .eq('email', contrato.inquilino_email)
+                .single();
+              telefonoInquilino = profileInq?.whatsapp_phone;
+            }
+
+            if (telefonoInquilino) {
+              let numInq = telefonoInquilino.replace(/\D/g, '');
+              if (numInq.startsWith('0')) numInq = numInq.substring(1);
+              if (!numInq.startsWith('54')) numInq = '54' + numInq;
+              const inqTel = '+' + numInq;
+              await generarYEnviarRecibo(cobroTarget, inqTel).catch(() => {});
+            }
+
+            await enviarWhatsApp(from, '✅ Pago confirmado. Se le envió el recibo al inquilino.');
+          } else if (comando.tipo === 'reclamo') {
+            // [CMD:reclamo:descripcion]
+            const { data: contratos } = await supabase
+              .from('contratos')
+              .select('id, propiedad_id, propietario_id')
+              .eq('inquilino_email', usuario.email || '')
+              .limit(1);
+
+            if (!contratos || contratos.length === 0) {
+              await enviarWhatsApp(from, '❌ No encontré un contrato asociado a tu cuenta.');
+              return;
+            }
+
+            const contrato = contratos[0];
+            const { error: insertErr } = await supabase
+              .from('reclamos')
+              .insert({
+                propiedad_id: contrato.propiedad_id,
+                contrato_id: contrato.id,
+                inquilino_telefono: from,
+                inquilino_nombre: usuario.nombre || usuario.email,
+                propietario_id: contrato.propietario_id,
+                descripcion: comando.param || 'Reclamo registrado por Gemini',
+                estado: 'abierto',
+                prioridad: 'normal',
+                created_at: new Date().toISOString()
+              });
+
+            if (insertErr) throw insertErr;
+
+            // Notificar propietario
+            const { data: profileProp } = await supabase
+              .from('profiles')
+              .select('whatsapp_phone')
+              .eq('id', contrato.propietario_id)
+              .single();
+
+            if (profileProp?.whatsapp_phone) {
+              let numProp = profileProp.whatsapp_phone.replace(/\D/g, '');
+              if (numProp.startsWith('0')) numProp = numProp.substring(1);
+              if (!numProp.startsWith('54')) numProp = '54' + numProp;
+              const propTel = '+' + numProp;
+              const msgProp = `🔧 *Nuevo reclamo* de ${usuario.nombre || 'Inquilino'}:\n\n${comando.param || 'Reclamo registrado'}`;
+              await enviarWhatsApp(propTel, msgProp).catch(() => {});
+            }
+
+            await enviarWhatsApp(from, '✅ Tu reclamo fue registrado. El propietario va a ser notificado.');
           }
         } catch (err) {
           console.error('❌ Error ejecutando comando CMD:', err);
@@ -1074,7 +1531,19 @@ IMPORTANTE — Cuando el usuario pide un recibo de pago o una factura de servici
 Después del comando, escribí un mensaje corto confirmando que se está procesando (ej: "🧾 Buscando tu recibo de marzo...").
 Ejemplos: "[CMD:recibo:marzo 2026] 🧾 Buscando tu recibo de marzo, ya te lo mando!" o "[CMD:factura:luz] 📄 Buscando la factura de luz, un momento!"
 
-*Comandos disponibles:*
+*5. Confirmación de pagos y reclamos (inquilino)*
+Los inquilinos pueden:
+• *Confirmar que pagaron*: escribir "ya pagué" o "transferí el pago". Se registra y notifica al propietario.
+• *Enviar comprobante*: enviar una foto/imagen del comprobante de pago. Se guarda y notifica al propietario.
+• *Hacer un reclamo*: escribir "reclamo", "se rompió", "arreglar", "gotea", etc. Se registra el reclamo y notifica al propietario.
+
+*6. Confirmación de pago (propietario)*
+Los propietarios pueden:
+• *Confirmar pago de inquilino*: escribir "confirmar pago de [nombre inquilino]". Se marca como pagado y se envía automáticamente el recibo al inquilino.
+
+*Comandos especiales disponibles (cuando Gemini los detecte):*
+• [CMD:confirmar_pago:nombre_inquilino mes] — para que Gemini confirme un pago cuando lo deteca
+• [CMD:reclamo:descripcion_del_problema] — para registrar un reclamo cuando lo detecte
 • Escribí *borrar* o *reset* para empezar una nueva conversación desde cero.
 
 ---
@@ -1207,12 +1676,12 @@ REGLA DE ORO: Si el dato está en la base de datos, lo das directamente. Si no e
 // ═══════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════
 // PROCESAR COMANDO CMD EN RESPUESTA DE GEMINI
-// Gemini incluye [CMD:recibo:periodo] o [CMD:factura:tipo]
-// cuando el usuario pide un recibo/factura por audio.
+// Gemini incluye [CMD:recibo:periodo], [CMD:factura:tipo],
+// [CMD:confirmar_pago:...], [CMD:reclamo:...], etc.
 // Retorna { textoLimpio, comando } donde comando es null si no hay CMD.
 // ═══════════════════════════════════════════════════════════
 function procesarComandoCMD(respuesta) {
-  const match = respuesta.match(/\[CMD:(recibo|factura):([^\]]+)\]/i);
+  const match = respuesta.match(/\[CMD:(recibo|factura|confirmar_pago|reclamo):([^\]]+)\]/i);
   if (!match) return { textoLimpio: respuesta, comando: null };
 
   const tipo = match[1].toLowerCase();
@@ -1645,6 +2114,306 @@ app.get('/notif-automaticas', async (req, res) => {
       }
     }
 
+    // ════════════════════════════════════════════════════════
+    // FEATURE 6: ALERTAS DE MOROSIDAD (cobros vencidos)
+    // ════════════════════════════════════════════════════════
+    const { data: cobrosVencidos } = await supabase
+      .from('cobros')
+      .select('*')
+      .eq('estado', 'pendiente')
+      .lt('fecha_vencimiento', hoy.toISOString().slice(0, 10));
+
+    if (cobrosVencidos && cobrosVencidos.length > 0) {
+      // Agrupar por propietario
+      const moraPorProp = {};
+      for (const cobro of cobrosVencidos) {
+        if (!moraPorProp[cobro.propietario_id]) {
+          moraPorProp[cobro.propietario_id] = [];
+        }
+        moraPorProp[cobro.propietario_id].push(cobro);
+      }
+
+      for (const [propId, cobrosMora] of Object.entries(moraPorProp)) {
+        // Obtener número de propietario
+        const { data: profileProp } = await supabase
+          .from('profiles')
+          .select('whatsapp_phone')
+          .eq('id', propId)
+          .single();
+
+        if (!profileProp?.whatsapp_phone) continue;
+
+        let numProp = profileProp.whatsapp_phone.replace(/\D/g, '');
+        if (numProp.startsWith('0')) numProp = numProp.substring(1);
+        if (!numProp.startsWith('54')) numProp = '54' + numProp;
+        const propTel = '+' + numProp;
+
+        // Agrupar por días de mora
+        const por7 = [];
+        const por15 = [];
+        const por30 = [];
+        const porMas30 = [];
+
+        for (const cobro of cobrosMora) {
+          const vtoDate = new Date(cobro.fecha_vencimiento);
+          const diasVencido = Math.floor((hoy - vtoDate) / (1000 * 60 * 60 * 24));
+
+          if (diasVencido <= 7) por7.push(cobro);
+          else if (diasVencido <= 15) por15.push(cobro);
+          else if (diasVencido <= 30) por30.push(cobro);
+          else porMas30.push(cobro);
+        }
+
+        // Enviar alertas de morosidad agrupadas
+        if (por7.length > 0) {
+          const claveUnica = `mora_7dias_${propId}_${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+          const { data: yaEnviado } = await supabase
+            .from('notificaciones_wa')
+            .select('id')
+            .eq('clave_unica', claveUnica)
+            .limit(1);
+
+          if (!yaEnviado?.length) {
+            const totalMora = por7.reduce((s, c) => s + (c.monto || 0), 0);
+            const msg = `⚠️ *AlquilApp — Morosidad detectada*\n\n${por7.length} cobro(s) vencido(s) hace menos de 7 días.\n💰 Monto total: *$${Number(totalMora).toLocaleString('es-AR')}*\n\nAccioná rápido para evitar problemas. 📞`;
+            try {
+              await enviarWhatsApp(propTel, msg);
+              await supabase.from('notificaciones_wa').insert({
+                tipo: 'mora_7dias', telefono: propTel, estado: 'enviado', clave_unica: claveUnica
+              });
+              resultados.enviados++;
+            } catch (err) {
+              resultados.errores++;
+            }
+          }
+        }
+
+        if (por15.length > 0) {
+          const claveUnica = `mora_15dias_${propId}_${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+          const { data: yaEnviado } = await supabase
+            .from('notificaciones_wa')
+            .select('id')
+            .eq('clave_unica', claveUnica)
+            .limit(1);
+
+          if (!yaEnviado?.length) {
+            const totalMora = por15.reduce((s, c) => s + (c.monto || 0), 0);
+            const msg = `🔴 *AlquilApp — Morosidad crítica*\n\n${por15.length} cobro(s) vencido(s) hace 8-15 días.\n💰 Monto total: *$${Number(totalMora).toLocaleString('es-AR')}*\n\n¡Urgente! Contactá al inquilino. ⚡`;
+            try {
+              await enviarWhatsApp(propTel, msg);
+              await supabase.from('notificaciones_wa').insert({
+                tipo: 'mora_15dias', telefono: propTel, estado: 'enviado', clave_unica: claveUnica
+              });
+              resultados.enviados++;
+            } catch (err) {
+              resultados.errores++;
+            }
+          }
+        }
+
+        if (por30.length > 0) {
+          const claveUnica = `mora_30dias_${propId}_${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+          const { data: yaEnviado } = await supabase
+            .from('notificaciones_wa')
+            .select('id')
+            .eq('clave_unica', claveUnica)
+            .limit(1);
+
+          if (!yaEnviado?.length) {
+            const totalMora = por30.reduce((s, c) => s + (c.monto || 0), 0);
+            const msg = `🚨 *AlquilApp — MOROSIDAD GRAVE*\n\n${por30.length} cobro(s) vencido(s) hace 16-30 días.\n💰 Monto total: *$${Number(totalMora).toLocaleString('es-AR')}*\n\n¡Requiere acción legal inmediata! ⚖️`;
+            try {
+              await enviarWhatsApp(propTel, msg);
+              await supabase.from('notificaciones_wa').insert({
+                tipo: 'mora_30dias', telefono: propTel, estado: 'enviado', clave_unica: claveUnica
+              });
+              resultados.enviados++;
+            } catch (err) {
+              resultados.errores++;
+            }
+          }
+        }
+      }
+    }
+
+    // ════════════════════════════════════════════════════════
+    // FEATURE 4: RESUMEN MENSUAL AUTOMÁTICO (1° de mes)
+    // ════════════════════════════════════════════════════════
+    if (hoy.getDate() === 1) {
+      // Enviar resumen a todos los propietarios
+      const { data: propietarios } = await supabase
+        .from('profiles')
+        .select('id, whatsapp_phone, nombre')
+        .eq('rol', 'propietario');
+
+      if (propietarios) {
+        for (const prop of propietarios) {
+          if (!prop.whatsapp_phone) continue;
+
+          const mesAnio = `${hoy.getFullYear()}-${String(hoy.getMonth()).padStart(2,'0')}`;
+          const claveUnica = `resumen_mensual_${mesAnio}_${prop.id}`;
+
+          const { data: yaEnviado } = await supabase
+            .from('notificaciones_wa')
+            .select('id')
+            .eq('clave_unica', claveUnica)
+            .limit(1);
+
+          if (yaEnviado?.length > 0) continue;
+
+          // Obtener datos del propietario
+          const { data: cobrosDelMes } = await supabase
+            .from('cobros')
+            .select('*')
+            .eq('propietario_id', prop.id);
+
+          const { data: contratos } = await supabase
+            .from('contratos')
+            .select('*')
+            .eq('propietario_id', prop.id);
+
+          if (!cobrosDelMes || !contratos) continue;
+
+          const totalCobrado = cobrosDelMes
+            .filter(c => c.estado === 'pagado')
+            .reduce((s, c) => s + (c.monto || 0), 0);
+          const cantPagados = cobrosDelMes.filter(c => c.estado === 'pagado').length;
+          const cobrosPendientes = cobrosDelMes.filter(c => c.estado === 'pendiente' || c.estado === 'pendiente_confirmacion');
+          const totalPendiente = cobrosPendientes.reduce((s, c) => s + (c.monto || 0), 0);
+
+          // Próximos ajustes de contrato (dentro de 30 días)
+          const proximosMes = new Date(hoy);
+          proximosMes.setDate(proximosMes.getDate() + 30);
+          const ajustesProximos = contratos.filter(c => {
+            if (!c.proximo_ajuste_fecha) return false;
+            const ajustDate = new Date(c.proximo_ajuste_fecha);
+            return ajustDate >= hoy && ajustDate <= proximosMes;
+          });
+
+          let resumen = `📊 *AlquilApp — Resumen Mensual*\n\n`;
+          resumen += `*Período: ${hoy.toLocaleString('es-AR', { month: 'long', year: 'numeric' })}*\n\n`;
+          resumen += `*Cobros:*\n`;
+          resumen += `✅ Pagados: ${cantPagados} | $${Number(totalCobrado).toLocaleString('es-AR')}\n`;
+          resumen += `⏳ Pendientes: ${cobrosPendientes.length} | $${Number(totalPendiente).toLocaleString('es-AR')}\n`;
+          if (ajustesProximos.length > 0) {
+            resumen += `\n*Próximos ajustes de contrato:* ${ajustesProximos.length}\n`;
+            ajustesProximos.slice(0, 3).forEach(c => {
+              resumen += `• ${c.inquilino_nombre}: ${c.proximo_ajuste_pct || 0}% el ${c.proximo_ajuste_fecha.split('T')[0]}\n`;
+            });
+          }
+          resumen += `\nIngresá a alquil.app para más detalles. 📱`;
+
+          let numProp = prop.whatsapp_phone.replace(/\D/g, '');
+          if (numProp.startsWith('0')) numProp = numProp.substring(1);
+          if (!numProp.startsWith('54')) numProp = '54' + numProp;
+          const propTel = '+' + numProp;
+
+          try {
+            await enviarWhatsApp(propTel, resumen);
+            await supabase.from('notificaciones_wa').insert({
+              tipo: 'resumen_mensual', telefono: propTel, estado: 'enviado', clave_unica: claveUnica
+            });
+            resultados.enviados++;
+          } catch (err) {
+            console.error(`❌ Error enviando resumen a ${propTel}:`, err.message);
+            resultados.errores++;
+          }
+        }
+      }
+    }
+
+    // ════════════════════════════════════════════════════════
+    // FEATURE 7: RECORDATORIO DE AJUSTES DE CONTRATO
+    // ════════════════════════════════════════════════════════
+    const { data: contratos } = await supabase
+      .from('contratos')
+      .select('*');
+
+    if (contratos) {
+      for (const contrato of contratos) {
+        if (!contrato.proximo_ajuste_fecha) continue;
+
+        const ajustDate = new Date(contrato.proximo_ajuste_fecha);
+        const diasHasta = Math.ceil((ajustDate - hoy) / (1000 * 60 * 60 * 24));
+
+        if (diasHasta === 15 || diasHasta === 5) {
+          const tipoAlerta = diasHasta === 15 ? 'ajuste_15dias' : 'ajuste_5dias';
+          const claveUnica = `${tipoAlerta}_${contrato.id}_${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}`;
+
+          const { data: yaEnviado } = await supabase
+            .from('notificaciones_wa')
+            .select('id')
+            .eq('clave_unica', claveUnica)
+            .limit(1);
+
+          if (yaEnviado?.length > 0) continue;
+
+          // Obtener propietario y inquilino
+          const { data: profileProp } = await supabase
+            .from('profiles')
+            .select('whatsapp_phone')
+            .eq('id', contrato.propietario_id)
+            .single();
+
+          const { data: profileInq } = await supabase
+            .from('profiles')
+            .select('whatsapp_phone')
+            .eq('email', contrato.inquilino_email)
+            .single();
+
+          const { data: prop } = await supabase
+            .from('propiedades')
+            .select('direccion')
+            .eq('id', contrato.propiedad_id)
+            .single();
+
+          const fechaFmt = ajustDate.toLocaleDateString('es-AR');
+          const porcentajeFmt = contrato.proximo_ajuste_pct || 0;
+          const indice = contrato.indice_ajuste || 'ICL';
+          const propDir = prop?.direccion || 'tu propiedad';
+          const inqNombre = contrato.inquilino_nombre || 'Inquilino';
+
+          const mensaje = `📊 *AlquilApp — Aviso de ajuste de contrato*\n\nEl ajuste de alquiler de *${propDir}* será el *${fechaFmt}*.\n\nÍndice: *${indice}*\nAumento: *${porcentajeFmt}%*\n\nVerificá los detalles en alquil.app. 📱`;
+
+          // Notificar propietario
+          if (profileProp?.whatsapp_phone) {
+            let numProp = profileProp.whatsapp_phone.replace(/\D/g, '');
+            if (numProp.startsWith('0')) numProp = numProp.substring(1);
+            if (!numProp.startsWith('54')) numProp = '54' + numProp;
+            const propTel = '+' + numProp;
+
+            try {
+              await enviarWhatsApp(propTel, mensaje);
+              await supabase.from('notificaciones_wa').insert({
+                tipo: tipoAlerta, telefono: propTel, estado: 'enviado', clave_unica: claveUnica
+              });
+              resultados.enviados++;
+            } catch (err) {
+              resultados.errores++;
+            }
+          }
+
+          // Notificar inquilino
+          if (profileInq?.whatsapp_phone) {
+            let numInq = profileInq.whatsapp_phone.replace(/\D/g, '');
+            if (numInq.startsWith('0')) numInq = numInq.substring(1);
+            if (!numInq.startsWith('54')) numInq = '54' + numInq;
+            const inqTel = '+' + numInq;
+
+            try {
+              await enviarWhatsApp(inqTel, mensaje);
+              await supabase.from('notificaciones_wa').insert({
+                tipo: tipoAlerta, telefono: inqTel, estado: 'enviado', clave_unica: claveUnica
+              });
+              resultados.enviados++;
+            } catch (err) {
+              resultados.errores++;
+            }
+          }
+        }
+      }
+    }
+
     console.log(`📊 Notif total: ${resultados.enviados} enviadas, ${resultados.omitidos} omitidas, ${resultados.errores} errores`);
     return res.json(resultados);
 
@@ -1705,9 +2474,22 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '4.2.0',
+    version:   '5.0.0',
     timestamp: new Date().toISOString(),
-    features:  ['recibos-pdf', 'facturas-servicios', 'recordatorios-servicios', 'audio', 'gemini-ai'],
+    features:  [
+      'recibos-pdf',
+      'facturas-servicios',
+      'recordatorios-servicios',
+      'audio',
+      'gemini-ai',
+      'confirmar-pago-inquilino',
+      'comprobante-imagen',
+      'reclamos-mantenimiento',
+      'confirmar-pago-propietario',
+      'resumen-mensual',
+      'alertas-morosidad',
+      'recordatorio-ajustes'
+    ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
       TWILIO_AUTH_TOKEN:     TWILIO_AUTH_TOKEN     ? 'SET' : '❌ UNSET',
@@ -1720,7 +2502,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v4.1 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.0.0 — Webhook activo ✅');
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1732,16 +2514,27 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v4.1          ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.0.0        ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
     console.log('Endpoints:');
-    console.log('  POST /webhook          → Recibe mensajes de Twilio');
-    console.log('  POST /cobro-pagado     → Auto-envía recibo al inquilino');
-    console.log('  GET  /notif-automaticas → Recordatorios de cobros y servicios');
-    console.log('  POST /verify-whatsapp   → Verifica conexión al sandbox');
-    console.log('  GET  /                  → Health check');
+    console.log('  POST /webhook            → Recibe mensajes de Twilio');
+    console.log('  POST /cobro-pagado       → Auto-envía recibo al inquilino');
+    console.log('  GET  /notif-automaticas  → Recordatorios + resumen + morosidad + ajustes');
+    console.log('  POST /verify-whatsapp    → Verifica conexión al sandbox');
+    console.log('  GET  /                   → Health check');
+    console.log('');
+    console.log('Features (v5.0.0):');
+    console.log('  ✅ Recibos PDF automáticos');
+    console.log('  ✅ Facturas de servicios');
+    console.log('  ✅ Confirmación de pago (inquilino)');
+    console.log('  ✅ Envío de comprobantes (imágenes)');
+    console.log('  ✅ Reclamos y mantenimiento');
+    console.log('  ✅ Confirmación de pago (propietario)');
+    console.log('  ✅ Resumen mensual automático');
+    console.log('  ✅ Alertas de morosidad');
+    console.log('  ✅ Recordatorio de ajustes de contrato');
     console.log('');
     console.log('Variables de entorno:');
     console.log('  TWILIO_ACCOUNT_SID    :', TWILIO_ACCOUNT_SID    ? '✅' : '❌ FALTA');
