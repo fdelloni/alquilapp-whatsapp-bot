@@ -68,3 +68,39 @@ CREATE POLICY "Service role full access" ON conversaciones_wa
 
 COMMENT ON TABLE conversaciones_wa
   IS 'Historial de conversaciones del bot de WhatsApp por número de teléfono';
+
+
+-- ═══════════════════════════════════════════════════════════════
+-- v4.0 — Recibos PDF, Facturas de Servicios, Recordatorios
+-- ═══════════════════════════════════════════════════════════════
+
+-- ── 5. Agregar columna para facturas de servicios en notificaciones_wa ──
+--    Permite registrar notificaciones de servicios (además de cobros).
+ALTER TABLE notificaciones_wa
+  ADD COLUMN IF NOT EXISTS servicio_factura_id uuid REFERENCES facturas_servicios(id) ON DELETE CASCADE;
+
+ALTER TABLE notificaciones_wa
+  ADD COLUMN IF NOT EXISTS clave_unica text;
+
+-- Índice para búsquedas de duplicados de facturas de servicios
+CREATE INDEX IF NOT EXISTS idx_notif_wa_servfact_tipo
+  ON notificaciones_wa (servicio_factura_id, tipo);
+
+-- Índice para clave única (servicios con dia_vto fijo)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_notif_wa_clave_unica
+  ON notificaciones_wa (clave_unica) WHERE clave_unica IS NOT NULL;
+
+-- Hacer cobro_id nullable (ya que ahora puede ser notif de servicio)
+ALTER TABLE notificaciones_wa ALTER COLUMN cobro_id DROP NOT NULL;
+
+COMMENT ON COLUMN notificaciones_wa.servicio_factura_id
+  IS 'ID de la factura de servicio (luz, gas, agua) para notificaciones de servicios';
+
+COMMENT ON COLUMN notificaciones_wa.clave_unica
+  IS 'Clave para evitar duplicados en notificaciones por dia_vto fijo (servicio_id_tipo_YYYY-MM)';
+
+
+-- ── 6. Bucket de Supabase Storage para recibos PDF ──
+--    NOTA: Crear manualmente desde Supabase Dashboard:
+--    Storage → New Bucket → Nombre: "recibos" → Public: sí
+--    (El bot también intenta crearlo automáticamente vía API)
