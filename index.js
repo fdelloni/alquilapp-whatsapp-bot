@@ -1596,14 +1596,75 @@ async function cargarDatosUsuario(usuario) {
 
   const datos = {
     rol,
-    propiedades: [],
-    contratos:   [],
-    cobros:      [],
-    servicios:   [],
-    expensas:    []
+    propiedades:     [],
+    contratos:       [],
+    cobros:          [],
+    servicios:       [],
+    expensas:        [],
+    admin_relations: [],
+    propietarios:    []
   };
 
   try {
+    // ═══ ADMINISTRADOR: datos de los propietarios delegados ═══
+    if (rol === 'administrador') {
+      const today = new Date().toISOString().slice(0, 10);
+      const { data: rels } = await supabase
+        .from('admin_propietario_relations')
+        .select('*, profiles!admin_propietario_relations_propietario_id_fkey(id,nombre,email)')
+        .eq('admin_id', userId)
+        .eq('estado', 'aceptado');
+
+      const relsActivas = (rels || []).filter(r => !r.fecha_expiracion || r.fecha_expiracion >= today);
+      datos.admin_relations = relsActivas;
+      datos.propietarios    = relsActivas.map(r => r.profiles).filter(Boolean);
+
+      if (relsActivas.length === 0) {
+        console.log(`📊 Admin sin propietarios activos`);
+        return datos;
+      }
+
+      const ownerIds = relsActivas.map(r => r.propietario_id);
+
+      // Propiedades: filtradas por propiedades_delegadas (si está vacío => acceso a TODAS del propietario)
+      const { data: props } = await supabase
+        .from('propiedades').select('*').in('propietario_id', ownerIds);
+      datos.propiedades = (props || []).filter(p => {
+        const rel = relsActivas.find(r => r.propietario_id === p.propietario_id);
+        if (!rel) return false;
+        const del = rel.propiedades_delegadas;
+        if (!del || !Array.isArray(del) || del.length === 0) return true;
+        return del.includes(p.id);
+      });
+
+      const propIds = datos.propiedades.map(p => p.id);
+      if (propIds.length > 0) {
+        const { data: contratos } = await supabase
+          .from('contratos').select('*').in('propiedad_id', propIds);
+        datos.contratos = contratos || [];
+
+        const contratoIds = datos.contratos.map(c => c.id);
+        if (contratoIds.length > 0) {
+          const { data: cobros } = await supabase
+            .from('cobros').select('*').in('contrato_id', contratoIds)
+            .order('fecha_vencimiento', { ascending: false }).limit(30);
+          datos.cobros = cobros || [];
+        }
+
+        const { data: servicios } = await supabase
+          .from('servicios').select('*').in('propiedad_id', propIds);
+        datos.servicios = servicios || [];
+      }
+
+      const { data: expensas } = await supabase
+        .from('expensas').select('*').in('propietario_id', ownerIds)
+        .order('periodo', { ascending: false }).limit(20);
+      datos.expensas = expensas || [];
+
+      console.log(`📊 Admin con ${relsActivas.length} propietarios: ${datos.propiedades.length} props, ${datos.contratos.length} contratos, ${datos.cobros.length} cobros`);
+      return datos;
+    }
+
     if (rol === 'inquilino') {
       // ── Inquilino: datos de SU alquiler ─────────────────
       const { data: contratos } = await supabase
@@ -1841,8 +1902,9 @@ async function consultarGeminiConAudio(telefono, audioUrl, mimeType, usuario, da
 function buildSystemPrompt(usuario, datos) {
   const nombre   = usuario.nombre || 'Usuario';
   const rol      = usuario.rol || 'propietario';
-  const esProp   = rol !== 'inquilino';
-  const rolLabel = esProp ? 'propietario/locador' : 'inquilino/locatario';
+  const esAdmin  = rol === 'administrador';
+  const esProp   = !esAdmin && rol !== 'inquilino';
+  const rolLabel = esAdmin ? 'administrador/gestor' : (esProp ? 'propietario/locador' : 'inquilino/locatario');
 
   // Mapa de propiedades por ID
   const propMap = {};
@@ -1911,8 +1973,70 @@ REGLA DE ORO: Si el dato está en la base de datos, lo das directamente. Si no e
 ═══════════ DATOS ACTUALES ═══════════
 `;
 
+  // ── BLOQUE ADMINISTRADOR ─────────────────────────────────
+  if (esAdmin) {
+    const rels = datos.admin_relations || [];
+    const propsByOwner = {};
+    (datos.propiedades || []).forEach(p => {
+      (propsByOwner[p.propietario_id] = propsByOwner[p.propietario_id] || []).push(p);
+    });
+    const contsByOwner = {};
+    (datos.contratos || []).forEach(c => {
+      const ownerId = c.propietario_id || (datos.propiedades.find(p => p.id === c.propiedad_id)?.propietario_id);
+      if (!ownerId) return;
+      (contsByOwner[ownerId] = contsByOwner[ownerId] || []).push(c);
+    });
+
+    prompt += `\nROL: Sos administrador/gestor. Gestionás alquileres por cuenta de *${rels.length}* propietario(s) que te delegaron acceso.\n`;
+    prompt += `IMPORTANTE: Solo tenés visibilidad de las propiedades que cada propietario te delegó explícitamente. Si el usuario pregunta algo ambiguo (ej: "mis cobros", "cuánto me deben"), aclará siempre por propietario o pedile que especifique.\n`;
+    prompt += `NIVELES DE PERMISO: total (todo), cobros (solo cobros y recibos), servicios (solo facturas de servicios), lectura (solo consulta). Respetalos al sugerir acciones.\n`;
+
+    if (rels.length === 0) {
+      prompt += '\nNo hay propietarios activos que te hayan delegado acceso todavía. Decile al usuario que el propietario debe invitarlo desde alquil.app → Propiedades → Administrador.\n';
+    } else {
+      rels.forEach((rel, i) => {
+        const owner = (datos.propietarios || []).find(o => o && o.id === rel.propietario_id);
+        const ownerName = owner?.nombre || owner?.email || `Propietario ${i + 1}`;
+        const permiso = rel.permiso || 'total';
+        const exp = rel.fecha_expiracion ? ` | vence ${rel.fecha_expiracion}` : '';
+        prompt += `\n━━━ PROPIETARIO ${i + 1}: *${ownerName}* (permiso: ${permiso}${exp}) ━━━\n`;
+
+        const pOwner = propsByOwner[rel.propietario_id] || [];
+        if (pOwner.length > 0) {
+          prompt += `PROPIEDADES (${pOwner.length}):\n`;
+          pOwner.forEach((p, j) => {
+            prompt += `  ${j + 1}. ${p.direccion || 'Sin dirección'}, ${[p.zona, p.localidad, p.provincia].filter(Boolean).join(' ')}\n`;
+          });
+        } else {
+          prompt += 'PROPIEDADES: ninguna delegada.\n';
+        }
+
+        const cOwner = contsByOwner[rel.propietario_id] || [];
+        if (cOwner.length > 0) {
+          prompt += `CONTRATOS (${cOwner.length}):\n`;
+          cOwner.forEach((c, j) => {
+            const prop = propMap[c.propiedad_id] || `Propiedad ${c.propiedad_id}`;
+            const monto = c.monto_alquiler ? `$${Number(c.monto_alquiler).toLocaleString('es-AR')}` : 'Sin monto';
+            prompt += `  ${j + 1}. ${prop} — ${c.inquilino_nombre || 'Sin inquilino'} | ${monto} | ${c.estado || 'activo'}\n`;
+          });
+        }
+      });
+
+      if (datos.cobros && datos.cobros.length > 0) {
+        const pend = datos.cobros.filter(c => c.estado === 'pendiente').length;
+        const pag  = datos.cobros.filter(c => c.estado === 'pagado').length;
+        prompt += `\nCOBROS TOTALES (${datos.cobros.length} | ${pend} pendientes | ${pag} pagados):\n`;
+        datos.cobros.slice(0, 10).forEach((c, i) => {
+          const prop  = propMap[c.propiedad_id] || 'N/A';
+          const vence = c.fecha_vencimiento?.split('T')[0] || 'N/A';
+          prompt += `  ${i + 1}. ${prop} | ${c.inquilino_nombre || 'N/A'} | $${c.monto || 'N/A'} | Vence: ${vence} | *${c.estado || 'N/A'}*\n`;
+        });
+        if (datos.cobros.length > 10) prompt += `  ... y ${datos.cobros.length - 10} más.\n`;
+      }
+    }
+
   // ── BLOQUE PROPIETARIO ───────────────────────────────────
-  if (esProp) {
+  } else if (esProp) {
     if (datos.propiedades.length > 0) {
       prompt += `\nPROPIEDADES (${datos.propiedades.length}):\n`;
       datos.propiedades.forEach((p, i) => {
