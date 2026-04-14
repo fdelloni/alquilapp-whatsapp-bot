@@ -1989,7 +1989,7 @@ REGLA DE ORO: Si el dato está en la base de datos, lo das directamente. Si no e
 
     prompt += `\nROL: Sos administrador/gestor. Gestionás alquileres por cuenta de *${rels.length}* propietario(s) que te delegaron acceso.\n`;
     prompt += `IMPORTANTE: Solo tenés visibilidad de las propiedades que cada propietario te delegó explícitamente. Si el usuario pregunta algo ambiguo (ej: "mis cobros", "cuánto me deben"), aclará siempre por propietario o pedile que especifique.\n`;
-    prompt += `NIVELES DE PERMISO: total (todo), cobros (solo cobros y recibos), servicios (solo facturas de servicios), lectura (solo consulta). Respetalos al sugerir acciones.\n`;
+    prompt += `NIVELES DE PERMISO: total (todo), cobros (solo cobros y recibos), servicios (solo facturas de servicios), expensas (solo expensas del consorcio/edificio), lectura (solo consulta). Respetalos al sugerir acciones.\n`;
 
     if (rels.length === 0) {
       prompt += '\nNo hay propietarios activos que te hayan delegado acceso todavía. Decile al usuario que el propietario debe invitarlo desde alquil.app → Propiedades → Administrador.\n';
