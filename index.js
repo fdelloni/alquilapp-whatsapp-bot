@@ -13,8 +13,8 @@ const { ImapFlow } = require('imapflow');
 const { simpleParser } = require('mailparser');
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Twilio envía form-urlencoded
+app.use(express.json({ limit: '25mb' })); // subimos límite para PDFs/imágenes base64 en proxy IA
+app.use(express.urlencoded({ extended: true, limit: '25mb' })); // Twilio envía form-urlencoded
 
 // CORS global (permite llamadas desde alquil.app y cualquier origen)
 app.use((req, res, next) => {
@@ -31,6 +31,8 @@ const {
   TWILIO_AUTH_TOKEN,
   TWILIO_WHATSAPP_NUMBER,
   GEMINI_KEY,
+  COHERE_KEY,
+  DEEPSEEK_KEY,
   SUPABASE_URL,
   SUPABASE_SERVICE_KEY,
   GOOGLE_CLIENT_ID,
@@ -3873,6 +3875,75 @@ if (process.env.IMAP_INBOX_HOST && process.env.IMAP_INBOX_EMAIL && process.env.I
       .catch(e => console.log('⚠️ Poll error:', e.message));
   }, 10 * 60 * 1000);
 }
+
+// ═══════════════════════════════════════════════════════════
+// PROXY DE APIs DE IA — para no exponer keys en el frontend
+// Endpoints transparentes: el body llega tal cual del cliente,
+// agregamos el Authorization con la key de env y reenviamos.
+// ═══════════════════════════════════════════════════════════
+function _originPermitido(req) {
+  const origin = req.headers.origin || req.headers.referer || '';
+  // Permitir alquil.app, www.alquil.app, Ferozo preview y local dev
+  const ok = /(^https?:\/\/)(www\.)?alquil\.app/.test(origin)
+          || /ferozo\.com/.test(origin)
+          || /localhost|127\.0\.0\.1|file:\/\//.test(origin)
+          || origin === '';
+  return ok;
+}
+
+// ── Proxy Gemini ─────────────────────────────────────────────
+app.post('/ai/gemini', async (req, res) => {
+  if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!GEMINI_KEY) return res.status(500).json({ error: 'GEMINI_KEY no configurada' });
+  const model = (req.query.model || 'gemini-2.0-flash').replace(/[^a-zA-Z0-9.-]/g, '');
+  try {
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(req.body) }
+    );
+    const txt = await r.text();
+    res.status(r.status).type('application/json').send(txt);
+  } catch (e) {
+    console.error('Proxy Gemini error:', e.message);
+    res.status(502).json({ error: 'Upstream Gemini error' });
+  }
+});
+
+// ── Proxy Cohere ─────────────────────────────────────────────
+app.post('/ai/cohere', async (req, res) => {
+  if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!COHERE_KEY) return res.status(500).json({ error: 'COHERE_KEY no configurada' });
+  try {
+    const r = await fetch('https://api.cohere.com/v2/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + COHERE_KEY },
+      body: JSON.stringify(req.body)
+    });
+    const txt = await r.text();
+    res.status(r.status).type('application/json').send(txt);
+  } catch (e) {
+    console.error('Proxy Cohere error:', e.message);
+    res.status(502).json({ error: 'Upstream Cohere error' });
+  }
+});
+
+// ── Proxy DeepSeek ───────────────────────────────────────────
+app.post('/ai/deepseek', async (req, res) => {
+  if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!DEEPSEEK_KEY) return res.status(500).json({ error: 'DEEPSEEK_KEY no configurada' });
+  try {
+    const r = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_KEY },
+      body: JSON.stringify(req.body)
+    });
+    const txt = await r.text();
+    res.status(r.status).type('application/json').send(txt);
+  } catch (e) {
+    console.error('Proxy DeepSeek error:', e.message);
+    res.status(502).json({ error: 'Upstream DeepSeek error' });
+  }
+});
 
 // ═══════════════════════════════════════════════════════════
 // HEALTH CHECK
