@@ -222,6 +222,51 @@ async function subirPDFaStorage(buffer, filename, bucket = 'recibos') {
 
 // ═══════════════════════════════════════════════════════════
 // ANALIZAR FACTURA CON GEMINI VISION
+// CLASIFICADOR DE IMÁGENES (factura vs comprobante de pago vs otro)
+// ═══════════════════════════════════════════════════════════
+// Dado una imagen, determina si es:
+//   - "factura":     factura de servicio (luz, gas, agua, internet, etc.)
+//   - "comprobante": comprobante/transferencia/pago (ticket de transferencia, captura de MP, etc.)
+//   - "otro":        ninguna de las anteriores
+async function clasificarImagenConGemini(imageBase64, mimeType) {
+  const prompt = `Mirá esta imagen y clasificala en UNA de estas 3 categorías. Respondé ÚNICAMENTE con una de estas palabras sin nada más:
+
+- factura: si es una factura o boleta de un servicio domiciliario (luz/EDENOR/EPE/Edesur, gas/Metrogas/Naturgy, agua/AySA/ABSA, internet, cable, telefonía, ABL, expensas).
+- comprobante: si es un comprobante/recibo de pago, transferencia bancaria, captura de Mercado Pago/home banking mostrando que se pagó algo.
+- otro: cualquier otra cosa (foto personal, documento, captura irrelevante).
+
+Respondé solo la palabra, sin puntuación, sin comillas, sin explicaciones.`;
+
+  const requestBody = {
+    contents: [{
+      role: 'user',
+      parts: [
+        { text: prompt },
+        { inline_data: { mime_type: mimeType, data: imageBase64 } }
+      ]
+    }]
+  };
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) }
+    );
+    if (!response.ok) { console.error('Gemini classify error:', response.status); return 'otro'; }
+    const json = await response.json();
+    const raw = (json.candidates?.[0]?.content?.parts?.[0]?.text || '').trim().toLowerCase();
+    // Normalizar — agarrar solo la primera palabra relevante
+    if (raw.includes('factura')) return 'factura';
+    if (raw.includes('comprobante')) return 'comprobante';
+    return 'otro';
+  } catch (err) {
+    console.error('Error clasificando imagen:', err.message);
+    return 'otro';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ANALIZAR FACTURA CON GEMINI VISION
 // Recibe imagen en base64, extrae datos de la factura
 // ═══════════════════════════════════════════════════════════
 async function analizarFacturaConGemini(imageBase64, mimeType) {
@@ -326,11 +371,31 @@ async function procesarFacturaPropietario(from, mediaUrl, mimeType, usuario) {
     const filename = `factura_${from.replace(/\D/g, '')}_${timestamp}.${ext}`;
     const facturaUrl = await subirFacturaAStorage(imageBase64, mimeType, filename);
 
-    // 4. Buscar servicios del propietario que matcheen con el tipo
-    const { data: servicios } = await supabase
-      .from('servicios')
-      .select('*')
-      .eq('propietario_id', usuario.id);
+    // 4. Buscar servicios asociados al usuario (propietario O inquilino)
+    let servicios = [];
+    if (usuario.rol === 'inquilino') {
+      // Inquilino: buscar via contrato activo → propiedad → servicios
+      const { data: contratos } = await supabase
+        .from('contratos')
+        .select('propiedad_id')
+        .eq('inquilino_email', usuario.email || '')
+        .limit(5);
+      const propiedadIds = (contratos || []).map(c => c.propiedad_id).filter(Boolean);
+      if (propiedadIds.length) {
+        const { data: svcs } = await supabase
+          .from('servicios')
+          .select('*')
+          .in('propiedad_id', propiedadIds);
+        servicios = svcs || [];
+      }
+    } else {
+      // Propietario: servicios propios
+      const { data: svcs } = await supabase
+        .from('servicios')
+        .select('*')
+        .eq('propietario_id', usuario.id);
+      servicios = svcs || [];
+    }
 
     if (!servicios || servicios.length === 0) {
       await enviarWhatsApp(from, `📄 Recibí la factura de *${datos.empresa || datos.tipo_servicio}* por *$${Number(datos.monto || 0).toLocaleString('es-AR')}*.\n\n⚠️ No tenés servicios cargados en AlquilApp. Primero agregá el servicio desde la web y después mandame la factura.`);
@@ -377,7 +442,7 @@ async function procesarFacturaPropietario(from, mediaUrl, mimeType, usuario) {
     try {
       await supabase.from('facturas_servicios').insert({
         servicio_id: servicio.id,
-        propietario_id: usuario.id,
+        propietario_id: servicio.propietario_id || usuario.id,
         monto: Number(datos.monto || 0),
         fecha_vto: datos.fecha_vencimiento || null,
         periodo: datos.periodo || null,
@@ -386,9 +451,12 @@ async function procesarFacturaPropietario(from, mediaUrl, mimeType, usuario) {
       });
     } catch (e) { console.warn('No se pudo insertar en facturas_servicios:', e.message); }
 
-    // 7. Confirmar al propietario
+    // 7. Confirmar al usuario
     const montoStr = datos.monto ? '$' + Number(datos.monto).toLocaleString('es-AR') : 'monto no detectado';
     const vtoStr = datos.fecha_vencimiento || 'vencimiento no detectado';
+    const cierreMsg = usuario.rol === 'inquilino'
+      ? 'Tu propietario ya puede ver esta factura en la app.'
+      : 'Tu inquilino ya puede ver esta factura en la app.';
     await enviarWhatsApp(from,
       `✅ *Factura cargada correctamente*\n\n` +
       `📋 Servicio: *${servicio.nombre || servicio.tipo}*\n` +
@@ -396,7 +464,7 @@ async function procesarFacturaPropietario(from, mediaUrl, mimeType, usuario) {
       `💰 Monto: *${montoStr}*\n` +
       `📅 Vencimiento: *${vtoStr}*\n` +
       `📎 Período: *${datos.periodo || '—'}*\n\n` +
-      `Tu inquilino ya puede ver esta factura en la app.`
+      cierreMsg
     );
 
     console.log(`✅ Factura cargada: ${servicio.nombre} → $${datos.monto} vto ${datos.fecha_vencimiento}`);
@@ -1113,24 +1181,49 @@ app.post('/webhook', async (req, res) => {
       }
     }
 
-    // ── FEATURE: PROPIETARIO ENVÍA FOTO DE FACTURA DE SERVICIO ──
-    if (esImagen && usuario.rol === 'propietario') {
-      console.log('📄 Imagen de propietario → procesando como factura de servicio');
-      res.send(`<Response><Message>${escapeXml('📄 Recibido. Analizando tu factura con IA...')}</Message></Response>`);
+    // ── FEATURE: IMAGEN RECIBIDA (factura o comprobante según contenido) ──
+    // Clasificamos con Gemini y ruteamos al flujo correcto.
+    // Antes se decidía por rol; ahora se decide por lo que muestra la imagen,
+    // así inquilinos y propietarios pueden mandar cualquiera de las dos cosas.
+    if (esImagen) {
+      console.log('🖼️ Imagen recibida → clasificando con Gemini...');
+      res.send(`<Response><Message>${escapeXml('🤖 Recibí tu imagen. Analizándola con IA, un momento…')}</Message></Response>`);
 
       (async () => {
-        await procesarFacturaPropietario(from, mediaUrl, mediaType, usuario);
+        try {
+          const imageBase64 = await descargarImagenBase64(mediaUrl);
+          const tipo = await clasificarImagenConGemini(imageBase64, mediaType);
+          console.log(`🏷️ Imagen clasificada como: ${tipo}`);
+
+          if (tipo === 'factura') {
+            // Procesar como factura de servicio (funciona para propietario O inquilino)
+            await procesarFacturaPropietario(from, mediaUrl, mediaType, usuario);
+            return;
+          }
+
+          if (tipo === 'comprobante') {
+            // Solo tiene sentido para inquilino (es quien paga)
+            if (usuario.rol !== 'inquilino') {
+              await enviarWhatsApp(from, 'ℹ️ Recibí un comprobante de pago, pero solo los inquilinos pueden enviar comprobantes. Si querés cargar una factura de servicio, asegurate que la foto muestre la factura completa.');
+              return;
+            }
+            await _procesarComprobanteInquilino(from, mediaUrl, mediaType, usuario);
+            return;
+          }
+
+          // tipo === 'otro'
+          await enviarWhatsApp(from, '🤔 No pude identificar qué muestra la imagen. Si es una *factura de servicio* o un *comprobante de pago*, probá con una foto más nítida y de cerca, que se vea claramente el texto. Si es otra cosa, decime en qué puedo ayudarte.');
+        } catch (err) {
+          console.error('❌ Error en flujo de imagen:', err);
+          await enviarWhatsApp(from, '⚠️ Hubo un error procesando tu imagen. Intentá de nuevo.').catch(() => {});
+        }
       })();
       return;
     }
 
-    // ── FEATURE 2: ENVIAR COMPROBANTE DE PAGO (inquilino sends image) ──
-    if (esImagen && usuario.rol === 'inquilino') {
-      console.log('🖼️ Imagen detectada como comprobante de pago');
-      res.send(`<Response><Message>${escapeXml('✅ Recibido. Procesando tu comprobante...')}</Message></Response>`);
-
-      (async () => {
-        try {
+    // Helper inline para procesar comprobante (extraído del flujo anterior)
+    async function _procesarComprobanteInquilino(from, mediaUrl, mediaType, usuario) {
+      try {
           // Descargar y subir imagen a Supabase
           const timestamp = Date.now();
           const filename = `comprobante_${from.replace(/\D/g, '')}_${timestamp}.jpg`;
@@ -1192,12 +1285,10 @@ app.post('/webhook', async (req, res) => {
           }
 
           await enviarWhatsApp(from, '✅ Comprobante recibido y guardado.');
-        } catch (err) {
-          console.error('❌ Error procesando comprobante:', err);
-          await enviarWhatsApp(from, '⚠️ Hubo un error guardando tu comprobante. Intentá de nuevo.').catch(() => {});
-        }
-      })();
-      return;
+      } catch (err) {
+        console.error('❌ Error procesando comprobante:', err);
+        await enviarWhatsApp(from, '⚠️ Hubo un error guardando tu comprobante. Intentá de nuevo.').catch(() => {});
+      }
     }
 
     // ── 3. Cargar datos del usuario desde Supabase ────────
@@ -3666,7 +3757,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.6.0',
+    version:   '5.7.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
