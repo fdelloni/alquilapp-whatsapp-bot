@@ -39,6 +39,11 @@ const {
   MICROSOFT_CLIENT_SECRET,
   ENCRYPTION_KEY,
   NOTIF_SECRET,
+  // Casilla central de reenvío de facturas (facturas@alquil.app)
+  IMAP_INBOX_HOST,
+  IMAP_INBOX_PORT,
+  IMAP_INBOX_EMAIL,
+  IMAP_INBOX_PASSWORD,
   PORT = 3000
 } = process.env;
 
@@ -3443,13 +3448,225 @@ app.post('/imap-revisar', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
+// REENVÍO: Casilla central facturas@alquil.app
+// ═══════════════════════════════════════════════════════════
+// El usuario configura en su Gmail/Outlook un reenvío a facturas@alquil.app.
+// El bot se conecta a esa casilla central (una sola vez, configurada vía
+// IMAP_INBOX_* env vars) y lee los emails reenviados. Cada email lo matchea
+// contra un usuario por el header "X-Forwarded-For" o por comparar remitentes
+// conocidos con profiles.forward_email. Al encontrar un match, guarda los
+// adjuntos en Supabase Storage y registra una fila en facturas_reenviadas.
+
+// POST /forward-configurar  { user_id, forward_email }
+// Guarda la dirección desde la cual el usuario va a reenviar los mails.
+app.post('/forward-configurar', async (req, res) => {
+  try {
+    const { user_id, forward_email } = req.body || {};
+    if (!user_id || !forward_email) return res.status(400).json({ ok: false, error: 'Faltan datos' });
+
+    const email = String(forward_email).trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return res.status(400).json({ ok: false, error: 'Email inválido' });
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ forward_email: email, forward_verified: false })
+      .eq('id', user_id);
+    if (error) throw error;
+    return res.json({ ok: true, forward_email: email });
+  } catch (err) {
+    console.error('❌ Error forward-configurar:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// POST /forward-desconectar  { user_id }
+app.post('/forward-desconectar', async (req, res) => {
+  try {
+    const { user_id } = req.body || {};
+    if (!user_id) return res.status(400).json({ ok: false, error: 'Falta user_id' });
+    const { error } = await supabase
+      .from('profiles')
+      .update({ forward_email: null, forward_verified: false, forward_last_check: null })
+      .eq('id', user_id);
+    if (error) throw error;
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('❌ Error forward-desconectar:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// Helper: extraer posibles emails del usuario a partir de headers del mail reenviado.
+function _extractCandidateEmails(parsed, rawHeaders) {
+  const out = new Set();
+  const push = v => {
+    if (!v) return;
+    const s = String(v).toLowerCase();
+    const m = s.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi);
+    if (m) m.forEach(x => out.add(x.toLowerCase()));
+  };
+  push(rawHeaders['x-forwarded-for']);
+  push(rawHeaders['x-forwarded-to']);
+  push(rawHeaders['x-original-to']);
+  push(rawHeaders['resent-from']);
+  push(rawHeaders['return-path']);
+  push(rawHeaders['reply-to']);
+  // "From" del envelope del forward puede ser el usuario (cuando usa "reenviar manualmente")
+  push(rawHeaders['from']);
+  push(rawHeaders['sender']);
+  // Received headers pueden contener el email origen
+  push(rawHeaders['delivered-to']);
+  return Array.from(out);
+}
+
+// Procesa una casilla IMAP (facturas@alquil.app) y matchea cada mensaje con un usuario.
+async function _pollInboxFacturas() {
+  if (!IMAP_INBOX_HOST || !IMAP_INBOX_EMAIL || !IMAP_INBOX_PASSWORD) {
+    return { ok: false, error: 'IMAP_INBOX_* no configurado en env' };
+  }
+
+  const client = new ImapFlow({
+    host: IMAP_INBOX_HOST,
+    port: parseInt(IMAP_INBOX_PORT || '993', 10),
+    secure: true,
+    auth: { user: IMAP_INBOX_EMAIL, pass: IMAP_INBOX_PASSWORD },
+    logger: false
+  });
+
+  await client.connect();
+  const lock = await client.getMailboxLock('INBOX');
+
+  const resumen = { leidos: 0, matcheados: 0, guardados: 0, sin_match: 0, errores: 0 };
+
+  try {
+    // Solo los no leídos → así cada mensaje se procesa una vez.
+    const uids = await client.search({ seen: false });
+    for (const uid of (uids || [])) {
+      try {
+        resumen.leidos++;
+        const msg = await client.fetchOne(uid, { envelope: true, source: true, flags: true });
+        if (!msg) continue;
+        const parsed = await simpleParser(msg.source);
+        const rawHeaders = {};
+        parsed.headerLines.forEach(h => { rawHeaders[h.key.toLowerCase()] = h.line.split(':').slice(1).join(':').trim(); });
+
+        const candidates = _extractCandidateEmails(parsed, rawHeaders);
+        let userRow = null;
+        if (candidates.length) {
+          const { data: hits } = await supabase
+            .from('profiles')
+            .select('id, forward_email, whatsapp_phone')
+            .in('forward_email', candidates)
+            .limit(1);
+          if (hits && hits.length) userRow = hits[0];
+        }
+
+        if (!userRow) {
+          resumen.sin_match++;
+          // Lo dejamos sin marcar para revisión manual (no lo marcamos como leído).
+          continue;
+        }
+
+        const adjuntos = (parsed.attachments || []).filter(a =>
+          a.contentType && (a.contentType.startsWith('image/') || a.contentType === 'application/pdf')
+        );
+
+        const fromAddr = ((parsed.from && parsed.from.value && parsed.from.value[0]?.address) || '').toLowerCase();
+        const subject  = parsed.subject || '';
+
+        if (adjuntos.length === 0) {
+          // Email sin adjunto: registramos la fila igual para trazabilidad, procesada=true para no reintentar.
+          await supabase.from('facturas_reenviadas').insert({
+            user_id: userRow.id,
+            from_address: fromAddr,
+            subject,
+            procesada: true,
+            raw_headers: rawHeaders
+          });
+          await client.messageFlagsAdd(uid, ['\\Seen']);
+          resumen.matcheados++;
+          continue;
+        }
+
+        // Subir cada adjunto a Supabase Storage
+        for (const att of adjuntos) {
+          const safeName = (att.filename || 'factura').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80);
+          const path = `${userRow.id}/${Date.now()}_${safeName}`;
+          const { error: upErr } = await supabase.storage
+            .from('facturas-mail')
+            .upload(path, att.content, { contentType: att.contentType, upsert: false });
+          if (upErr) {
+            console.log('⚠️ Error subiendo adjunto:', upErr.message);
+            continue;
+          }
+          const { data: pub } = supabase.storage.from('facturas-mail').createSignedUrl
+            ? await supabase.storage.from('facturas-mail').createSignedUrl(path, 60 * 60 * 24 * 30)
+            : { data: { signedUrl: null } };
+
+          await supabase.from('facturas_reenviadas').insert({
+            user_id: userRow.id,
+            from_address: fromAddr,
+            subject,
+            attachment_url: pub?.signedUrl || path,
+            attachment_name: safeName,
+            content_type: att.contentType,
+            procesada: false,
+            raw_headers: rawHeaders
+          });
+          resumen.guardados++;
+        }
+
+        // Marcar como verificado la primera vez
+        await supabase.from('profiles')
+          .update({ forward_verified: true, forward_last_check: new Date().toISOString() })
+          .eq('id', userRow.id);
+
+        await client.messageFlagsAdd(uid, ['\\Seen']);
+        resumen.matcheados++;
+      } catch (msgErr) {
+        resumen.errores++;
+        console.log('⚠️ Error procesando mensaje reenviado:', msgErr.message);
+      }
+    }
+  } finally {
+    lock.release();
+    await client.logout();
+  }
+
+  return { ok: true, resumen };
+}
+
+// POST /revisar-facturas-reenviadas  (sin body, ejecuta el polling de la casilla central)
+app.post('/revisar-facturas-reenviadas', async (req, res) => {
+  try {
+    const r = await _pollInboxFacturas();
+    return res.json(r);
+  } catch (err) {
+    console.error('❌ Error revisar-facturas-reenviadas:', err);
+    return res.json({ ok: false, error: err.message });
+  }
+});
+
+// Polling automático cada 10 minutos (si env vars están configuradas)
+if (process.env.IMAP_INBOX_HOST && process.env.IMAP_INBOX_EMAIL && process.env.IMAP_INBOX_PASSWORD) {
+  console.log('📬 Polling automático de facturas@alquil.app activado (cada 10 min)');
+  setInterval(() => {
+    _pollInboxFacturas()
+      .then(r => { if (r.ok && r.resumen && (r.resumen.guardados || r.resumen.sin_match)) console.log('📬 Poll:', r.resumen); })
+      .catch(e => console.log('⚠️ Poll error:', e.message));
+  }, 10 * 60 * 1000);
+}
+
+// ═══════════════════════════════════════════════════════════
 // HEALTH CHECK
 // ═══════════════════════════════════════════════════════════
 app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.5.2',
+    version:   '5.6.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
