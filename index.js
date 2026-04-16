@@ -98,6 +98,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 // ── Historial en memoria como respaldo (se usa si Supabase falla) ──
 const historialMemoria = {};
 
+// ── Estado pendiente de facturas escaneadas (esperando acción del usuario) ──
+// Estructura: { [telefono]: { datos, imageBase64, mimeType, facturaUrl, usuario, timestamp } }
+const _facturaPendiente = {};
+
 // ═══════════════════════════════════════════════════════════
 // GENERAR PDF RECIBO DE PAGO (con pdfkit)
 // Replica el diseño del frontend: header azul, filas, monto
@@ -474,6 +478,175 @@ async function procesarFacturaPropietario(from, mediaUrl, mimeType, usuario) {
   } catch (err) {
     console.error('❌ Error procesando factura:', err);
     await enviarWhatsApp(from, '⚠️ Hubo un error procesando la factura. Intentá de nuevo.').catch(() => {});
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// GUARDAR FACTURA EN SERVICIOS (desde menú interactivo)
+// Se llama cuando el usuario elige opción 1 tras escanear factura
+// ═══════════════════════════════════════════════════════════
+async function _guardarFacturaEnServicios(from, datos, facturaUrl, usuario) {
+  try {
+    // Buscar servicios del usuario
+    let servicios = [];
+    if (usuario.rol === 'inquilino') {
+      const { data: contratos } = await supabase
+        .from('contratos')
+        .select('propiedad_id')
+        .eq('inquilino_email', usuario.email || '')
+        .limit(5);
+      const propiedadIds = (contratos || []).map(c => c.propiedad_id).filter(Boolean);
+      if (propiedadIds.length) {
+        const { data: svcs } = await supabase
+          .from('servicios')
+          .select('*')
+          .in('propiedad_id', propiedadIds);
+        servicios = svcs || [];
+      }
+    } else {
+      const { data: svcs } = await supabase
+        .from('servicios')
+        .select('*')
+        .eq('propietario_id', usuario.id);
+      servicios = svcs || [];
+    }
+
+    // Si no tiene servicios cargados, crear uno nuevo
+    if (!servicios || servicios.length === 0) {
+      // Buscar propiedad del usuario para asociar
+      let propiedadId = null;
+      if (usuario.rol === 'inquilino') {
+        const { data: ctr } = await supabase
+          .from('contratos')
+          .select('propiedad_id')
+          .eq('inquilino_email', usuario.email || '')
+          .limit(1)
+          .single();
+        if (ctr) propiedadId = ctr.propiedad_id;
+      } else {
+        const { data: props } = await supabase
+          .from('propiedades')
+          .select('id')
+          .eq('propietario_id', usuario.id)
+          .limit(1);
+        if (props && props.length) propiedadId = props[0].id;
+      }
+
+      if (!propiedadId) {
+        await enviarWhatsApp(from, '⚠️ No encontré propiedades en tu cuenta para asociar esta factura. Primero agregá una propiedad desde la web.');
+        return;
+      }
+
+      const tipoMap = { luz: 'luz', gas: 'gas', agua: 'agua', internet: 'internet', abl: 'municipal' };
+      const tipoNorm = (datos.tipo_servicio || '').toLowerCase();
+      const { error: insertErr } = await supabase.from('servicios').insert({
+        propiedad_id: propiedadId,
+        propietario_id: usuario.rol !== 'inquilino' ? usuario.id : null,
+        nombre: datos.empresa || datos.tipo_servicio || 'Servicio',
+        tipo: tipoMap[tipoNorm] || 'otro',
+        proveedor: datos.empresa || '',
+        numero_cuenta: datos.numero_cuenta || '',
+        ultima_factura_monto: datos.monto ? Number(datos.monto) : null,
+        ultima_factura_vto: datos.fecha_vencimiento || null,
+        factura_url: facturaUrl
+      });
+
+      if (insertErr) throw insertErr;
+
+      await enviarWhatsApp(from,
+        `✅ *Servicio creado y factura cargada*\n\n` +
+        `📋 Servicio: *${datos.empresa || datos.tipo_servicio}*\n` +
+        `💰 Monto: *$${Number(datos.monto || 0).toLocaleString('es-AR')}*\n` +
+        `📅 Vencimiento: *${datos.fecha_vencimiento || '—'}*\n\n` +
+        `Se creó un nuevo servicio en tu cuenta porque no tenías uno de este tipo.`
+      );
+      return;
+    }
+
+    // Matchear servicio existente
+    const tipoNorm = (datos.tipo_servicio || '').toLowerCase();
+    const empresaNorm = (datos.empresa || '').toLowerCase();
+    const servicio = servicios.find(s => {
+      const nombre = (s.nombre || '').toLowerCase();
+      const tipo = (s.tipo || '').toLowerCase();
+      const proveedor = (s.proveedor || '').toLowerCase();
+      if (tipoNorm === 'luz' && (nombre.includes('luz') || tipo.includes('luz') || nombre.includes('electr') || proveedor.includes('epe') || proveedor.includes('edenor') || proveedor.includes('edesur'))) return true;
+      if (tipoNorm === 'gas' && (nombre.includes('gas') || tipo.includes('gas') || proveedor.includes('litoral') || proveedor.includes('metrogas') || proveedor.includes('naturgy') || proveedor.includes('camuzzi'))) return true;
+      if (tipoNorm === 'agua' && (nombre.includes('agua') || tipo.includes('agua') || proveedor.includes('aysa') || proveedor.includes('caps') || proveedor.includes('absa'))) return true;
+      if (tipoNorm === 'internet' && (nombre.includes('internet') || nombre.includes('wifi') || nombre.includes('cable'))) return true;
+      if (empresaNorm && (nombre.includes(empresaNorm) || proveedor.includes(empresaNorm))) return true;
+      return false;
+    });
+
+    if (!servicio) {
+      // No matchea → crear servicio nuevo
+      const tipoMap = { luz: 'luz', gas: 'gas', agua: 'agua', internet: 'internet', abl: 'municipal' };
+      const { error: insertErr } = await supabase.from('servicios').insert({
+        propiedad_id: servicios[0].propiedad_id,
+        propietario_id: servicios[0].propietario_id || usuario.id,
+        nombre: datos.empresa || datos.tipo_servicio || 'Servicio',
+        tipo: tipoMap[tipoNorm] || 'otro',
+        proveedor: datos.empresa || '',
+        numero_cuenta: datos.numero_cuenta || '',
+        ultima_factura_monto: datos.monto ? Number(datos.monto) : null,
+        ultima_factura_vto: datos.fecha_vencimiento || null,
+        factura_url: facturaUrl
+      });
+
+      if (insertErr) throw insertErr;
+
+      await enviarWhatsApp(from,
+        `✅ *Nuevo servicio creado y factura cargada*\n\n` +
+        `📋 Servicio: *${datos.empresa || datos.tipo_servicio}*\n` +
+        `💰 Monto: *$${Number(datos.monto || 0).toLocaleString('es-AR')}*\n` +
+        `📅 Vencimiento: *${datos.fecha_vencimiento || '—'}*`
+      );
+      return;
+    }
+
+    // Actualizar servicio existente
+    const updateData = {};
+    if (datos.monto) updateData.ultima_factura_monto = Number(datos.monto);
+    if (datos.fecha_vencimiento) updateData.ultima_factura_vto = datos.fecha_vencimiento;
+    if (facturaUrl) updateData.factura_url = facturaUrl;
+    if (datos.numero_cuenta && !servicio.numero_cuenta) updateData.numero_cuenta = datos.numero_cuenta;
+
+    const { error: updateErr } = await supabase
+      .from('servicios')
+      .update(updateData)
+      .eq('id', servicio.id);
+
+    if (updateErr) throw updateErr;
+
+    // Insertar en facturas_servicios
+    try {
+      await supabase.from('facturas_servicios').insert({
+        servicio_id: servicio.id,
+        propietario_id: servicio.propietario_id || usuario.id,
+        monto: Number(datos.monto || 0),
+        fecha_vto: datos.fecha_vencimiento || null,
+        periodo: datos.periodo || null,
+        factura_url: facturaUrl,
+        estado: 'pendiente'
+      });
+    } catch (e) { console.warn('No se pudo insertar en facturas_servicios:', e.message); }
+
+    const cierreMsg = usuario.rol === 'inquilino'
+      ? 'Tu propietario ya puede ver esta factura en la app.'
+      : 'Ya podés verla en la sección Servicios de la app.';
+
+    await enviarWhatsApp(from,
+      `✅ *Factura cargada correctamente*\n\n` +
+      `📋 Servicio: *${servicio.nombre || servicio.tipo}*\n` +
+      `🏢 Empresa: *${datos.empresa || '—'}*\n` +
+      `💰 Monto: *$${Number(datos.monto || 0).toLocaleString('es-AR')}*\n` +
+      `📅 Vencimiento: *${datos.fecha_vencimiento || '—'}*\n\n` +
+      cierreMsg
+    );
+
+  } catch (err) {
+    console.error('❌ Error en _guardarFacturaEnServicios:', err);
+    await enviarWhatsApp(from, '⚠️ Hubo un error guardando la factura: ' + err.message).catch(() => {});
   }
 }
 
@@ -886,6 +1059,39 @@ app.post('/webhook', async (req, res) => {
 
     console.log(`👤 Usuario: ${usuario.nombre || usuario.email} (${usuario.rol || 'propietario'})`);
 
+    // ── 1.5. Verificar si hay una factura pendiente esperando respuesta ──
+    if (_facturaPendiente[from] && !esImagen && !esAudio) {
+      const fp = _facturaPendiente[from];
+      // Expirar después de 10 minutos
+      if (Date.now() - fp.timestamp > 600000) {
+        delete _facturaPendiente[from];
+      } else {
+        const opcion = text.replace(/[^\d]/g, '');
+        if (opcion === '1') {
+          // Cargar en servicios
+          delete _facturaPendiente[from];
+          res.send(`<Response><Message>${escapeXml('⏳ Cargando factura en tus servicios…')}</Message></Response>`);
+          (async () => {
+            try {
+              await _guardarFacturaEnServicios(from, fp.datos, fp.facturaUrl, fp.usuario);
+            } catch (err) {
+              console.error('❌ Error guardando factura:', err);
+              await enviarWhatsApp(from, '⚠️ Hubo un error guardando la factura. Intentá de nuevo.').catch(() => {});
+            }
+          })();
+          return;
+        } else if (opcion === '2') {
+          // Solo guardar imagen (ya está subida a Storage)
+          delete _facturaPendiente[from];
+          return res.send(`<Response><Message>${escapeXml('✅ Imagen guardada. La factura queda almacenada pero no se cargó en ningún servicio. Si después querés cargarla, mandala de nuevo y elegí la opción 1.')}</Message></Response>`);
+        } else if (opcion === '3') {
+          delete _facturaPendiente[from];
+          return res.send(`<Response><Message>${escapeXml('🗑️ Factura descartada. Si necesitás otra cosa, escribime.')}</Message></Response>`);
+        }
+        // Si no es 1, 2 ni 3, dejar que siga el flujo normal (quizás escribió otra cosa)
+      }
+    }
+
     // ── 2. Detectar intención especial (recibo, factura) ──
     if (!esAudio && text) {
       const intencion = detectarIntencion(text);
@@ -1198,8 +1404,44 @@ app.post('/webhook', async (req, res) => {
           console.log(`🏷️ Imagen clasificada como: ${tipo}`);
 
           if (tipo === 'factura') {
-            // Procesar como factura de servicio (funciona para propietario O inquilino)
-            await procesarFacturaPropietario(from, mediaUrl, mediaType, usuario);
+            // Analizar con Gemini y preguntar qué hacer
+            const datos = await analizarFacturaConGemini(imageBase64, mediaType);
+            if (!datos || (!datos.empresa && !datos.monto)) {
+              await enviarWhatsApp(from, '⚠️ No pude leer los datos de la factura. Intentá con una foto más nítida, de cerca y con buena luz.');
+              return;
+            }
+
+            // Subir imagen a Storage
+            const timestamp = Date.now();
+            const ext = mediaType.includes('png') ? 'png' : 'jpg';
+            const filename = `factura_${from.replace(/\D/g, '')}_${timestamp}.${ext}`;
+            const facturaUrl = await subirFacturaAStorage(imageBase64, mediaType, filename);
+
+            // Guardar datos temporalmente esperando la elección del usuario
+            _facturaPendiente[from] = {
+              datos,
+              facturaUrl,
+              usuario,
+              timestamp: Date.now()
+            };
+
+            // Armar resumen y opciones
+            const montoStr = datos.monto ? '$' + Number(datos.monto).toLocaleString('es-AR') : 'no detectado';
+            const vtoStr = datos.fecha_vencimiento || 'no detectado';
+            await enviarWhatsApp(from,
+              `📄 *Factura detectada*\n\n` +
+              `🏢 Empresa: *${datos.empresa || '—'}*\n` +
+              `⚡ Tipo: *${datos.tipo_servicio || '—'}*\n` +
+              `💰 Monto: *${montoStr}*\n` +
+              `📅 Vencimiento: *${vtoStr}*\n` +
+              `📎 Período: *${datos.periodo || '—'}*\n` +
+              `🔢 Cuenta/NIS: *${datos.numero_cuenta || '—'}*\n\n` +
+              `¿Qué querés hacer con esta factura?\n\n` +
+              `*1️⃣* Cargar en mis servicios\n` +
+              `*2️⃣* Solo guardar la imagen\n` +
+              `*3️⃣* Descartar\n\n` +
+              `_Respondé con el número de la opción._`
+            );
             return;
           }
 
