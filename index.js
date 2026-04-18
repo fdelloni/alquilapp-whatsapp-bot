@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
-// v5.8.1 — Recibos PDF, facturas servicios, recordatorios,
+// v5.10.0 — Recibos PDF, facturas servicios, recordatorios,
 //          confirmar pagos, reclamos, comprobantes, morosidad,
 //          ajustes de contrato, mail OAuth (Gmail), IMAP genérico,
 //          forwarding central, clasificador factura/comprobante,
@@ -101,9 +101,49 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 // ── Historial en memoria como respaldo (se usa si Supabase falla) ──
 const historialMemoria = {};
 
-// ── Estado pendiente de facturas escaneadas (esperando acción del usuario) ──
-// Estructura: { [telefono]: { datos, imageBase64, mimeType, facturaUrl, usuario, timestamp } }
-const _facturaPendiente = {};
+// ── Estado pendiente del bot (persistido en Supabase) ───────────
+// Antes vivía en memoria (_facturaPendiente). Ahora la tabla
+// `bot_estado_pendiente` sobrevive a reinicios de Railway y a
+// múltiples instancias, usando service_role.
+//
+// Estructura por registro:
+//   telefono (PK) | accion | payload (jsonb) | expires_at | created_at
+//
+// accion = 'factura_menu'  → payload: { datos, facturaUrl, usuario }
+async function setBotPendiente(telefono, accion, payload, ttlMin = 10) {
+  const expires_at = new Date(Date.now() + ttlMin * 60 * 1000).toISOString();
+  const { error } = await supabase
+    .from('bot_estado_pendiente')
+    .upsert({ telefono, accion, payload, expires_at }, { onConflict: 'telefono' });
+  if (error) console.error('❌ setBotPendiente error:', error.message);
+}
+
+async function getBotPendiente(telefono) {
+  const { data, error } = await supabase
+    .from('bot_estado_pendiente')
+    .select('accion, payload, expires_at')
+    .eq('telefono', telefono)
+    .gt('expires_at', new Date().toISOString())
+    .single();
+  if (error) return null; // nada pendiente o expirado
+  return data;
+}
+
+async function deleteBotPendiente(telefono) {
+  await supabase
+    .from('bot_estado_pendiente')
+    .delete()
+    .eq('telefono', telefono);
+}
+
+// Limpieza oportunista de registros expirados (corre 1% de las veces)
+async function _gcBotPendientes() {
+  if (Math.random() > 0.01) return;
+  await supabase
+    .from('bot_estado_pendiente')
+    .delete()
+    .lt('expires_at', new Date().toISOString());
+}
 
 // ═══════════════════════════════════════════════════════════
 // GENERAR PDF RECIBO DE PAGO (con pdfkit)
@@ -975,6 +1015,35 @@ async function buscarFacturaServicio(usuario, texto) {
 function detectarIntencion(texto) {
   const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
+  // ── Helper: detectar si la frase incluye una negación previa ──
+  // Ej: "todavia no pague", "aun no pague", "no pague", "no me acuerdo si pague"
+  // Si negado, NO es confirmación de pago — que vaya a Gemini para diálogo natural.
+  function esNegado(patron) {
+    // Buscamos negaciones dentro de los ~20 caracteres previos al match
+    const re = new RegExp('(no|todavia no|aun no|nunca|tampoco)\\s+[\\w\\s]{0,15}?(' + patron + ')', 'i');
+    return re.test(t);
+  }
+
+  // ── Comando ayuda / menú ──
+  if (/^(ayuda|menu|help|\/ayuda|\/menu|\/help|comandos|que puedo|qué puedo|que podes hacer|qué podés hacer)(\b|[?!.]|$)/i.test(t)) {
+    return { tipo: 'ayuda', texto };
+  }
+
+  // ── Consulta reclamos abiertos ──
+  // "reclamos abiertos", "mis reclamos", "qué reclamos tengo", "estado reclamos"
+  if (/\breclamos?\b/.test(t) &&
+      /\b(abierto|abiertas|pendiente|mis|tengo|que|cual|cuales|estado|ver|lista|listar)\b/.test(t) &&
+      !/nuevo|registrar|crear|hay un|tengo un/.test(t)) {
+    return { tipo: 'consultar_reclamos', texto };
+  }
+
+  // ── Propietario: cambiar estado de reclamo ──
+  // "marcá resuelto reclamo 3", "resolver reclamo 5", "reclamo 2 en curso", "cerrar reclamo 1"
+  if (/\breclamo\b/.test(t) && /\b\d+\b/.test(t) &&
+      /(resuelt|resolver|cerrar|cerrad|curso|en progres|trabaj|solucionad|termina)/.test(t)) {
+    return { tipo: 'cambiar_estado_reclamo', texto };
+  }
+
   // Pedido de recibo
   if (/recibo|comprobante|comprobant/.test(t) && /mand|envi|pasa|quiero|necesito|dame|genera/.test(t)) {
     return { tipo: 'recibo', texto };
@@ -998,8 +1067,10 @@ function detectarIntencion(texto) {
   }
 
   // Confirmación de pago (inquilino: "ya pagué", "pagué el alquiler", "transferí el pago")
-  if (/pague|pago|pague|transfiri|transferi|deposit|mande|mandate|envi|pasar/.test(t) &&
-      /alquiler|pago|rent/.test(t)) {
+  // IMPORTANTE: si hay negación previa ("no pagué", "todavía no pagué"), NO es confirmación.
+  if (/pague|pago|transfiri|transferi|deposit|mande|mandate|envi|pasar/.test(t) &&
+      /alquiler|pago|rent/.test(t) &&
+      !esNegado('pague|pago|transfiri|transferi|deposit')) {
     return { tipo: 'confirmar_pago_inquilino', texto };
   }
 
@@ -1009,7 +1080,9 @@ function detectarIntencion(texto) {
   }
 
   // Propietario confirmando pago: "confirmar pago", "confirmá el pago", "marcar como pagado", "ya pagó"
-  if (/confirm.*pago|marca.*pagado|ya pago|sabes que pago/.test(t)) {
+  // Mismo cuidado con negaciones: "no pagó" NO es confirmación.
+  if (/confirm.*pago|marca.*pagado|ya pago|sabes que pago/.test(t) &&
+      !esNegado('pago|pagado')) {
     return { tipo: 'confirmar_pago_propietario', texto };
   }
 
@@ -1063,41 +1136,80 @@ app.post('/webhook', async (req, res) => {
     console.log(`👤 Usuario: ${usuario.nombre || usuario.email} (${usuario.rol || 'propietario'})`);
 
     // ── 1.5. Verificar si hay una factura pendiente esperando respuesta ──
-    if (_facturaPendiente[from] && !esImagen && !esAudio) {
-      const fp = _facturaPendiente[from];
-      // Expirar después de 10 minutos
-      if (Date.now() - fp.timestamp > 600000) {
-        delete _facturaPendiente[from];
-      } else {
-        const opcion = text.replace(/[^\d]/g, '');
-        if (opcion === '1') {
-          // Cargar en servicios
-          delete _facturaPendiente[from];
-          res.send(`<Response><Message>${escapeXml('⏳ Cargando factura en tus servicios…')}</Message></Response>`);
-          (async () => {
-            try {
-              await _guardarFacturaEnServicios(from, fp.datos, fp.facturaUrl, fp.usuario);
-            } catch (err) {
-              console.error('❌ Error guardando factura:', err);
-              await enviarWhatsApp(from, '⚠️ Hubo un error guardando la factura. Intentá de nuevo.').catch(() => {});
-            }
-          })();
-          return;
-        } else if (opcion === '2') {
-          // Solo guardar imagen (ya está subida a Storage)
-          delete _facturaPendiente[from];
-          return res.send(`<Response><Message>${escapeXml('✅ Imagen guardada. La factura queda almacenada pero no se cargó en ningún servicio. Si después querés cargarla, mandala de nuevo y elegí la opción 1.')}</Message></Response>`);
-        } else if (opcion === '3') {
-          delete _facturaPendiente[from];
-          return res.send(`<Response><Message>${escapeXml('🗑️ Factura descartada. Si necesitás otra cosa, escribime.')}</Message></Response>`);
-        }
-        // Si no es 1, 2 ni 3, dejar que siga el flujo normal (quizás escribió otra cosa)
+    // Ahora persistido en Supabase (sobrevive reinicios de Railway).
+    _gcBotPendientes(); // limpieza oportunista
+    const pendiente = (!esImagen && !esAudio) ? await getBotPendiente(from) : null;
+    if (pendiente && pendiente.accion === 'factura_menu') {
+      const fp = pendiente.payload || {};
+      const opcion = text.replace(/[^\d]/g, '');
+      if (opcion === '1') {
+        // Cargar en servicios
+        await deleteBotPendiente(from);
+        res.send(`<Response><Message>${escapeXml('⏳ Cargando factura en tus servicios…')}</Message></Response>`);
+        (async () => {
+          try {
+            await _guardarFacturaEnServicios(from, fp.datos, fp.facturaUrl, fp.usuario);
+          } catch (err) {
+            console.error('❌ Error guardando factura:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error guardando la factura. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      } else if (opcion === '2') {
+        // Solo guardar imagen (ya está subida a Storage)
+        await deleteBotPendiente(from);
+        return res.send(`<Response><Message>${escapeXml('✅ Imagen guardada. La factura queda almacenada pero no se cargó en ningún servicio. Si después querés cargarla, mandala de nuevo y elegí la opción 1.')}</Message></Response>`);
+      } else if (opcion === '3') {
+        await deleteBotPendiente(from);
+        return res.send(`<Response><Message>${escapeXml('🗑️ Factura descartada. Si necesitás otra cosa, escribime.')}</Message></Response>`);
       }
+      // Si no es 1, 2 ni 3, dejar que siga el flujo normal (quizás escribió otra cosa)
     }
 
     // ── 2. Detectar intención especial (recibo, factura) ──
     if (!esAudio && text) {
       const intencion = detectarIntencion(text);
+
+      // ── AYUDA / MENÚ (por rol) ──────────────────────────────
+      if (intencion?.tipo === 'ayuda') {
+        console.log('ℹ️ Intención detectada: AYUDA');
+        const rol = (usuario.rol || 'propietario').toLowerCase();
+        const esInq = rol === 'inquilino';
+        const esAdm = rol === 'administrador' || rol === 'admin';
+
+        let msg = '';
+
+        if (esInq) {
+          msg = `*Comandos:*\n` +
+                `• "recibo de [mes]" — PDF del recibo\n` +
+                `• "factura de luz/gas/agua" — PDF del servicio\n` +
+                `• "ya pagué" — confirmar pago\n` +
+                `• Foto del comprobante — se envía al propietario\n` +
+                `• "se rompió la canilla" — reclamo\n` +
+                `• "mis reclamos" — ver reclamos abiertos\n` +
+                `• Preguntas libres (texto o audio)\n\n` +
+                `Escribí *borrar* para reiniciar.`;
+        } else if (esAdm) {
+          msg = `*Comandos:*\n` +
+                `• "confirmar pago de [inquilino]"\n` +
+                `• "reclamos abiertos"\n` +
+                `• "marcá resuelto reclamo 3"\n` +
+                `• Foto de factura — se carga en servicios\n` +
+                `• Preguntas libres (texto o audio)\n\n` +
+                `Escribí *borrar* para reiniciar.`;
+        } else {
+          msg = `*Comandos:*\n` +
+                `• "confirmar pago de [inquilino]"\n` +
+                `• "reclamos abiertos"\n` +
+                `• "marcá resuelto reclamo 3"\n` +
+                `• Foto de factura (luz/gas/agua) — se carga automático\n` +
+                `• "recibo de [inquilino] de marzo"\n` +
+                `• Preguntas libres (texto o audio)\n\n` +
+                `Escribí *borrar* para reiniciar.`;
+        }
+
+        return res.send(`<Response><Message>${escapeXml(msg)}</Message></Response>`);
+      }
 
       if (intencion?.tipo === 'recibo') {
         console.log('🧾 Intención detectada: RECIBO');
@@ -1263,7 +1375,7 @@ app.post('/webhook', async (req, res) => {
             const contrato = contratos[0];
 
             // Insertar reclamo en tabla reclamos
-            const { error: insertErr } = await supabase
+            const { data: insertedReclamo, error: insertErr } = await supabase
               .from('reclamos')
               .insert({
                 propiedad_id: contrato.propiedad_id,
@@ -1275,9 +1387,20 @@ app.post('/webhook', async (req, res) => {
                 estado: 'abierto',
                 prioridad: 'normal',
                 created_at: new Date().toISOString()
-              });
+              })
+              .select('id')
+              .single();
 
             if (insertErr) throw insertErr;
+            const reclamoId = insertedReclamo?.id;
+
+            // Obtener dirección de la propiedad para dar contexto
+            let direccionProp = '';
+            if (contrato.propiedad_id) {
+              const { data: propRow } = await supabase
+                .from('propiedades').select('direccion').eq('id', contrato.propiedad_id).single();
+              if (propRow?.direccion) direccionProp = propRow.direccion;
+            }
 
             // Notificar al propietario
             const { data: profile } = await supabase
@@ -1292,14 +1415,169 @@ app.post('/webhook', async (req, res) => {
               if (!numProp.startsWith('54')) numProp = '54' + numProp;
               const propTel = '+' + numProp;
 
-              const msgProp = `🔧 *Nuevo reclamo* del inquilino *${usuario.nombre || 'Inquilino'}*:\n\n${text}`;
-              await enviarWhatsApp(propTel, msgProp).catch(() => {});
+              const idStr = reclamoId ? `*#${reclamoId}*` : '';
+              const direccStr = direccionProp ? `\n📍 ${direccionProp}` : '';
+              const msgProp =
+                `🔧 *Nuevo reclamo ${idStr}* del inquilino *${usuario.nombre || 'Inquilino'}*${direccStr}\n\n` +
+                `📝 ${text}\n\n` +
+                (reclamoId
+                  ? `💡 Para actualizar: "marcá en curso reclamo ${reclamoId}" o "resuelto reclamo ${reclamoId}".`
+                  : '');
+              await enviarWhatsApp(propTel, msgProp).catch(err => {
+                console.error('❌ Error notificando propietario de nuevo reclamo:', err.message);
+              });
             }
 
-            await enviarWhatsApp(from, '✅ Tu reclamo fue registrado. El propietario va a ser notificado.');
+            const idMsg = reclamoId ? ` (*#${reclamoId}*)` : '';
+            await enviarWhatsApp(from, `✅ Tu reclamo${idMsg} fue registrado. El propietario va a ser notificado. Te avisamos cuando cambie de estado.`);
           } catch (err) {
             console.error('❌ Error registrando reclamo:', err);
             await enviarWhatsApp(from, '⚠️ Hubo un error registrando tu reclamo. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      }
+
+      // ── CONSULTAR RECLAMOS (inquilino o propietario/admin) ────
+      if (intencion?.tipo === 'consultar_reclamos') {
+        console.log('🔍 Intención detectada: CONSULTAR RECLAMOS');
+        res.send(`<Response><Message>${escapeXml('🔍 Buscando reclamos...')}</Message></Response>`);
+
+        (async () => {
+          try {
+            const rol = (usuario.rol || 'propietario').toLowerCase();
+            let q = supabase
+              .from('reclamos')
+              .select('id, descripcion, estado, prioridad, created_at, propiedad_id, inquilino_nombre')
+              .in('estado', ['abierto', 'en_curso', 'en progreso', 'pendiente'])
+              .order('created_at', { ascending: false })
+              .limit(15);
+
+            if (rol === 'inquilino') {
+              q = q.eq('inquilino_telefono', from);
+            } else {
+              // propietario o admin delegado → reclamos donde él es propietario_id
+              q = q.eq('propietario_id', usuario.id);
+            }
+
+            const { data: reclamos, error } = await q;
+            if (error) throw error;
+
+            if (!reclamos || reclamos.length === 0) {
+              await enviarWhatsApp(from, '✅ No tenés reclamos abiertos en este momento.');
+              return;
+            }
+
+            // Enriquecer con dirección de propiedad
+            const propIds = [...new Set(reclamos.map(r => r.propiedad_id).filter(Boolean))];
+            const direccPorId = {};
+            if (propIds.length) {
+              const { data: props } = await supabase
+                .from('propiedades')
+                .select('id, direccion')
+                .in('id', propIds);
+              (props || []).forEach(p => { direccPorId[p.id] = p.direccion; });
+            }
+
+            const estadoIcon = { abierto: '🟠', en_curso: '🔵', 'en progreso': '🔵', pendiente: '🟠', resuelto: '✅', cerrado: '⚫' };
+            let msg = `📋 *Reclamos abiertos* (${reclamos.length}):\n\n`;
+            reclamos.forEach((r, i) => {
+              const icon = estadoIcon[r.estado] || '🔸';
+              const fecha = r.created_at ? r.created_at.slice(0,10).split('-').reverse().join('/') : '';
+              const direcc = direccPorId[r.propiedad_id] || '—';
+              const descShort = (r.descripcion || '').slice(0, 80) + ((r.descripcion || '').length > 80 ? '…' : '');
+              msg += `${icon} *#${r.id}* — ${r.estado}\n`;
+              msg += `   📍 ${direcc}\n`;
+              if (rol !== 'inquilino' && r.inquilino_nombre) msg += `   👤 ${r.inquilino_nombre}\n`;
+              msg += `   📅 ${fecha}\n`;
+              msg += `   📝 ${descShort}\n\n`;
+            });
+
+            if (rol !== 'inquilino') {
+              msg += `💡 Para cambiar el estado: "marcá resuelto reclamo [N]" o "reclamo [N] en curso"`;
+            } else {
+              msg += `💡 Si querés cargar uno nuevo, contame qué pasa.`;
+            }
+
+            await enviarWhatsApp(from, msg);
+          } catch (err) {
+            console.error('❌ Error consultando reclamos:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error consultando los reclamos. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      }
+
+      // ── CAMBIAR ESTADO DE RECLAMO (propietario/admin) ─────────
+      if (intencion?.tipo === 'cambiar_estado_reclamo') {
+        console.log('🔄 Intención detectada: CAMBIAR ESTADO RECLAMO');
+        const rol = (usuario.rol || 'propietario').toLowerCase();
+        if (rol === 'inquilino') {
+          return res.send(`<Response><Message>${escapeXml('⚠️ Solo el propietario o administrador puede cambiar el estado de un reclamo.')}</Message></Response>`);
+        }
+        res.send(`<Response><Message>${escapeXml('🔄 Actualizando reclamo...')}</Message></Response>`);
+
+        (async () => {
+          try {
+            const tNorm = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            // Extraer número de reclamo
+            const mNum = tNorm.match(/reclamo\s*(?:#|n[°º]?|numero|num|nro\.?)?\s*(\d+)|\b(\d+)\b/i);
+            const reclamoId = mNum ? parseInt(mNum[1] || mNum[2], 10) : null;
+            if (!reclamoId) {
+              await enviarWhatsApp(from, '⚠️ No pude identificar el número de reclamo. Probá: "marcá resuelto reclamo 3".');
+              return;
+            }
+
+            // Detectar nuevo estado
+            let nuevoEstado = null;
+            if (/resuelt|solucionad|termin|cerrad|listo|arreglad/.test(tNorm)) nuevoEstado = 'resuelto';
+            else if (/en curso|en progres|trabaj|progres|avanzand/.test(tNorm)) nuevoEstado = 'en_curso';
+            if (!nuevoEstado) {
+              await enviarWhatsApp(from, '⚠️ No entendí el nuevo estado. Usá "resuelto" o "en curso".');
+              return;
+            }
+
+            // Buscar reclamo y verificar que pertenece al propietario
+            const { data: rec } = await supabase
+              .from('reclamos')
+              .select('*')
+              .eq('id', reclamoId)
+              .single();
+            if (!rec) {
+              await enviarWhatsApp(from, `⚠️ No encontré el reclamo #${reclamoId}.`);
+              return;
+            }
+            if (rec.propietario_id !== usuario.id) {
+              await enviarWhatsApp(from, '⚠️ Ese reclamo no corresponde a tus propiedades.');
+              return;
+            }
+
+            // Update
+            const { error: updErr } = await supabase
+              .from('reclamos')
+              .update({ estado: nuevoEstado, updated_at: new Date().toISOString() })
+              .eq('id', reclamoId);
+            if (updErr) throw updErr;
+
+            // Notificar al inquilino
+            if (rec.inquilino_telefono) {
+              const icon = nuevoEstado === 'resuelto' ? '✅' : '🔵';
+              const msgInq =
+                `${icon} *Actualización de reclamo #${reclamoId}*\n\n` +
+                `Tu reclamo pasó a estado: *${nuevoEstado.replace('_', ' ')}*.\n\n` +
+                `📝 _${(rec.descripcion || '').slice(0, 100)}_\n\n` +
+                (nuevoEstado === 'resuelto'
+                  ? 'Si el problema no está resuelto, avisame y lo reabrimos.'
+                  : 'Te avisamos cuando esté terminado.');
+              await enviarWhatsApp(rec.inquilino_telefono, msgInq).catch(err => {
+                console.error('❌ Error notificando inquilino del cambio de reclamo:', err.message);
+              });
+            }
+
+            await enviarWhatsApp(from, `✅ Reclamo #${reclamoId} actualizado a *${nuevoEstado.replace('_', ' ')}*. El inquilino fue notificado.`);
+          } catch (err) {
+            console.error('❌ Error cambiando estado de reclamo:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error actualizando el reclamo. Intentá de nuevo.').catch(() => {});
           }
         })();
         return;
@@ -1420,13 +1698,13 @@ app.post('/webhook', async (req, res) => {
             const filename = `factura_${from.replace(/\D/g, '')}_${timestamp}.${ext}`;
             const facturaUrl = await subirFacturaAStorage(imageBase64, mediaType, filename);
 
-            // Guardar datos temporalmente esperando la elección del usuario
-            _facturaPendiente[from] = {
+            // Guardar datos en Supabase (sobrevive reinicios de Railway)
+            // TTL 10 min — si el usuario no elige, desaparece solo.
+            await setBotPendiente(from, 'factura_menu', {
               datos,
               facturaUrl,
-              usuario,
-              timestamp: Date.now()
-            };
+              usuario
+            }, 10);
 
             // Armar resumen y opciones
             const montoStr = datos.monto ? '$' + Number(datos.monto).toLocaleString('es-AR') : 'no detectado';
@@ -2157,7 +2435,13 @@ function buildSystemPrompt(usuario, datos) {
   const propMap = {};
   datos.propiedades.forEach(p => { propMap[p.id] = p.direccion || 'Sin dirección'; });
 
-  let prompt = `Sos *Alquil*, el asistente de WhatsApp de AlquilApp. Hablás de manera clara, directa y amigable, como un experto en alquileres que le habla a un amigo. Sin tecnicismos innecesarios.
+  let prompt = `Sos *Alquil*, el asistente de WhatsApp de AlquilApp. Hablás en español rioplatense, directo, sin rodeos ni saludos.
+
+*REGLAS DE ESTILO — PRIORITARIAS*
+1. NUNCA empieces una respuesta con "Hola", "¡Hola!", "Hola ${nombre}", "Buen día", ni con el nombre del usuario. Respondé directo al grano.
+2. Por defecto, una respuesta tiene 1-3 oraciones. Solo te extendés si el usuario pide una explicación, un análisis legal, o datos múltiples que requieren más contexto.
+3. Nada de preámbulos tipo "Claro, te ayudo con eso" o "Por supuesto". Si la respuesta es un número, un dato o un sí/no, eso es todo lo que va.
+4. Si ya charlaste con el usuario en este mismo hilo, asumí contexto — no repitas quién sos ni qué podés hacer.
 
 El usuario es *${nombre}* y está registrado como *${rolLabel}*.
 
@@ -2213,9 +2497,9 @@ Los propietarios pueden:
 USUARIO: *${nombre}* (${rolLabel})
 Email: ${usuario.email || 'No registrado'}
 
-FORMATO: Español rioplatense. Mensajes cortos y claros. *Negrita* para lo importante. Listas con •. Sin tablas. Sin ## ni ---. Máximo 3-4 párrafos por respuesta.
+FORMATO: Español rioplatense. Respuestas cortas por defecto (1-3 oraciones). *Negrita* solo para lo crítico. Listas con • únicamente si hay 3+ ítems distintos. Sin tablas. Sin ## ni ---. Sin saludos. Sin despedidas. Si el usuario pide algo breve, una línea alcanza.
 
-REGLA DE ORO: Si el dato está en la base de datos, lo das directamente. Si no está cargado, explicás en qué sección de alquil.app puede cargarlo.
+REGLA DE ORO: Si el dato está en la base de datos, lo das directamente, sin introducir la respuesta. Si no está cargado, decís en una línea qué sección de alquil.app hay que usar.
 
 ═══════════ DATOS ACTUALES ═══════════
 `;
@@ -3140,81 +3424,154 @@ app.get('/notif-automaticas', async (req, res) => {
     }
 
     // ════════════════════════════════════════════════════════
-    // PARTE EXTRA: Recordatorio mensual al propietario para cargar facturas
-    // Se ejecuta los días 1 al 5 de cada mes
+    // PARTE EXTRA: Recordatorio mensual de carga de facturas
+    // Se ejecuta los días 1 al 5 de cada mes.
+    // A partir de v5.9 → se envía al RESPONSABLE de cada servicio
+    // (propietario / inquilino / ambos), no siempre al propietario.
     // ════════════════════════════════════════════════════════
     const diaDelMes = hoy.getDate();
     if (diaDelMes >= 1 && diaDelMes <= 5) {
-      console.log('📄 Enviando recordatorios de carga de facturas a propietarios...');
+      console.log('📄 Enviando recordatorios de carga de facturas por responsable...');
 
-      // Obtener todos los propietarios con WhatsApp y servicios
-      const { data: propietarios } = await supabase
-        .from('profiles')
-        .select('id, nombre, whatsapp_phone')
-        .eq('rol', 'propietario')
-        .not('whatsapp_phone', 'is', null);
+      const mesActual = hoy.toISOString().slice(0, 7); // "2026-04"
+      const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      const mesNombre = meses[hoy.getMonth()];
 
-      if (propietarios && propietarios.length > 0) {
-        for (const prop of propietarios) {
-          // Verificar si ya se mandó este mes
-          const mesActual = hoy.toISOString().slice(0, 7); // "2026-04"
-          const claveRecordatorio = `recordatorio_facturas_${prop.id}_${mesActual}`;
+      // 1) Traer todos los servicios activos con su responsable
+      const { data: serviciosTodos } = await supabase
+        .from('servicios')
+        .select('id, nombre, tipo, proveedor, propietario_id, propiedad_id, responsable_factura, estado')
+        .eq('estado', 'activo');
 
-          const { data: yaEnviado } = await supabase
-            .from('notificaciones_wa')
+      // 2) Filtrar los que ya tienen factura cargada para el mes actual
+      //    (si ya la mandaron, no molestar)
+      const serviciosPendientes = [];
+      for (const s of (serviciosTodos || [])) {
+        try {
+          const { data: factMes } = await supabase
+            .from('facturas_servicios')
             .select('id')
-            .eq('clave_unica', claveRecordatorio)
+            .eq('servicio_id', s.id)
+            .gte('fecha_vto', mesActual + '-01')
+            .lt('fecha_vto', mesActual + '-32')
             .limit(1);
+          if (factMes && factMes.length > 0) continue; // ya tiene factura del mes
+        } catch (_e) { /* si falla la consulta, mejor no avisar duplicado — lo incluimos igual */ }
+        serviciosPendientes.push(s);
+      }
 
-          if (yaEnviado && yaEnviado.length > 0) continue;
+      // 3) Cachear datos de propietarios e inquilinos para evitar N+1 queries
+      const cachePropietarios = {};          // id → profile
+      const cacheContratosPorPropiedad = {}; // propiedad_id → contrato + inquilino profile
 
-          // Buscar servicios de este propietario
-          const { data: servicios } = await supabase
-            .from('servicios')
-            .select('id, nombre, tipo, proveedor')
-            .eq('propietario_id', prop.id);
+      async function _getPropietario(id) {
+        if (!id) return null;
+        if (cachePropietarios[id] !== undefined) return cachePropietarios[id];
+        const { data } = await supabase
+          .from('profiles')
+          .select('id, nombre, whatsapp_phone')
+          .eq('id', id)
+          .single();
+        cachePropietarios[id] = data || null;
+        return cachePropietarios[id];
+      }
 
-          if (!servicios || servicios.length === 0) continue;
-
-          // Filtrar solo servicios tipo servicio (no expensas)
-          const svcsActivos = servicios.filter(s => {
-            const tipo = (s.tipo || '').toLowerCase();
-            return tipo !== 'expensas' && tipo !== 'expensa';
-          });
-
-          if (svcsActivos.length === 0) continue;
-
-          // Armar mensaje
-          const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-          const mesNombre = meses[hoy.getMonth()];
-          let listaSvcs = svcsActivos.map(s => `• ${s.nombre || s.tipo}${s.proveedor ? ' (' + s.proveedor + ')' : ''}`).join('\n');
-
-          const mensaje =
-            `📄 *Recordatorio de facturas — ${mesNombre}*\n\n` +
-            `Hola ${prop.nombre || 'propietario'}, es momento de cargar las facturas del mes. ` +
-            `Mandame una *foto de cada factura* y yo la proceso automáticamente.\n\n` +
-            `Tus servicios:\n${listaSvcs}\n\n` +
-            `📸 Solo sacale foto a la factura y mandala por este chat.`;
-
-          let numProp = (prop.whatsapp_phone || '').replace(/\D/g, '');
-          if (numProp.startsWith('0')) numProp = numProp.substring(1);
-          if (!numProp.startsWith('54')) numProp = '54' + numProp;
-          const telProp = '+' + numProp;
-
-          try {
-            await enviarWhatsApp(telProp, mensaje);
-            await supabase.from('notificaciones_wa').insert({
-              tipo: 'recordatorio_facturas',
-              telefono: telProp,
-              estado: 'enviado',
-              clave_unica: claveRecordatorio
-            });
-            resultados.enviados++;
-            resultados.detalle.push({ tipo: 'recordatorio_facturas', tel: telProp });
-          } catch (err) {
-            resultados.errores++;
-            console.error(`❌ Error enviando recordatorio facturas a ${telProp}:`, err.message);
+      async function _getInquilinoDePropiedad(propiedadId) {
+        if (!propiedadId) return null;
+        if (cacheContratosPorPropiedad[propiedadId] !== undefined) return cacheContratosPorPropiedad[propiedadId];
+        const { data: contratos } = await supabase
+          .from('contratos')
+          .select('id, inquilino_email, inquilino_telefono, inquilino_nombre')
+          .eq('propiedad_id', propiedadId)
+          .order('fecha_inicio', { ascending: false })
+          .limit(1);
+        const c = contratos && contratos[0];
+        if (!c) { cacheContratosPorPropiedad[propiedadId] = null; return null; }
+        let inq = {
+          nombre:    c.inquilino_nombre || 'inquilino',
+          whatsapp_phone: c.inquilino_telefono || null
+        };
+        if (!inq.whatsapp_phone && c.inquilino_email) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('nombre, whatsapp_phone')
+            .eq('email', c.inquilino_email)
+            .single();
+          if (profile) {
+            if (profile.nombre) inq.nombre = profile.nombre;
+            if (profile.whatsapp_phone) inq.whatsapp_phone = profile.whatsapp_phone;
           }
+        }
+        cacheContratosPorPropiedad[propiedadId] = inq;
+        return inq;
+      }
+
+      // 4) Agrupar servicios por destinatario (telefono canonicalizado)
+      //    destinos[tel] = { nombre, rol, servicios:[...] }
+      const destinos = {};
+      function _addDestino(tel, nombre, rol, servicio) {
+        if (!tel) return;
+        let num = tel.replace(/\D/g, '');
+        if (num.startsWith('0')) num = num.substring(1);
+        if (!num.startsWith('54')) num = '54' + num;
+        const canon = '+' + num;
+        if (!destinos[canon]) destinos[canon] = { nombre: nombre || 'usuario', rol, servicios: [] };
+        // Evitar duplicados de servicio (puede pasar si "ambos" y vuelve a entrar)
+        if (!destinos[canon].servicios.find(s => s.id === servicio.id)) {
+          destinos[canon].servicios.push(servicio);
+        }
+      }
+
+      for (const s of serviciosPendientes) {
+        const resp = s.responsable_factura || 'propietario';
+        if (resp === 'propietario' || resp === 'ambos') {
+          const pr = await _getPropietario(s.propietario_id);
+          if (pr && pr.whatsapp_phone) _addDestino(pr.whatsapp_phone, pr.nombre, 'propietario', s);
+        }
+        if (resp === 'inquilino' || resp === 'ambos') {
+          const inq = await _getInquilinoDePropiedad(s.propiedad_id);
+          if (inq && inq.whatsapp_phone) _addDestino(inq.whatsapp_phone, inq.nombre, 'inquilino', s);
+        }
+      }
+
+      // 5) Para cada destinatario, verificar si ya se avisó este mes y enviar
+      for (const tel of Object.keys(destinos)) {
+        const d = destinos[tel];
+        const claveRecordatorio = `recordatorio_facturas_${tel}_${mesActual}`;
+        const { data: yaEnviado } = await supabase
+          .from('notificaciones_wa')
+          .select('id')
+          .eq('clave_unica', claveRecordatorio)
+          .limit(1);
+        if (yaEnviado && yaEnviado.length > 0) continue;
+
+        const listaSvcs = d.servicios
+          .map(s => `• ${s.nombre || s.tipo}${s.proveedor ? ' (' + s.proveedor + ')' : ''}`)
+          .join('\n');
+
+        const saludoRol = d.rol === 'inquilino'
+          ? `Hola ${d.nombre}, el propietario te pidió que nos mandes la foto de estas facturas del mes.`
+          : `Hola ${d.nombre}, es momento de cargar las facturas del mes.`;
+
+        const mensaje =
+          `📄 *Recordatorio de facturas — ${mesNombre}*\n\n` +
+          `${saludoRol} Mandame una *foto de cada factura* y yo la proceso automáticamente.\n\n` +
+          `Servicios pendientes:\n${listaSvcs}\n\n` +
+          `📸 Solo sacale foto y mandala por este chat.`;
+
+        try {
+          await enviarWhatsApp(tel, mensaje);
+          await supabase.from('notificaciones_wa').insert({
+            tipo: 'recordatorio_facturas',
+            telefono: tel,
+            estado: 'enviado',
+            clave_unica: claveRecordatorio
+          });
+          resultados.enviados++;
+          resultados.detalle.push({ tipo: 'recordatorio_facturas', tel, rol: d.rol, n: d.servicios.length });
+        } catch (err) {
+          resultados.errores++;
+          console.error(`❌ Error enviando recordatorio facturas a ${tel}:`, err.message);
         }
       }
     }
@@ -4197,7 +4554,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.8.1',
+    version:   '5.9.1',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -4240,14 +4597,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.8.1 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.10.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.8.1',
+    version: '5.9.1',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
@@ -4262,7 +4619,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.8.1        ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.10.0        ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
@@ -4279,7 +4636,7 @@ if (process.env.VERCEL) {
     console.log('  GET  /health                  → Health check simple');
     console.log('  GET  /                        → Health check detallado + env check');
     console.log('');
-    console.log('Features (v5.8.1):');
+    console.log('Features (v5.10.0):');
     console.log('  ✅ Recibos PDF automáticos');
     console.log('  ✅ Facturas de servicios');
     console.log('  ✅ Confirmación de pago (inquilino + propietario)');
@@ -4293,6 +4650,7 @@ if (process.env.VERCEL) {
     console.log('  ✅ Forwarding central facturas@alquil.app');
     console.log('  ✅ Admin delegados + permiso expensas');
     console.log('  ✅ Proxy IA (Gemini / Cohere / DeepSeek)');
+    console.log('  ✅ Recordatorio mensual por responsable (propietario/inquilino/ambos)');
     console.log('');
     console.log('Variables de entorno:');
     console.log('  TWILIO_ACCOUNT_SID    :', TWILIO_ACCOUNT_SID    ? '✅' : '❌ FALTA');
