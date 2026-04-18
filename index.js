@@ -1,8 +1,11 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
-// v5.3.0 — Recibos PDF, facturas de servicios, recordatorios
-//          automáticos, confirmar pagos, reclamos, comprobantes
-//          de pago, morosidad, ajustes de contrato.
+// v5.8.1 — Recibos PDF, facturas servicios, recordatorios,
+//          confirmar pagos, reclamos, comprobantes, morosidad,
+//          ajustes de contrato, mail OAuth (Gmail), IMAP genérico,
+//          forwarding central, clasificador factura/comprobante,
+//          admin delegados, permiso expensas, menú factura,
+//          proxy IA (Gemini/Cohere/DeepSeek).
 // ═══════════════════════════════════════════════════════════
 
 const express = require('express');
@@ -143,7 +146,7 @@ function generarPDFRecibo(cobro, contrato, propiedad) {
 
       // ── Header azul ──
       doc.save();
-      doc.roundedRect(M, M, CW, 65, 8).fill('#1E5FAD');
+      doc.roundedRect(M, M, CW, 65, 8).fill('#0891B2');
       doc.fillColor('#FFFFFF').fontSize(22).font('Helvetica-Bold')
          .text('Alquil.app', M + 15, M + 12, { width: CW - 30 });
       doc.fontSize(10).font('Helvetica')
@@ -178,7 +181,7 @@ function generarPDFRecibo(cobro, contrato, propiedad) {
 
       // ── Monto total destacado ──
       doc.save();
-      doc.roundedRect(M, y, CW, 50, 8).fill('#1E5FAD');
+      doc.roundedRect(M, y, CW, 50, 8).fill('#0891B2');
       doc.fillColor('#FFFFFF').fontSize(12).font('Helvetica')
          .text('MONTO TOTAL RECIBIDO', M + 15, y + 10);
       doc.fillColor('#FFFFFF').fontSize(22).font('Helvetica-Bold')
@@ -4194,7 +4197,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.7.0',
+    version:   '5.8.1',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -4212,7 +4215,14 @@ app.get('/', (req, res) => {
       'factura-por-foto-propietario',
       'recordatorio-mensual-facturas',
       'mail-facturas-oauth',
-      'mail-facturas-scan'
+      'mail-facturas-scan',
+      'imap-generico',
+      'forwarding-central',
+      'clasificador-imagen',
+      'menu-foto-factura',
+      'admin-delegados',
+      'permiso-expensas',
+      'ai-proxy'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
@@ -4230,7 +4240,17 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.3.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.8.1 — Webhook activo ✅');
+});
+
+// ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
+app.get('/health', (req, res) => {
+  res.json({
+    status:  'ok',
+    version: '5.8.1',
+    uptime:  Math.round(process.uptime()),
+    ts:      new Date().toISOString()
+  });
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -4242,27 +4262,37 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.3.0        ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.8.1        ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
     console.log('Endpoints:');
-    console.log('  POST /webhook            → Recibe mensajes de Twilio');
-    console.log('  POST /cobro-pagado       → Auto-envía recibo al inquilino');
-    console.log('  GET  /notif-automaticas  → Recordatorios + resumen + morosidad + ajustes');
-    console.log('  POST /verify-whatsapp    → Verifica conexión al sandbox');
-    console.log('  GET  /                   → Health check');
+    console.log('  POST /webhook                 → Recibe mensajes de Twilio');
+    console.log('  POST /cobro-pagado            → Auto-envía recibo al inquilino');
+    console.log('  GET  /notif-automaticas       → Recordatorios + resumen + morosidad + ajustes');
+    console.log('  POST /verify-whatsapp         → Verifica conexión al sandbox');
+    console.log('  POST /oauth-mail-callback     → OAuth Gmail (scan facturas)');
+    console.log('  POST /revisar-mail-facturas   → Scan inbox OAuth');
+    console.log('  POST /imap-{configurar,...}   → IMAP genérico (Outlook/Yahoo/iCloud)');
+    console.log('  POST /forward-{configurar,...}→ Forwarding central facturas@alquil.app');
+    console.log('  POST /ai/{gemini,cohere,...}  → Proxy IA (keys en servidor)');
+    console.log('  GET  /health                  → Health check simple');
+    console.log('  GET  /                        → Health check detallado + env check');
     console.log('');
-    console.log('Features (v5.3.0):');
+    console.log('Features (v5.8.1):');
     console.log('  ✅ Recibos PDF automáticos');
     console.log('  ✅ Facturas de servicios');
-    console.log('  ✅ Confirmación de pago (inquilino)');
-    console.log('  ✅ Envío de comprobantes (imágenes)');
+    console.log('  ✅ Confirmación de pago (inquilino + propietario)');
+    console.log('  ✅ Comprobantes por imagen');
     console.log('  ✅ Reclamos y mantenimiento');
-    console.log('  ✅ Confirmación de pago (propietario)');
     console.log('  ✅ Resumen mensual automático');
-    console.log('  ✅ Alertas de morosidad');
-    console.log('  ✅ Recordatorio de ajustes de contrato');
+    console.log('  ✅ Alertas de morosidad + recordatorio ajustes contrato');
+    console.log('  ✅ Factura por foto (propietario) + clasificador imagen');
+    console.log('  ✅ Menú interactivo al recibir factura');
+    console.log('  ✅ Scan de facturas por mail (OAuth Gmail + IMAP genérico)');
+    console.log('  ✅ Forwarding central facturas@alquil.app');
+    console.log('  ✅ Admin delegados + permiso expensas');
+    console.log('  ✅ Proxy IA (Gemini / Cohere / DeepSeek)');
     console.log('');
     console.log('Variables de entorno:');
     console.log('  TWILIO_ACCOUNT_SID    :', TWILIO_ACCOUNT_SID    ? '✅' : '❌ FALTA');
