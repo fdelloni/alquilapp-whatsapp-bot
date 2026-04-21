@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
+// v5.11.0 — RAG con pgvector + /ai/gemini-embed proxy
 // v5.10.0 — Recibos PDF, facturas servicios, recordatorios,
 //          confirmar pagos, reclamos, comprobantes, morosidad,
 //          ajustes de contrato, mail OAuth (Gmail), IMAP genérico,
@@ -2313,13 +2314,84 @@ async function limpiarHistorial(telefono) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// RAG — Recuperar contexto de la base de conocimiento
+// (documentos_chatbot en Supabase, búsqueda por similitud con
+//  Gemini text-embedding-004 + RPC match_documentos_chatbot)
+// ═══════════════════════════════════════════════════════════
+async function obtenerEmbedding(texto, taskType = 'RETRIEVAL_QUERY') {
+  try {
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'models/text-embedding-004',
+          content: { parts: [{ text: String(texto).slice(0, 8000) }] },
+          taskType
+        })
+      }
+    );
+    if (!r.ok) {
+      console.warn('⚠️ Embed API error:', r.status);
+      return null;
+    }
+    const j = await r.json();
+    return Array.isArray(j?.embedding?.values) ? j.embedding.values : null;
+  } catch (e) {
+    console.warn('⚠️ Embed fetch error:', e.message);
+    return null;
+  }
+}
+
+async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = null } = {}) {
+  try {
+    const emb = await obtenerEmbedding(pregunta, 'RETRIEVAL_QUERY');
+    if (!emb) return '';
+    const { data, error } = await supabase.rpc('match_documentos_chatbot', {
+      query_embedding: emb,
+      match_threshold: threshold,
+      match_count: k,
+      p_fuente: fuente
+    });
+    if (error) {
+      console.warn('⚠️ match_documentos_chatbot error:', error.message);
+      return '';
+    }
+    if (!data || data.length === 0) return '';
+    const bloque = data
+      .map((m, i) => `[Fuente ${i + 1}] (${m.fuente}/${m.tipo}) — ${m.titulo}\n${m.contenido}`)
+      .join('\n\n---\n\n');
+    console.log(`📚 RAG: ${data.length} fragmentos recuperados (top sim: ${data[0]?.similarity?.toFixed?.(3)})`);
+    return bloque;
+  } catch (e) {
+    console.warn('⚠️ RAG error:', e.message);
+    return '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // CONSULTAR A GEMINI AI — Texto
 // ═══════════════════════════════════════════════════════════
 async function consultarGemini(telefono, pregunta, usuario, datos) {
   const historial = await obtenerHistorial(telefono);
   historial.push({ role: 'user', parts: [{ text: pregunta }] });
 
-  const systemPrompt = buildSystemPrompt(usuario, datos);
+  let systemPrompt = buildSystemPrompt(usuario, datos);
+
+  // ── RAG: inyectar contexto de documentos_chatbot ──
+  // Se recupera siempre; si no hay matches el prompt queda igual.
+  const ctxRAG = await obtenerContextoRAG(pregunta);
+  if (ctxRAG) {
+    systemPrompt +=
+      `\n\n=== DOCUMENTACIÓN DE REFERENCIA (AlquilApp y legislación argentina aplicable) ===\n` +
+      `Usá este contexto como fuente de verdad cuando la pregunta sea sobre cómo funciona el sitio, ` +
+      `sobre la Ley 27.551, DNU 70/2023 o cualquier normativa. Si la info no está acá y la pregunta ` +
+      `es sobre esos temas, decí "No tengo esa información en mi base de conocimiento" y no inventes.\n\n` +
+      ctxRAG +
+      `\n=== FIN DOCUMENTACIÓN ===\n`;
+  }
+
   const requestBody  = {
     system_instruction: { parts: [{ text: systemPrompt }] },
     contents: historial
@@ -4511,6 +4583,29 @@ app.post('/ai/gemini', async (req, res) => {
   }
 });
 
+
+
+// ── Proxy Gemini Embeddings (para RAG de AlquilApp) ────────────
+// POST /ai/gemini-embed?model=text-embedding-004
+// Body: { "content": { "parts":[{"text":"..."}] }, "taskType":"RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY" }
+// Response: { "embedding": { "values": [...] } }
+app.post('/ai/gemini-embed', async (req, res) => {
+  if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!GEMINI_KEY) return res.status(500).json({ error: 'GEMINI_KEY no configurada' });
+  const model = (req.query.model || 'text-embedding-004').replace(/[^a-zA-Z0-9.-]/g, '');
+  try {
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${GEMINI_KEY}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(req.body) }
+    );
+    const txt = await r.text();
+    res.status(r.status).type('application/json').send(txt);
+  } catch (e) {
+    console.error('Proxy Gemini embed error:', e.message);
+    res.status(502).json({ error: 'Upstream Gemini embed error' });
+  }
+});
+
 // ── Proxy Cohere ─────────────────────────────────────────────
 app.post('/ai/cohere', async (req, res) => {
   if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
@@ -4597,14 +4692,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.10.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.11.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.9.1',
+    version: '5.11.0',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
@@ -4619,7 +4714,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.10.0        ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.11.0       ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
@@ -4633,10 +4728,11 @@ if (process.env.VERCEL) {
     console.log('  POST /imap-{configurar,...}   → IMAP genérico (Outlook/Yahoo/iCloud)');
     console.log('  POST /forward-{configurar,...}→ Forwarding central facturas@alquil.app');
     console.log('  POST /ai/{gemini,cohere,...}  → Proxy IA (keys en servidor)');
+    console.log('  POST /ai/gemini-embed         → Proxy Gemini embeddings (RAG)');
     console.log('  GET  /health                  → Health check simple');
     console.log('  GET  /                        → Health check detallado + env check');
     console.log('');
-    console.log('Features (v5.10.0):');
+    console.log('Features (v5.11.0):');
     console.log('  ✅ Recibos PDF automáticos');
     console.log('  ✅ Facturas de servicios');
     console.log('  ✅ Confirmación de pago (inquilino + propietario)');
@@ -4651,6 +4747,7 @@ if (process.env.VERCEL) {
     console.log('  ✅ Admin delegados + permiso expensas');
     console.log('  ✅ Proxy IA (Gemini / Cohere / DeepSeek)');
     console.log('  ✅ Recordatorio mensual por responsable (propietario/inquilino/ambos)');
+    console.log('  ✅ RAG con pgvector (documentos_chatbot) inyectado en Gemini');
     console.log('');
     console.log('Variables de entorno:');
     console.log('  TWILIO_ACCOUNT_SID    :', TWILIO_ACCOUNT_SID    ? '✅' : '❌ FALTA');
