@@ -1,7 +1,7 @@
 {
   "name": "alquilapp-whatsapp-bot",
-  "version": "5.14.0",
-  "description": "Bot de WhatsApp para AlquilApp - Consultas de alquileres con IA (Gemini/Cohere/DeepSeek/Groq) vía Twilio + recibos PDF, facturas servicios, IMAP, admin delegados",
+  "version": "5.15.0",
+  "description": "Bot de WhatsApp para AlquilApp - Consultas de alquileres con IA (Gemini/Groq/Cohere) vía Twilio + recibos PDF, facturas servicios, IMAP, admin delegados",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
