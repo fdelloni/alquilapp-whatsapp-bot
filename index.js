@@ -2373,7 +2373,7 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 }
 
 // ═══════════════════════════════════════════════════════════
-// LLM CON FALLBACK: Gemini → Cohere → DeepSeek → Groq
+// LLM CON FALLBACK: Gemini → Groq → Cohere
 //
 // Acepta el mismo formato que usa Gemini (system_instruction + contents)
 // y devuelve { texto, provider, error }. Intenta Gemini primero; si
@@ -2382,10 +2382,18 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 // siguen llamando directo a Gemini (los otros providers no son
 // multimodales equivalentes).
 //
+// Orden justificado:
+//   1) Gemini — mejor calidad en legislación AR (primario cuando funciona)
+//   2) Groq   — free tier ~100 req/min, muy rápido (LPUs), soporta ráfagas
+//   3) Cohere — red de seguridad final (free tier 20 req/min, más limitado)
+//
 // Retry con backoff:
 //   - Gemini 503 (overload): espera 3s y reintenta UNA vez antes de rotar
 //   - Cohere 429 (rate limit trial): espera 15s y reintenta UNA vez
 //   - Otros errores: rotan inmediatamente al siguiente proveedor
+//
+// Nota: DeepSeek fue removido en v5.15.0 porque estaba sin saldo (HTTP 402)
+//       y su rol de 3er proveedor pasó a Groq (gratis y más rápido).
 //
 // Params:
 //   systemPrompt : string
@@ -2394,7 +2402,7 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 //   opts.temperature : number (default 0.7)
 //
 // Return:
-//   { texto, provider: 'gemini'|'cohere'|'deepseek'|'groq'|null, error }
+//   { texto, provider: 'gemini'|'groq'|'cohere'|null, error }
 // ═══════════════════════════════════════════════════════════
 async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
   const label = opts.label || 'llm';
@@ -2458,7 +2466,40 @@ async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
     errores.push('gemini: sin key');
   }
 
-  // ── 2) Fallback Cohere command-a-03-2025 (con retry en 429) ──
+  // ── 2) Fallback Groq llama-3.3-70b-versatile (OpenAI-compatible) ──
+  // Free tier generoso (~100 req/min). Corre sobre LPUs → muy baja latencia.
+  // Es el mejor candidato cuando Gemini falla bajo carga.
+  if (GROQ_KEY) {
+    try {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: toChatMessages(systemPrompt, contents),
+          temperature
+        })
+      });
+      if (r.ok) {
+        const j = await r.json();
+        const txt = j?.choices?.[0]?.message?.content?.trim() || '';
+        if (txt) return { texto: txt, provider: 'groq', error: null };
+        errores.push('groq: respuesta vacía');
+      } else {
+        const t = await r.text().catch(() => '');
+        errores.push(`groq: HTTP ${r.status} ${t.slice(0, 120)}`);
+        console.warn(`[${label}] Groq ${r.status} → fallback`);
+      }
+    } catch (e) {
+      errores.push(`groq: ${e.message}`);
+    }
+  } else {
+    errores.push('groq: sin key');
+  }
+
+  // ── 3) Fallback final: Cohere command-a-03-2025 (con retry en 429) ──
+  // Red de seguridad cuando Gemini Y Groq fallan al mismo tiempo (raro).
+  // Free trial tiene 20 req/min, por eso va al final.
   if (COHERE_KEY) {
     for (let intento = 1; intento <= 2; intento++) {
       try {
@@ -2490,7 +2531,7 @@ async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
           continue;
         }
         errores.push(`cohere: HTTP ${r.status} ${t.slice(0, 120)}`);
-        console.warn(`[${label}] Cohere ${r.status} → fallback`);
+        console.warn(`[${label}] Cohere ${r.status}`);
         break;
       } catch (e) {
         errores.push(`cohere: ${e.message}`);
@@ -2499,66 +2540,6 @@ async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
     }
   } else {
     errores.push('cohere: sin key');
-  }
-
-  // ── 3) Fallback DeepSeek (OpenAI-compatible) ──
-  if (DEEPSEEK_KEY) {
-    try {
-      const r = await fetch('https://api.deepseek.com/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_KEY },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: toChatMessages(systemPrompt, contents),
-          temperature
-        })
-      });
-      if (r.ok) {
-        const j = await r.json();
-        const txt = j?.choices?.[0]?.message?.content?.trim() || '';
-        if (txt) return { texto: txt, provider: 'deepseek', error: null };
-        errores.push('deepseek: respuesta vacía');
-      } else {
-        const t = await r.text().catch(() => '');
-        errores.push(`deepseek: HTTP ${r.status} ${t.slice(0, 120)}`);
-        console.warn(`[${label}] DeepSeek ${r.status} → fallback`);
-      }
-    } catch (e) {
-      errores.push(`deepseek: ${e.message}`);
-    }
-  } else {
-    errores.push('deepseek: sin key');
-  }
-
-  // ── 4) Fallback final: Groq llama-3.3-70b-versatile (OpenAI-compatible) ──
-  // Groq ofrece llama-3.3-70b gratis con ~100 req/min. Red de seguridad
-  // cuando los tres proveedores anteriores fallan simultáneamente.
-  if (GROQ_KEY) {
-    try {
-      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: toChatMessages(systemPrompt, contents),
-          temperature
-        })
-      });
-      if (r.ok) {
-        const j = await r.json();
-        const txt = j?.choices?.[0]?.message?.content?.trim() || '';
-        if (txt) return { texto: txt, provider: 'groq', error: null };
-        errores.push('groq: respuesta vacía');
-      } else {
-        const t = await r.text().catch(() => '');
-        errores.push(`groq: HTTP ${r.status} ${t.slice(0, 120)}`);
-        console.warn(`[${label}] Groq ${r.status}`);
-      }
-    } catch (e) {
-      errores.push(`groq: ${e.message}`);
-    }
-  } else {
-    errores.push('groq: sin key');
   }
 
   return { texto: '', provider: null, error: errores.join(' | ') };
@@ -4937,7 +4918,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
       pregunta,
       rol,
       respuesta,
-      llm_provider: llmProvider,      // gemini | cohere | deepseek | groq | null
+      llm_provider: llmProvider,      // gemini | groq | cohere | null
       llm_error: llmError,             // string con errores de los providers que fallaron
       rag: {
         docs_recuperados: docs.length,
@@ -4951,7 +4932,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
         llm: tLLMMs,
         total: tTotalMs
       },
-      version_bot: '5.14.0',
+      version_bot: '5.15.0',
       ts: new Date().toISOString()
     });
   } catch (e) {
@@ -4967,7 +4948,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.14.0',
+    version:   '5.15.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -5013,14 +4994,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.14.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.15.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.14.0',
+    version: '5.15.0',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
@@ -5035,7 +5016,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.14.0       ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.15.0       ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
