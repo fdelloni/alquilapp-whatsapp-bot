@@ -2346,7 +2346,7 @@ async function obtenerEmbedding(texto, taskType = 'RETRIEVAL_QUERY') {
   }
 }
 
-async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = null } = {}) {
+async function obtenerContextoRAG(pregunta, { k = 6, threshold = 0.25, fuente = null } = {}) {
   try {
     const emb = await obtenerEmbedding(pregunta, 'RETRIEVAL_QUERY');
     if (!emb) return '';
@@ -2392,7 +2392,7 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 //   - Cohere 429 (rate limit trial): espera 15s y reintenta UNA vez
 //   - Otros errores: rotan inmediatamente al siguiente proveedor
 //
-// Nota: DeepSeek fue removido en v5.16.0 porque estaba sin saldo (HTTP 402)
+// Nota: DeepSeek fue removido en v5.17.0 porque estaba sin saldo (HTTP 402)
 //       y su rol de 3er proveedor pasó a Groq (gratis y más rápido).
 //
 // Params:
@@ -4859,8 +4859,8 @@ app.post('/ai/qa-test', async (req, res) => {
       const tRagStart = Date.now();
       const { data, error } = await supabase.rpc('match_documentos_chatbot', {
         query_embedding: emb,
-        match_threshold: 0.35,
-        match_count: 4,
+        match_threshold: 0.25,
+        match_count: 6,
         p_fuente: null
       });
       tRagMs = Date.now() - tRagStart;
@@ -4956,7 +4956,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
         llm: tLLMMs,
         total: tTotalMs
       },
-      version_bot: '5.16.0',
+      version_bot: '5.17.0',
       ts: new Date().toISOString()
     });
   } catch (e) {
@@ -4972,7 +4972,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.16.0',
+    version:   '5.17.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -5001,7 +5001,8 @@ app.get('/', (req, res) => {
       'qa-test-endpoint',
       'llm-fallback-chain',
       'llm-4-providers-retry',
-      'prompt-v2-gradient-rag'
+      'prompt-v2-gradient-rag',
+      'rag-lower-threshold-k6'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
@@ -5019,14 +5020,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.16.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.17.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.16.0',
+    version: '5.17.0',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
@@ -5041,7 +5042,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.16.0       ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.17.0       ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
