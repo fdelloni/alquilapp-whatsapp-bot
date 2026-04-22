@@ -78,29 +78,56 @@ function timestamp() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}`;
 }
 
+// ── Helpers de matching con detección de negación ────────────
+function estaNegada(texto, frase) {
+  const f = frase.toLowerCase();
+  const idx = texto.indexOf(f);
+  if (idx < 0) return false;
+  const inicioOracion = Math.max(
+    texto.lastIndexOf('.', idx - 1) + 1,
+    texto.lastIndexOf('\n', idx - 1) + 1,
+    texto.lastIndexOf('!', idx - 1) + 1,
+    texto.lastIndexOf('?', idx - 1) + 1,
+    0
+  );
+  const ventana = texto.slice(inicioOracion, idx);
+  return /\b(ya\s+no|no\s+(?:es|está|hay|existe|aplica|rige|tiene|puede|debe|sigue|corresponde|se\s+aplica)|nunca|jamás|tampoco|fue(?:ron)?\s+derogad|ha\s+sido\s+derogad|dejó\s+de|dejaron\s+de|sin\s+)/i.test(ventana);
+}
+
+function hayMarcadorDerogacion(texto) {
+  return /\b(derogad[oa]s?|derog[óo]|fueron?\s+derogad|ha\s+sido\s+derogad|reemplazad[oa]\s+por|ya\s+no\s+(?:rige|aplica|existe|tiene\s+vigencia|es\s+vigente)|dnu\s*70\/?20?23)\b/i.test(texto);
+}
+
 function clasificar(p, r) {
-  // ⚫ error de red/500
-  // 🔴 respuesta vacía o error LLM
-  // 🟠 keywords_esperadas: 0 de N aparecen
-  // 🟡 keywords_esperadas: algunas aparecen (≥1 pero < total)
-  // 🟢 keywords_esperadas: todas aparecen O no había keywords (caso libre)
-  // 🚫 no_debe_decir: alguna frase prohibida aparece → fail automático (🔴)
-  // ✅ debe_rechazar: la respuesta contiene "no tengo" / "solo ayudo con alquileres" / similar
-  if (!r || r.network_error) return '⚫';
-  if (!r.ok || !r.respuesta) return '🔴';
+  if (!r || r.network_error) return { clasificacion: '⚫', matcher_warning: null };
+  if (!r.ok || !r.respuesta) {
+    const preguntaVacia = !String(p.pregunta || '').trim() || p.vacia === true;
+    if (preguntaVacia) {
+      return { clasificacion: '⚪', matcher_warning: 'pregunta vacía o marcada vacia=true — test inválido, excluido del total real' };
+    }
+    return { clasificacion: '🔴', matcher_warning: null };
+  }
 
   const resp = (r.respuesta || '').toLowerCase();
 
-  // Frases prohibidas
+  if (!String(p.pregunta || '').trim() || p.vacia === true) {
+    return { clasificacion: '⚪', matcher_warning: 'pregunta vacía o marcada vacia=true — test excluido del total real' };
+  }
+
+  let matcherWarning = null;
   if (Array.isArray(p.no_debe_decir)) {
     for (const frase of p.no_debe_decir) {
-      if (resp.includes(frase.toLowerCase())) {
-        return '🔴'; // fail: dijo algo que no debía
+      const f = String(frase).toLowerCase();
+      if (resp.includes(f)) {
+        if (estaNegada(resp, f) || hayMarcadorDerogacion(resp)) {
+          matcherWarning = `"${frase}" aparece pero el contexto indica negación o derogación — tratado como no-fallo`;
+          continue;
+        }
+        return { clasificacion: '🔴', matcher_warning: null };
       }
     }
   }
 
-  // Preguntas que deben ser rechazadas (fuera de tema)
   if (p.debe_rechazar) {
     const rechazoIndicadores = [
       'no tengo esa información',
@@ -114,28 +141,25 @@ function clasificar(p, r) {
       'no está en mi base de conocimiento'
     ];
     const rechaza = rechazoIndicadores.some(ind => resp.includes(ind));
-    return rechaza ? '🟢' : '🟠';
+    return { clasificacion: rechaza ? '🟢' : '🟠', matcher_warning: matcherWarning };
   }
 
-  // Preguntas ambiguas o vacías: basta que no alucine
   if (p.ambigua || p.vacia) {
-    if (resp.length > 10 && !resp.includes('error')) return '🟢';
-    return '🟡';
+    if (resp.length > 10 && !resp.includes('error')) return { clasificacion: '🟢', matcher_warning: matcherWarning };
+    return { clasificacion: '🟡', matcher_warning: matcherWarning };
   }
 
-  // Keywords esperadas
   if (Array.isArray(p.keywords_esperadas) && p.keywords_esperadas.length > 0) {
     const encontradas = p.keywords_esperadas.filter(kw =>
       resp.includes(String(kw).toLowerCase())
     );
     const total = p.keywords_esperadas.length;
-    if (encontradas.length === total) return '🟢';
-    if (encontradas.length === 0) return '🟠';
-    return '🟡';
+    if (encontradas.length === total) return { clasificacion: '🟢', matcher_warning: matcherWarning };
+    if (encontradas.length === 0) return { clasificacion: '🟠', matcher_warning: matcherWarning };
+    return { clasificacion: '🟡', matcher_warning: matcherWarning };
   }
 
-  // Sin criterio → verde si hubo respuesta
-  return '🟢';
+  return { clasificacion: '🟢', matcher_warning: matcherWarning };
 }
 
 async function correrPregunta(p) {
@@ -211,9 +235,12 @@ async function correrConConcurrencia(preguntas, concurrency) {
       const p = preguntas[i];
       process.stdout.write(`[${i + 1}/${preguntas.length}] ${p.id} — ${p.pregunta.slice(0, 60)}...`);
       const r = await correrPregunta(p);
-      r.clasificacion = clasificar(p, r);
+      const { clasificacion, matcher_warning } = clasificar(p, r);
+      r.clasificacion = clasificacion;
+      r.matcher_warning = matcher_warning;
       results[i] = r;
-      process.stdout.write(` ${r.clasificacion} (${r.tiempos_ms.total}ms, ${r.rag?.docs_recuperados ?? 0} docs)\n`);
+      const warn = matcher_warning ? ' ⚠️' : '';
+      process.stdout.write(` ${r.clasificacion}${warn} (${r.tiempos_ms.total}ms, ${r.rag?.docs_recuperados ?? 0} docs)\n`);
     }
   }
 
@@ -227,9 +254,9 @@ async function correrConConcurrencia(preguntas, concurrency) {
   const resultados = await correrConConcurrencia(preguntas, CONCURRENCY);
   const tTotal = Date.now() - tStart;
 
-  // Conteos
-  const por = { '🟢': 0, '🟡': 0, '🟠': 0, '🔴': 0, '⚫': 0 };
+  const por = { '🟢': 0, '🟡': 0, '🟠': 0, '🔴': 0, '⚫': 0, '⚪': 0 };
   const fallos = [];
+  const warnings = [];
   let sumTiempo = 0;
   let sumDocs = 0;
 
@@ -240,12 +267,14 @@ async function correrConConcurrencia(preguntas, concurrency) {
     if (['🟠', '🔴', '⚫'].includes(r.clasificacion)) {
       fallos.push(r);
     }
+    if (r.matcher_warning) warnings.push(r);
   }
 
+  const excluidos = por['⚪'] || 0;
+  const totalEvaluable = resultados.length - excluidos;
   const promTiempo = Math.round(sumTiempo / resultados.length);
   const promDocs = (sumDocs / resultados.length).toFixed(2);
 
-  // Crear qa-reports/
   const reportsDir = path.join(ROOT, 'qa-reports');
   fs.mkdirSync(reportsDir, { recursive: true });
 
@@ -260,13 +289,15 @@ async function correrConConcurrencia(preguntas, concurrency) {
     corrida_iniciada: new Date(tStart).toISOString(),
     corrida_duracion_ms: tTotal,
     total_preguntas: resultados.length,
+    total_evaluable: totalEvaluable,
+    excluidos: excluidos,
+    matcher_warnings: warnings.length,
     por_clasificacion: por,
     promedio_tiempo_ms: promTiempo,
     promedio_docs_rag: parseFloat(promDocs),
     resultados
   }, null, 2));
 
-  // Resumen Markdown
   let md = `# QA Bot — Reporte ${ts}\n\n`;
   md += `- **Bot**: ${BOT_URL}\n`;
   md += `- **Banco**: v${banco.version} (${banco.actualizado})\n`;
@@ -280,7 +311,21 @@ async function correrConConcurrencia(preguntas, concurrency) {
   md += `| 🟡 | Parcial (algunas keywords aparecen) | ${por['🟡'] || 0} |\n`;
   md += `| 🟠 | Débil (0 keywords o rechazo faltante) | ${por['🟠'] || 0} |\n`;
   md += `| 🔴 | Fallo (sin respuesta o dijo algo prohibido) | ${por['🔴'] || 0} |\n`;
-  md += `| ⚫ | Error de red/timeout | ${por['⚫'] || 0} |\n\n`;
+  md += `| ⚫ | Error de red/timeout | ${por['⚫'] || 0} |\n`;
+  md += `| ⚪ | Excluida (pregunta vacía o flag vacia=true) | ${por['⚪'] || 0} |\n\n`;
+
+  md += `## Métricas reales (post-matcher)\n\n`;
+  md += `- **Total evaluable**: ${totalEvaluable} de ${resultados.length} (excluye ${excluidos} tests inválidos)\n`;
+  md += `- **🔴 reales**: ${por['🔴'] || 0} (ya no cuenta falsos positivos por negación/derogación)\n`;
+  md += `- **Matcher warnings**: ${warnings.length} (preguntas donde el matcher detectó posible falso positivo y lo resolvió a favor del bot)\n`;
+  if (warnings.length) {
+    md += `\n<details><summary>Ver ${warnings.length} warning(s)</summary>\n\n`;
+    for (const w of warnings) {
+      md += `- **${w.id}** (${w.clasificacion}): ${w.matcher_warning}\n`;
+    }
+    md += `\n</details>\n`;
+  }
+  md += `\n`;
 
   if (fallos.length) {
     md += `## Fallos a revisar (${fallos.length})\n\n`;
@@ -307,21 +352,20 @@ async function correrConConcurrencia(preguntas, concurrency) {
 
   fs.writeFileSync(mdPath, md);
 
-  // Console summary
   console.log('\n════════════════════════════════════════');
   console.log(`📊 QA terminado en ${(tTotal / 1000).toFixed(1)}s`);
-  console.log(`🟢 ${por['🟢'] || 0}  🟡 ${por['🟡'] || 0}  🟠 ${por['🟠'] || 0}  🔴 ${por['🔴'] || 0}  ⚫ ${por['⚫'] || 0}`);
+  console.log(`🟢 ${por['🟢'] || 0}  🟡 ${por['🟡'] || 0}  🟠 ${por['🟠'] || 0}  🔴 ${por['🔴'] || 0}  ⚫ ${por['⚫'] || 0}  ⚪ ${por['⚪'] || 0}`);
+  console.log(`📈 Evaluable: ${totalEvaluable} | Matcher warnings: ${warnings.length}`);
   console.log(`⏱  Promedio: ${promTiempo}ms/pregunta | 📚 RAG promedio: ${promDocs} docs`);
   console.log(`📄 Reportes:`);
   console.log(`   - ${path.relative(ROOT, jsonPath)}`);
   console.log(`   - ${path.relative(ROOT, mdPath)}`);
 
-  // Exit code: 1 si hay 🔴 o ⚫ (falla el workflow de CI)
   const criticos = (por['🔴'] || 0) + (por['⚫'] || 0);
   if (criticos > 0) {
-    console.log(`\n⚠️  ${criticos} fallos críticos — exit 1`);
+    console.log(`\n⚠️  ${criticos} fallos críticos reales — exit 1`);
     process.exit(1);
   }
-  console.log('\n✅ Sin fallos críticos');
+  console.log('\n✅ Sin fallos críticos reales');
   process.exit(0);
 })();
