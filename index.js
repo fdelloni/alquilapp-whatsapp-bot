@@ -2316,19 +2316,20 @@ async function limpiarHistorial(telefono) {
 // ═══════════════════════════════════════════════════════════
 // RAG — Recuperar contexto de la base de conocimiento
 // (documentos_chatbot en Supabase, búsqueda por similitud con
-//  Gemini text-embedding-004 + RPC match_documentos_chatbot)
+//  Gemini gemini-embedding-001 truncado a 768 dims + RPC
+//  match_documentos_chatbot)
 // ═══════════════════════════════════════════════════════════
 async function obtenerEmbedding(texto, taskType = 'RETRIEVAL_QUERY') {
   try {
     const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'models/text-embedding-004',
           content: { parts: [{ text: String(texto).slice(0, 8000) }] },
-          taskType
+          taskType,
+          outputDimensionality: 768
         })
       }
     );
@@ -4586,13 +4587,13 @@ app.post('/ai/gemini', async (req, res) => {
 
 
 // ── Proxy Gemini Embeddings (para RAG de AlquilApp) ────────────
-// POST /ai/gemini-embed?model=text-embedding-004
-// Body: { "content": { "parts":[{"text":"..."}] }, "taskType":"RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY" }
+// POST /ai/gemini-embed?model=gemini-embedding-001
+// Body: { "content": { "parts":[{"text":"..."}] }, "taskType":"RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY", "outputDimensionality": 768 }
 // Response: { "embedding": { "values": [...] } }
 app.post('/ai/gemini-embed', async (req, res) => {
   if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
   if (!GEMINI_KEY) return res.status(500).json({ error: 'GEMINI_KEY no configurada' });
-  const model = (req.query.model || 'text-embedding-004').replace(/[^a-zA-Z0-9.-]/g, '');
+  const model = (req.query.model || 'gemini-embedding-001').replace(/[^a-zA-Z0-9.-]/g, '');
   try {
     const r = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${GEMINI_KEY}`,
@@ -4692,14 +4693,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.11.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.11.1 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.11.0',
+    version: '5.11.1',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
