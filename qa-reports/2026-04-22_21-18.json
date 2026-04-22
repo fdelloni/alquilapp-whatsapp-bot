@@ -1,0 +1,4055 @@
+{
+  "version_banco": "1.0",
+  "actualizado_banco": "2026-04-22",
+  "bot_url": "https://truthful-commitment-production.up.railway.app",
+  "corrida_iniciada": "2026-04-22T21:15:33.425Z",
+  "corrida_duracion_ms": 160202,
+  "total_preguntas": 70,
+  "total_evaluable": 69,
+  "excluidos": 1,
+  "matcher_warnings": 3,
+  "por_clasificacion": {
+    "🟢": 13,
+    "🟡": 23,
+    "🟠": 33,
+    "🔴": 0,
+    "⚫": 0,
+    "⚪": 1
+  },
+  "promedio_tiempo_ms": 4413,
+  "promedio_docs_rag": 3.4,
+  "resultados": [
+    {
+      "id": "loc-01",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto puede durar como mínimo un contrato de alquiler de vivienda?",
+      "keywords_esperadas": [
+        "libre",
+        "acuerdo",
+        "DNU",
+        "70",
+        "2 años"
+      ],
+      "no_debe_decir": [
+        "Ley 27.551 vigente",
+        "mínimo obligatorio"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Con el DNU 70/2023, no hay un plazo mínimo obligatorio para los contratos de alquiler de vivienda. Las partes pueden pactar libremente la duración que quieran.\n\nSi no se pacta un plazo específico, el Código Civil y Comercial establece supletoriamente una duración de dos años para la locación habitacional. Recordá que esto es orientación, para tu caso particular consultá con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.755,
+            "preview": " los contratos con destino a vivienda permanente, con o sin muebles, será de dos (2) años; y (iii) para los restantes destinos será de tres (3) años.\"\n**Qué cambió:** antes había u"
+          },
+          {
+            "orden": 2,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.6581,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6205,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.6152,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6035,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6018,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 199,
+        "rag": 1026,
+        "llm": 3130,
+        "total": 4355
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": "\"mínimo obligatorio\" aparece pero el contexto indica negación o derogación — tratado como no-fallo"
+    },
+    {
+      "id": "loc-02",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme 6 meses de depósito de garantía?",
+      "keywords_esperadas": [
+        "libre",
+        "acuerdo",
+        "DNU"
+      ],
+      "no_debe_decir": [
+        "máximo 1 mes"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, pueden. Después del DNU 70/2023, hay libertad contractual para el depósito en garantía.\n\nYa no rige el tope de un mes por año de contrato, así que el propietario puede pedir más de un mes o la cantidad que acuerden las partes, siempre que no sea abusivo. Para tu caso particular, lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Garantías de alquiler en Argentina — tipos, costos y cuándo elegir cada una",
+            "similarity": 0.745,
+            "preview": "se pide (post-DNU):** libertad contractual. Ya no rige el tope de 1 mes por año de locación ni la obligación de devolver al valor del último alquiler.\n**Devolución:** al final del "
+          },
+          {
+            "orden": 2,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Garantías de alquiler en Argentina — tipos, costos y cuándo elegir cada una",
+            "similarity": 0.7165,
+            "preview": "o (el banco inmoviliza fondos del inquilino como contragarantía). Poco usado en locaciones residenciales; más habitual en comerciales.\n\n## Cómo elegir\n**Si sos inquilino:**\n1. Preg"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.7154,
+            "preview": "lino: depósito mayor a un mes, valor llave, garantes con ingresos desproporcionados. **Al derogarse, esos puntos pasaron a ser de libre negociación.**\n**Aplicación hoy:** el propie"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 2 — Contratos modelo de locación",
+            "similarity": 0.7044,
+            "preview": "]\n- Alias: [ALIAS]\n- Titular: [NOMBRE Y CUIT]\nAlternativamente podrá utilizarse el sistema de cobro de AlquilApp\n(DEBIN / orden de cobro electrónica).\n**CLÁUSULA QUINTA — AJUSTE DE"
+          },
+          {
+            "orden": 5,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Garantías de alquiler en Argentina — tipos, costos y cuándo elegir cada una",
+            "similarity": 0.7038,
+            "preview": "nmueble, libre deuda, CDI).\n\n**Limitaciones:** muchos inquilinos no tienen acceso a alguien con propiedad libre de hipotecas.\n\n## 2. Seguro de caución\n**Qué es:** una aseguradora r"
+          },
+          {
+            "orden": 6,
+            "fuente": "tendencias_jurisprudenciales_alquilapp",
+            "tipo": "doctrina",
+            "titulo": "Tendencias jurisprudenciales consolidadas en alquileres (Argentina)",
+            "similarity": 0.699,
+            "preview": "aro** o sin informar, puede haber responsabilidad por Ley 24.240.\n- En locación comercial, el cobro al inquilino es práctica habitual y no se discute.\nLa jurisprudencia todavía se "
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 203,
+        "rag": 1034,
+        "llm": 3831,
+        "total": 5068
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-03",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿En qué moneda me pueden cobrar el alquiler?",
+      "keywords_esperadas": [
+        "dólares",
+        "moneda",
+        "acuerdo",
+        "DNU"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Te pueden cobrar el alquiler en pesos o en cualquier moneda extranjera. Eso se pacta libremente en el contrato.\n\nRecordá que esta es una orientación informativa. Para tu caso particular, lo mejor es que consultes a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6614,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 2,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6605,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 3,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.6538,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.6427,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6353,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.6293,
+            "preview": " los contratos con destino a vivienda permanente, con o sin muebles, será de dos (2) años; y (iii) para los restantes destinos será de tres (3) años.\"\n**Qué cambió:** antes había u"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 146,
+        "rag": 589,
+        "llm": 5870,
+        "total": 6605
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-04",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Cada cuánto puedo actualizar el canon?",
+      "keywords_esperadas": [
+        "acuerdo",
+        "índice",
+        "libre"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El DNU 70/2023 establece que la frecuencia de actualización del canon es de libre acuerdo entre las partes. No hay un plazo mínimo o máximo fijado por ley.\n\nTenés que ver lo que pactaron en el contrato de alquiler. Para casos específicos, siempre es mejor consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 153,
+        "rag": 513,
+        "llm": 1643,
+        "total": 2310
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-05",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Qué índices de ajuste puedo usar en un contrato nuevo?",
+      "keywords_esperadas": [
+        "ICL",
+        "IPC",
+        "Casa Propia",
+        "UVA"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para un contrato nuevo, podés usar cualquier índice de ajuste que acuerdes con el inquilino. El DNU 70/2023 derogó la obligatoriedad del ICL.\n\nLos más comunes son el IPC, ICL, Casa Propia, UVA o CER. También se puede pactar en dólares sin ajuste.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Índices de ajuste de alquileres en Argentina (IPC, ICL, Casa Propia, UVA, CER)",
+            "similarity": 0.7706,
+            "preview": "# Índices de ajuste de alquileres\n\nQué mide cada índice, dónde consultarlo y cómo calcular un ajuste paso a paso. Vigencia post-DNU 70/2023 (ratificado por Ley 27.742).\n\n---\n\n## Ma"
+          },
+          {
+            "orden": 2,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Índices de ajuste de alquileres en Argentina (IPC, ICL, Casa Propia, UVA, CER)",
+            "similarity": 0.7672,
+            "preview": "es **solo IPC**; UVA es IPC + ~3% anual. CER suele usarse en bonos y depósitos más que en locaciones, pero puede pactarse.\n\n---\n\n## Comparación rápida\n| Índice | Mide | Tendencia e"
+          },
+          {
+            "orden": 3,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Índices de ajuste de alquileres en Argentina (IPC, ICL, Casa Propia, UVA, CER)",
+            "similarity": 0.7614,
+            "preview": "hábil del trimestre iniciado y el primer día hábil del trimestre en curso. El nuevo canon entrará en vigencia desde el cuarto mes y así sucesivamente.\nPuntos a revisar antes de fir"
+          },
+          {
+            "orden": 4,
+            "fuente": "faq",
+            "tipo": "ajuste",
+            "titulo": "¿Cómo se calcula el ajuste del alquiler?",
+            "similarity": 0.7596,
+            "preview": "El ajuste del alquiler depende del índice y la periodicidad pactados en el contrato. Desde la entrada en vigencia del DNU 70/2023 (diciembre de 2023), ya no existe un índice obliga"
+          },
+          {
+            "orden": 5,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Índices de ajuste de alquileres en Argentina (IPC, ICL, Casa Propia, UVA, CER)",
+            "similarity": 0.7533,
+            "preview": "ón del RIPTE** (Remuneración Imponible Promedio de los Trabajadores Estables), 50% y 50%. Refleja mitad inflación, mitad aumento de salarios formales.\n**Quién lo publica:** **BCRA*"
+          },
+          {
+            "orden": 6,
+            "fuente": "faq",
+            "tipo": "ajuste",
+            "titulo": "¿Cómo se calcula el ajuste del alquiler?",
+            "similarity": 0.7493,
+            "preview": "rimer ajuste en mayo (4 meses después).\n3. Tomás el IPC acumulado de enero a abril (ej: 8%).\n4. Nuevo alquiler desde mayo: $300.000 × 1,08 = $324.000.\nEn AlquilApp el ajuste se cal"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 140,
+        "rag": 501,
+        "llm": 1755,
+        "total": 2396
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-06",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden cobrar comisión inmobiliaria a mí?",
+      "keywords_esperadas": [
+        "derogada",
+        "libre"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, te pueden cobrar comisión inmobiliaria.\n\nSegún el DNU 70/2023, la comisión es de libre acuerdo y la puede pagar cualquiera de las partes.\n\nRecordá que esta es una orientación informativa. Para tu caso particular, lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6691,
+            "preview": "eriores, se mantiene la fórmula de la Ley 27.551 o 27.737 según corresponda.\n\n## Servicios y expensas\n\n### ¿Quién paga los servicios? ¿Y las expensas?\nLa regla supletoria del CCyC "
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6463,
+            "preview": "Cobros**, con la propiedad que elegiste. Requiere que el inquilino tenga banco habilitado (casi todos lo están).\n\n### Mi inquilino no paga, ¿qué hago?\n1. Primero avisá por el chat "
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6085,
+            "preview": "e WhatsApp para consultas e interacción (integrado vía Twilio).\n- Integraciones con servicios externos (Gmail OAuth, IMAP genérico, API EPE Santa Fe).\n4. ROL DE ALQUILAPP EN LA REL"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6077,
+            "preview": ", con fuerte soporte probatorio.\n- Para actos que requieran firma digital cualificada (escrituras, poderes notariales, etc.), consultá a un escribano.\n8. LIMITACIÓN DE RESPONSABILI"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5974,
+            "preview": "Última actualización: abril de 2026.\n\nEn AlquilApp nos tomamos en serio la privacidad de los datos de los usuarios. Esta Política describe qué información recolectamos, cómo la usa"
+          },
+          {
+            "orden": 6,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.5838,
+            "preview": "en paralelo** — maximizás la presión sobre el deudor.\n3. **Conservá el contrato original** físico, firmado en todas las hojas, por si hay impugnación.\n**Para el locatario:**\n1. **A"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 147,
+        "rag": 212,
+        "llm": 1443,
+        "total": 1803
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-07",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Quiero irme antes del contrato, ¿qué penalidad pago?",
+      "keywords_esperadas": [
+        "1221",
+        "rescisión",
+        "6 meses",
+        "un mes y medio"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Podés rescindir el contrato desde el sexto mes, dando 30 días de aviso. La penalidad es de 1,5 meses de alquiler si te vas antes del primer año, o 1 mes de alquiler si lo hacés después del primer año.\n\nPara tu caso específico, lo mejor es que consultes a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 137,
+        "rag": 262,
+        "llm": 2057,
+        "total": 2456
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-08",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 2 meses, ¿qué tengo que hacer primero?",
+      "keywords_esperadas": [
+        "intimar",
+        "10 días",
+        "carta documento"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Tenés que intimar formalmente al inquilino por falta de pago. Dale un plazo para que abone la deuda. Para tu caso particular, siempre es mejor consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 162,
+        "rag": 162,
+        "llm": 3383,
+        "total": 3707
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-09",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Hay una filtración en el baño, ¿quién la arregla?",
+      "keywords_esperadas": [
+        "propietario",
+        "urgente",
+        "reparación"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El propietario (locador) es quien debe hacerse cargo de las reparaciones para mantener la propiedad en buen estado. Si es una reparación urgente y el propietario no responde, vos podés hacerla y reclamar el reembolso.\n\nRecordá que esta es una orientación informativa; para tu caso particular, consultá con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 2,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5822,
+            "preview": " no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley 25.326.\nLa AGENCIA DE ACCESO A LA INF"
+          },
+          {
+            "orden": 2,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.5716,
+            "preview": "do.\n- **Desalojo por falta de pago en CABA**: también está exceptuado, porque se considera procedimiento urgente.\n\n### Cómo funciona (nacional / CABA)\n1. El **reclamante** (locador"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 141,
+        "rag": 195,
+        "llm": 1851,
+        "total": 2187
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-10",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo subalquilar una habitación?",
+      "keywords_esperadas": [
+        "prohibida",
+        "salvo pacto",
+        "expreso"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, la sublocación está prohibida, a menos que tu contrato de alquiler lo permita expresamente. Revisá lo que dice tu contrato.\n\nPara casos puntuales, consultá con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 145,
+        "rag": 199,
+        "llm": 1461,
+        "total": 1805
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-01",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿La Ley 27.551 sigue vigente?",
+      "keywords_esperadas": [
+        "derogada",
+        "DNU",
+        "70"
+      ],
+      "no_debe_decir": [
+        "vigente",
+        "aplica"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, la Ley 27.551 fue derogada por el DNU 70/2023. Ya no está vigente.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_feature",
+            "tipo": "feature_producto",
+            "titulo": "Anclaje a Bitcoin vía OpenTimestamps — prueba criptográfica de no manipulación",
+            "similarity": 0.5998,
+            "preview": "umentos electrónicos; Ley 25.506 de firma digital). Ante un juicio, funciona como **prueba pericial** adicional, no como única fuente de verdad legal.\n### ¿Cuánto tarda una prueba "
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "firma",
+            "titulo": "Firma electrónica de contratos en AlquilApp",
+            "similarity": 0.5899,
+            "preview": " queda inmutable.\n\nEl banner \"Firmado electrónicamente\" aparece solo si hay evidencia real registrada en la tabla contrato_firmantes o contratos_hash.\nPodés descargar el dossier co"
+          },
+          {
+            "orden": 3,
+            "fuente": "ley_nacional",
+            "tipo": "legislacion_nacional",
+            "titulo": "Mediación previa obligatoria en juicios de alquiler — Ley 26.589 (Parte A: excepciones del art. 5 y regla práctica para desalojo y cobro)",
+            "similarity": 0.589,
+            "preview": "rocesos de EJECUCIÓN DE SENTENCIA la mediación es OPTATIVA para el reclamante. Esto es central para alquileres.\n\nREGLA PRÁCTICA SIMPLE PARA ALQUILERES\n- ¿Demanda DESALOJO (por venc"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_feature",
+            "tipo": "feature_producto",
+            "titulo": "Scoring crediticio bilateral de AlquilApp — escala 0-1000 para 3 roles",
+            "similarity": 0.5862,
+            "preview": "ilApp**, no reemplaza ni se integra con Veraz, BCRA, Nosis u otras centrales de riesgo financiero del mercado argentino.\n\n---\n\n## Referencias cruzadas\n- **Anclaje Bitcoin OpenTimes"
+          },
+          {
+            "orden": 5,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.5768,
+            "preview": "l historial de facturas queda guardado por propiedad y por servicio.\n\n### ¿Cómo cambio la titularidad de un servicio cuando empieza un alquiler nuevo?\nNo la cambia AlquilApp, eso e"
+          },
+          {
+            "orden": 6,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.5742,
+            "preview": "icial\nPara demandados con recursos limitados — lo designa el juzgado al inicio del juicio si el demandado lo solicita.\n\n---\n\n## Cuadro resumen de vías\n| Vía | Objetivo | Duración |"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 159,
+        "rag": 190,
+        "llm": 1228,
+        "total": 1577
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": "\"vigente\" aparece pero el contexto indica negación o derogación — tratado como no-fallo"
+    },
+    {
+      "id": "dnu-02",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambió con el DNU 70/2023?",
+      "keywords_esperadas": [
+        "plazo",
+        "libre",
+        "ajuste",
+        "depósito"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El DNU 70/2023 derogó la Ley 27.551, así que los alquileres ahora se rigen por el Código Civil y Comercial con las modificaciones de este DNU. Los cambios clave son:\n\n*   **Duración:** Se pacta libremente, no hay mínimo de 3 años.\n*   **Precio y ajustes:** Total libertad para acordar el precio, el índice de ajuste y la frecuencia (puede ser ICL, IPC, UVA, porcentaje fijo, etc.).\n*   **Moneda:** Se puede pactar en pesos o en moneda extranjera.\n*   **Depósito:** También es de libre acuerdo, sin tope.\n*   **Garantías:** El propietario puede pedir las que quiera: fiador, depósito, caución, o combinaciones.\n*   **Comisión inmobiliaria:** La pagan libremente las partes, no hay una regla fija.\n*   **Rescisión del inquilino:** Puede rescindir desde el 6° mes con 30 días de aviso. Si lo hace antes del año, la penalidad es 1,5 meses de alquiler; después del año, 1 mes.\n*   **Reparaciones urgentes:** Si el propietario no responde, el inquilino puede hacerlas y reclamar el reembolso, pero ya no puede descontarlas unilateralmente del alquiler (se derogó el art. 1204 bis del CCyC).\n*   **Sublocación:** Está prohibida, salvo que se pacte expresamente en el contrato.\n\nRecordá que esto es una orientación. Para tu situación puntual, siempre lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.731,
+            "preview": "# FAQs AlquilApp — Parte 2: Legalidad, administración y features\n\n> Segunda tanda de preguntas frecuentes con fraseo natural de usuario final.\n\n## Ley de alquileres y DNU 70/2023\n\n"
+          },
+          {
+            "orden": 2,
+            "fuente": "tendencias_jurisprudenciales_alquilapp",
+            "tipo": "doctrina",
+            "titulo": "Tendencias jurisprudenciales consolidadas en alquileres (Argentina)",
+            "similarity": 0.6962,
+            "preview": "5 días y luego va a juicio. La mediación previa suele resolver estos casos.\n\n---\n\n## 8. Reparaciones del inmueble y facultad del locatario tras DNU 70\n**Tendencia tras la derogació"
+          },
+          {
+            "orden": 3,
+            "fuente": "ley",
+            "tipo": "ley-27551",
+            "titulo": "Ley 27.551 de Alquileres (DEROGADA) — qué regía y qué la reemplazó",
+            "similarity": 0.6813,
+            "preview": "# Ley 27.551 de Alquileres — DEROGADA\n\n**Estado actual (abril 2026):** La Ley 27.551 fue DEROGADA por el DNU 70/2023 (art. 249), vigente desde el 29 de diciembre de 2023. La deroga"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6713,
+            "preview": "ara futuras acciones (compensación, rescisión por incumplimiento del locador, art. 1220 CCyC).\n\n### ¿Quién paga las reparaciones?\n\nDepende de qué sea:\n- **Roturas estructurales y v"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 2 — Obligaciones de locador y locatario (arts. 1200 a 1215)",
+            "similarity": 0.6476,
+            "preview": "léctrica fallante al inicio) son del propietario. Roturas por uso (foco quemado, canilla desgastada) son del inquilino.\n\n### Art. 1202 — Pagar mejoras\nEl locador debe pagar al loca"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.6426,
+            "preview": "# Plantillas legales — Parte 3: Actas y notificaciones\n\n> Modelos para documentar el inicio y el fin del contrato, así como notificaciones obligatorias que surgen durante la relaci"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 154,
+        "rag": 196,
+        "llm": 10176,
+        "total": 10526
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-03",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme varias garantías a la vez?",
+      "keywords_esperadas": [
+        "derogado",
+        "13",
+        "múltiples"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el propietario puede pedirte varias garantías a la vez.\n\nCon el DNU 70/2023, hay libertad contractual plena y no hay tope legal a la cantidad ni al tipo de garantías que te pueden exigir. Por ejemplo, te pueden pedir un fiador, un depósito y un seguro de caución.\n\nRecordá que esta es una orientación informativa. Para tu caso, lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.7092,
+            "preview": "abitualmente 1 a 3 meses de alquiler, se puede pactar más). Se devuelve al final del contrato deducidos daños y deudas. Libre pacto de monto y moneda.\n4. Recibos de sueldo o compro"
+          },
+          {
+            "orden": 2,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.7055,
+            "preview": "# ¿Qué garantías puede pedir un propietario en Argentina?\n\n**Régimen vigente (post-DNU 70/2023):** libertad contractual plena. Tras la derogación de la Ley 27.551 por el DNU 70/202"
+          },
+          {
+            "orden": 3,
+            "fuente": "tendencias_jurisprudenciales_alquilapp",
+            "tipo": "doctrina",
+            "titulo": "Tendencias jurisprudenciales consolidadas en alquileres (Argentina)",
+            "similarity": 0.6378,
+            "preview": "el cumplimiento de la intimación previa de 10 días. Sin intimación formal, la demanda de desalojo por falta de pago **se rechaza**, aunque haya deuda.\n**Criterios:**\n- La intimació"
+          },
+          {
+            "orden": 4,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.6226,
+            "preview": "jo para recuperar + ejecutivo para cobrar lo adeudado.\n- El ejecutivo también se puede usar contra el **garante** (si la deuda es exigible contra él).\n### Etapas del ejecutivo\n1. *"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.615,
+            "preview": "n por WhatsApp.\n- Preguntas legales que responde el RAG.\n- Recibir alertas de pagos recibidos en tiempo real.\n\nFIRMA ELECTRÓNICA CON ANCLAJE A BITCOIN\nCuando el propietario crea un"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.6005,
+            "preview": "a intimación; el resto se hace con un abogado.\n\n## Firma electrónica y validez legal\n\n### ¿Qué diferencia hay entre firma electrónica y firma digital?\n**Firma digital** requiere un"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 151,
+        "rag": 226,
+        "llm": 4490,
+        "total": 4867
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-04",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Se puede pactar en dólares?",
+      "keywords_esperadas": [
+        "sí",
+        "DNU",
+        "moneda extranjera"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, se puede pactar el alquiler en pesos o en moneda extranjera, es de libre acuerdo entre las partes.\n\nSiempre es bueno consultar a un abogado para tu caso particular.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 2,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.6294,
+            "preview": "do.\n- **Desalojo por falta de pago en CABA**: también está exceptuado, porque se considera procedimiento urgente.\n\n### Cómo funciona (nacional / CABA)\n1. El **reclamante** (locador"
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5896,
+            "preview": " no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley 25.326.\nLa AGENCIA DE ACCESO A LA INF"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 148,
+        "rag": 518,
+        "llm": 1130,
+        "total": 1796
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-01",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuánto se paga de sellado de un contrato de alquiler de vivienda en CABA?",
+      "keywords_esperadas": [
+        "exent",
+        "vivienda única"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.5888,
+            "preview": "- Llaves de portón de cochera: [N] juegos\n   - Tarjetas/controles de acceso al edificio: [N] unidades\n   - Códigos de alarma: [LOS RECIBE / NO APLICA]\n2. ESTADO GENERAL. Las partes"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 146,
+        "rag": 438,
+        "llm": 2414,
+        "total": 2998
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-02",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en provincia de Buenos Aires?",
+      "keywords_esperadas": [
+        "ARBA",
+        "1,2"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.6203,
+            "preview": " de una. **Fue derogada por el DNU 70/2023. No se aplica a contratos firmados después del 29/12/2023.**\n\n## Excepción — contratos anteriores al DNU 70\nLos contratos firmados entre "
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.6168,
+            "preview": " pesos o en moneda extranjera. El inquilino no puede exigir pagar en otra moneda distinta de la pactada.\n\n### ¿Qué índice tengo que usar para ajustar?\nLo que pacten las partes. Pue"
+          },
+          {
+            "orden": 3,
+            "fuente": "tendencias_jurisprudenciales_alquilapp",
+            "tipo": "doctrina",
+            "titulo": "Tendencias jurisprudenciales consolidadas en alquileres (Argentina)",
+            "similarity": 0.6021,
+            "preview": "o antes de dar curso a ciertos actos procesales.\n- En tribunales comerciales, hay obligación del juez de informar a la administración tributaria.\n\n---\n## Observaciones generales so"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 1 — Intimaciones y cartas documento",
+            "similarity": 0.5827,
+            "preview": "e locaciones.\n- Ley Bases 27.742 (julio 2024), que ratifica el DNU 70.\n- Las plantillas reflejan el régimen vigente a abril de 2026.\n\n## 8. Disclaimer\nLas plantillas son **modelos "
+          },
+          {
+            "orden": 5,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 1 — Intimaciones y cartas documento",
+            "similarity": 0.5675,
+            "preview": "reclamar los daños y perjuicios derivados.\n\nQueda usted notificado/a.\n\n[NOMBRE Y APELLIDO DEL LOCADOR]\nDNI [NÚMERO]\n```\n\n## 6. Mini-glosario operativo\n- **Intimación fehaciente** →"
+          },
+          {
+            "orden": 6,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Juicio de desalojo en Argentina — causales, etapas, plazos y costas",
+            "similarity": 0.5547,
+            "preview": "n mora por otra causa).\n2. **Mediación previa obligatoria** en jurisdicciones que la exigen (CABA — Ley 26.589 nacional). Ver doc 22c para el detalle.\n### Etapa 2 — Demanda\n1. El l"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 154,
+        "rag": 193,
+        "llm": 9036,
+        "total": 9383
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-03",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿En Córdoba hay exención de sellado?",
+      "keywords_esperadas": [
+        "vivienda única",
+        "exento",
+        "DGR"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 4,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Intimación fehaciente — medios, costos, procedimiento y contenido",
+            "similarity": 0.617,
+            "preview": "**. Si se envía a otro (por ejemplo, al real si es diferente), el destinatario puede alegar que no fue válidamente notificado y el juez dará la razón.\nSi el domicilio constituido c"
+          },
+          {
+            "orden": 2,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Intimación fehaciente — medios, costos, procedimiento y contenido",
+            "similarity": 0.6066,
+            "preview": " vence el jueves 20.\n- Si el último día es inhábil (fin de semana, feriado), se corre al primer día hábil siguiente.\n\n### Una intimación por cada tema\nCada reclamo amerita una inti"
+          },
+          {
+            "orden": 3,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Intimación fehaciente — medios, costos, procedimiento y contenido",
+            "similarity": 0.5961,
+            "preview": "hábil siguiente.\n7. **Redactar agresivo o con amenazas fuera de lo legal** → puede generar contra-demanda por daños morales.\n\n---\n\n## Consejo práctico\nPara la mayoría de los casos "
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.575,
+            "preview": "DETALLADA: heladera marca X modelo Y, cocina 4\n     hornallas, calefón X litros, aire acondicionado Split Y\n     frigorías, microondas, LED 42\", etc.]\n4. MEDIDORES DE SERVICIOS. Le"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 146,
+        "rag": 184,
+        "llm": 1848,
+        "total": 2178
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-04",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Quién paga el sellado, yo o el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "50",
+        "pacto"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El pago del sellado es por libre acuerdo entre las partes. Pueden pactar que lo pague el inquilino, vos, o dividirlo. Revisá qué dice el contrato al respecto.\n\nRecordá que esto es orientación; para tu caso específico, consultá un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 154,
+        "rag": 424,
+        "llm": 3916,
+        "total": 4494
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-05",
+      "bloque": "sellado_provincial",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto tengo para sellar el contrato?",
+      "keywords_esperadas": [
+        "15",
+        "días",
+        "corridos"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No hay un plazo legal para \"sellar\" el contrato. El acuerdo es válido una vez que lo firman las partes.\n\nCualquier \"sellado\" adicional depende de lo que hayan pactado o de impuestos provinciales, no de una obligación general. Recordá que para casos específicos, siempre es mejor consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 152,
+        "rag": 462,
+        "llm": 4232,
+        "total": 4846
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-06",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "Alquilo en Rosario, ¿dónde hago el sellado?",
+      "keywords_esperadas": [
+        "API",
+        "Santa Fe"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El sellado lo hacés a través de la API (Administración Provincial de Impuestos) de Santa Fe. Entrá a https://www.santafe.gov.ar/api para generar el VEP y pagar.\n\nTambién podés hacerlo en Cajeros Automáticos Link, Pago Fácil o Rapipago.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_provincial_alquilapp",
+            "tipo": "legislacion_local",
+            "titulo": "Alquileres en Santa Fe — sellado, corredores, procedimiento, Defensoría y EPE",
+            "similarity": 0.7756,
+            "preview": " el CCyC. Hay regulaciones tangenciales de habilitación comercial, impuestos y procedimiento.\n\n---\n\n## 2. Sellado de contratos de locación en Santa Fe\nRegulado por el **Código Fisc"
+          },
+          {
+            "orden": 2,
+            "fuente": "legislacion_provincial_alquilapp",
+            "tipo": "legislacion_local",
+            "titulo": "Alquileres en Santa Fe — sellado, corredores, procedimiento, Defensoría y EPE",
+            "similarity": 0.7433,
+            "preview": "# Alquileres en la Provincia de Santa Fe\n\nRige el marco nacional (CCyC + DNU 70/2023 + Ley 27.742). Esta guía cubre la normativa provincial propia: sellado, corredores inmobiliario"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_provincial_alquilapp",
+            "tipo": "legislacion_local",
+            "titulo": "Alquileres en la Provincia de Buenos Aires — sellado, corredores, procedimiento y Defensoría",
+            "similarity": 0.7304,
+            "preview": "tecedentes, juramento.\n- Régimen disciplinario y aranceles orientativos.\n\n**Contacto CUCIBA:** https://cociba.com.ar (y los colegios departamentales).\n### Defensoría del Pueblo de "
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_provincial_alquilapp",
+            "tipo": "legislacion_local",
+            "titulo": "Alquileres en Mendoza — sellado, corredores, procedimiento y Defensoría",
+            "similarity": 0.723,
+            "preview": "ual**. Administrado por la **Administración Tributaria Mendoza (ATM)**.\n\n**Alícuotas típicas (verificar Ley Impositiva vigente al año del contrato):**\n| Destino | Alícuota | Observ"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_provincial_alquilapp",
+            "tipo": "legislacion_local",
+            "titulo": "Alquileres en Mendoza — sellado, corredores, procedimiento y Defensoría",
+            "similarity": 0.7215,
+            "preview": "# Alquileres en la Provincia de Mendoza\n\nRige el marco nacional (CCyC + DNU 70/2023 + Ley 27.742). Esta guía cubre la normativa provincial mendocina: sellado, corredores inmobiliar"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_provincial_alquilapp",
+            "tipo": "legislacion_local",
+            "titulo": "Alquileres en Santa Fe — sellado, corredores, procedimiento, Defensoría y EPE",
+            "similarity": 0.7147,
+            "preview": "onquista)**: prácticas más dispersas, a veces 1 mes al locador.\n- **Alquiler temporario en costa de Rosario / turismo fluvial**: medio mes al locador.\n### Denuncia contra inmobilia"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 144,
+        "rag": 448,
+        "llm": 1667,
+        "total": 2259
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-07",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "En Mendoza, ¿cuánto se paga de sellado por un alquiler comercial?",
+      "keywords_esperadas": [
+        "1,5",
+        "ATM"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento. El sellado es un impuesto provincial y varía según la jurisdicción.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.569,
+            "preview": "- Llaves de portón de cochera: [N] juegos\n   - Tarjetas/controles de acceso al edificio: [N] unidades\n   - Códigos de alarma: [LOS RECIBE / NO APLICA]\n2. ESTADO GENERAL. Las partes"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 145,
+        "rag": 453,
+        "llm": 3456,
+        "total": 4054
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-01",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 3 meses, ¿cuánto tarda el desalojo?",
+      "keywords_esperadas": [
+        "intimación",
+        "10 días",
+        "meses"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El desalojo es un proceso judicial que puede demorar bastante, generalmente entre 6 meses y 2 años, dependiendo de la provincia y la complejidad del caso.\n\nAntes de iniciar la demanda, tenés que intimar al inquilino para que pague en un plazo no menor a 10 días hábiles. Para un caso así, lo mejor es que consultes a un abogado para que te asesore con los pasos legales.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 151,
+        "rag": 172,
+        "llm": 2934,
+        "total": 3257
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-02",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el desalojo exprés?",
+      "keywords_esperadas": [
+        "intruso",
+        "684"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Es un proceso judicial abreviado para que el propietario recupere la posesión del inmueble más rápido. Se aplica cuando el inquilino no paga o incumple alguna cláusula grave del contrato. Siempre es clave consultar a un abogado para tu caso.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 131,
+        "rag": 168,
+        "llm": 7350,
+        "total": 7649
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-03",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "El contrato venció y no se quieren ir, ¿qué hago?",
+      "keywords_esperadas": [
+        "vencimiento",
+        "intimación"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si el contrato venció y el inquilino no se va, tenés que iniciar un desalojo. Primero, mandale una carta documento intimándolo a que devuelva la propiedad. Si no lo hace, deberás iniciar una demanda judicial de desalojo. Siempre es mejor consultar con un abogado para tu caso.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 144,
+        "rag": 166,
+        "llm": 8470,
+        "total": 8780
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-04",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Necesito mediación previa antes de iniciar el desalojo?",
+      "keywords_esperadas": [
+        "26.589"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para un desalojo, la mediación previa es optativa para vos como reclamante, según el artículo 6 de la Ley 26.589 sobre juicios ejecutivos. Siempre es bueno consultar a un abogado para tu caso particular.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "ley_nacional",
+            "tipo": "legislacion_nacional",
+            "titulo": "Mediación previa obligatoria en juicios de alquiler — Ley 26.589 (Parte A: excepciones del art. 5 y regla práctica para desalojo y cobro)",
+            "similarity": 0.7479,
+            "preview": " mediación antes de presentar la demanda, bajo pena de inadmisibilidad del escrito.\n\nEXCEPCIONES DEL ART. 5 — CASOS EXCLUIDOS DE MEDIACIÓN OBLIGATORIA\nEl art. 5 de la Ley 26.589 en"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 138,
+        "rag": 466,
+        "llm": 3901,
+        "total": 4505
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-05",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es una carta documento?",
+      "keywords_esperadas": [
+        "fehaciente",
+        "correo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.594,
+            "preview": "ón impositiva. Emitís factura C (Monotributo) o la que corresponda a tu categoría. La exención se aplica al cálculo del impuesto, no a la facturación.\n**¿Qué pasa si no declaro?**\n"
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5914,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5671,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          },
+          {
+            "orden": 4,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.5647,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.5556,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.5446,
+            "preview": " los contratos con destino a vivienda permanente, con o sin muebles, será de dos (2) años; y (iii) para los restantes destinos será de tres (3) años.\"\n**Qué cambió:** antes había u"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 127,
+        "rag": 167,
+        "llm": 2131,
+        "total": 2426
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-01",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué requisitos debe tener un garante?",
+      "keywords_esperadas": [
+        "propiedad",
+        "inmueble",
+        "solvencia"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Un garante puede ser una persona con propiedad (fiador solidario con inmueble) o alguien con ingresos demostrables (fianza personal sin inmueble).\n\nEl propietario tiene libertad total para exigir el tipo y cantidad de garantías que necesite, incluso pedir un tipo específico como un garante propietario. Puede rechazar las que no le den seguridad.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.7279,
+            "preview": "abitualmente 1 a 3 meses de alquiler, se puede pactar más). Se devuelve al final del contrato deducidos daños y deudas. Libre pacto de monto y moneda.\n4. Recibos de sueldo o compro"
+          },
+          {
+            "orden": 2,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.7257,
+            "preview": "# ¿Qué garantías puede pedir un propietario en Argentina?\n\n**Régimen vigente (post-DNU 70/2023):** libertad contractual plena. Tras la derogación de la Ley 27.551 por el DNU 70/202"
+          },
+          {
+            "orden": 3,
+            "fuente": "tendencias_jurisprudenciales_alquilapp",
+            "tipo": "doctrina",
+            "titulo": "Tendencias jurisprudenciales consolidadas en alquileres (Argentina)",
+            "similarity": 0.6399,
+            "preview": "el cumplimiento de la intimación previa de 10 días. Sin intimación formal, la demanda de desalojo por falta de pago **se rechaza**, aunque haya deuda.\n**Criterios:**\n- La intimació"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.6374,
+            "preview": "n por WhatsApp.\n- Preguntas legales que responde el RAG.\n- Recibir alertas de pagos recibidos en tiempo real.\n\nFIRMA ELECTRÓNICA CON ANCLAJE A BITCOIN\nCuando el propietario crea un"
+          },
+          {
+            "orden": 5,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.6342,
+            "preview": "jo para recuperar + ejecutivo para cobrar lo adeudado.\n- El ejecutivo también se puede usar contra el **garante** (si la deuda es exigible contra él).\n### Etapas del ejecutivo\n1. *"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "firma",
+            "titulo": "Firma electrónica de contratos en AlquilApp",
+            "similarity": 0.6195,
+            "preview": "ún el art. 288 del Código Civil y Comercial y la Ley 25.506 de Firma Digital (que regula firma electrónica y firma digital como categorías distintas).\nCómo funciona:\n1. Desde \"Mis "
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 127,
+        "rag": 182,
+        "llm": 2690,
+        "total": 2999
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-02",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿El garante queda liberado si venden el inmueble de garantía?",
+      "keywords_esperadas": [
+        "preferencia"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento. Para un caso tan específico sobre la liberación de un garante por la venta del inmueble de garantía, lo mejor es que consultes con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5738,
+            "preview": ", con fuerte soporte probatorio.\n- Para actos que requieran firma digital cualificada (escrituras, poderes notariales, etc.), consultá a un escribano.\n8. LIMITACIÓN DE RESPONSABILI"
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.5695,
+            "preview": "Cobros**, con la propiedad que elegiste. Requiere que el inquilino tenga banco habilitado (casi todos lo están).\n\n### Mi inquilino no paga, ¿qué hago?\n1. Primero avisá por el chat "
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5539,
+            "preview": "e WhatsApp para consultas e interacción (integrado vía Twilio).\n- Integraciones con servicios externos (Gmail OAuth, IMAP genérico, API EPE Santa Fe).\n4. ROL DE ALQUILAPP EN LA REL"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.5423,
+            "preview": "eriores, se mantiene la fórmula de la Ley 27.551 o 27.737 según corresponda.\n\n## Servicios y expensas\n\n### ¿Quién paga los servicios? ¿Y las expensas?\nLa regla supletoria del CCyC "
+          },
+          {
+            "orden": 5,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.5305,
+            "preview": "en paralelo** — maximizás la presión sobre el deudor.\n3. **Conservá el contrato original** físico, firmado en todas las hojas, por si hay impugnación.\n**Para el locatario:**\n1. **A"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5281,
+            "preview": "Última actualización: abril de 2026.\n\nEn AlquilApp nos tomamos en serio la privacidad de los datos de los usuarios. Esta Política describe qué información recolectamos, cómo la usa"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 130,
+        "rag": 447,
+        "llm": 2676,
+        "total": 3253
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-03",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo demandar al garante directamente sin pasar por el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "excusión"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo información específica sobre si podés demandar al garante directamente sin incluir al inquilino. Si la acción se considera un juicio ejecutivo, la mediación previa es optativa para vos como reclamante, según el art. 6 de la Ley 26.589. Para casos particulares, siempre consultá con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "ley_nacional",
+            "tipo": "legislacion_nacional",
+            "titulo": "Mediación previa obligatoria en juicios de alquiler — Ley 26.589 (Parte A: excepciones del art. 5 y regla práctica para desalojo y cobro)",
+            "similarity": 0.6226,
+            "preview": " mediación antes de presentar la demanda, bajo pena de inadmisibilidad del escrito.\n\nEXCEPCIONES DEL ART. 5 — CASOS EXCLUIDOS DE MEDIACIÓN OBLIGATORIA\nEl art. 5 de la Ley 26.589 en"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 134,
+        "rag": 185,
+        "llm": 10438,
+        "total": 10757
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-04",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si se muere el fiador?",
+      "keywords_esperadas": [
+        "herederos",
+        "1594"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si el fiador fallece, tenés derecho a exigir al inquilino que presente una nueva garantía que sea satisfactoria. Esto es clave para mantener la seguridad del contrato de alquiler.\n\nRecordá que esta es una orientación informativa. Para tu caso particular, siempre es recomendable consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 178,
+        "rag": 473,
+        "llm": 5355,
+        "total": 6006
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-05",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un seguro de caución?",
+      "keywords_esperadas": [
+        "aseguradora",
+        "4",
+        "6"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Un seguro de caución es un tipo de garantía que podés pedirle al inquilino para el alquiler. Según el DNU 70/2023, las garantías son de libre acuerdo entre las partes y podés pedir fiador, depósito, caución o la combinación que quieras. No tengo una definición más detallada sobre su funcionamiento específico en mi base.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.5655,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5422,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.5392,
+            "preview": "ón impositiva. Emitís factura C (Monotributo) o la que corresponda a tu categoría. La exención se aplica al cálculo del impuesto, no a la facturación.\n**¿Qué pasa si no declaro?**\n"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5218,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.5196,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.5183,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 131,
+        "rag": 443,
+        "llm": 5675,
+        "total": 6249
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-06",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo exigir fiador + depósito + caución al mismo tiempo?",
+      "keywords_esperadas": [
+        "DNU",
+        "sí",
+        "derogó"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés. Con el DNU 70/2023 se derogó la limitación anterior y ahora tenés libertad contractual para exigir varias garantías combinadas, como fiador, depósito y seguro de caución al mismo tiempo.\n\nTené en cuenta que pedir tantas garantías podría reducir el número de inquilinos interesados. Recordá que esta es una orientación; para tu caso específico, lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Garantías de alquiler en Argentina — tipos, costos y cuándo elegir cada una",
+            "similarity": 0.7629,
+            "preview": "o (el banco inmoviliza fondos del inquilino como contragarantía). Poco usado en locaciones residenciales; más habitual en comerciales.\n\n## Cómo elegir\n**Si sos inquilino:**\n1. Preg"
+          },
+          {
+            "orden": 2,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Garantías de alquiler en Argentina — tipos, costos y cuándo elegir cada una",
+            "similarity": 0.7468,
+            "preview": "nmueble, libre deuda, CDI).\n\n**Limitaciones:** muchos inquilinos no tienen acceso a alguien con propiedad libre de hipotecas.\n\n## 2. Seguro de caución\n**Qué es:** una aseguradora r"
+          },
+          {
+            "orden": 3,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Garantías de alquiler en Argentina — tipos, costos y cuándo elegir cada una",
+            "similarity": 0.7238,
+            "preview": "se pide (post-DNU):** libertad contractual. Ya no rige el tope de 1 mes por año de locación ni la obligación de devolver al valor del último alquiler.\n**Devolución:** al final del "
+          },
+          {
+            "orden": 4,
+            "fuente": "codigo_civil_comercial",
+            "tipo": "legislacion_nacional",
+            "titulo": "Fianza en el CCyC — arts. 1574 a 1578 (aplicación a la garantía de locación)",
+            "similarity": 0.7131,
+            "preview": " pagador, sin beneficio de excusión ni división\"*.\n\n**Consecuencia:** el locador puede demandar directamente al fiador desde el primer incumplimiento.\n### Fianza simple\nEl fiador r"
+          },
+          {
+            "orden": 5,
+            "fuente": "codigo_civil_comercial",
+            "tipo": "legislacion_nacional",
+            "titulo": "Fianza en el CCyC — arts. 1574 a 1578 (aplicación a la garantía de locación)",
+            "similarity": 0.7122,
+            "preview": "gación del locatario (art. 1206 CCyC — devolver el inmueble en el estado recibido, salvo desgaste normal) y por ende entran en el objeto de la fianza.\n### ¿Qué pasa si el locador n"
+          },
+          {
+            "orden": 6,
+            "fuente": "datos_mercado_alquilapp",
+            "tipo": "datos_practicos",
+            "titulo": "Garantías de alquiler en Argentina — tipos, costos y cuándo elegir cada una",
+            "similarity": 0.7088,
+            "preview": "# Garantías de alquiler — tipos, costos y cómo elegir\n\nComparación de los mecanismos de garantía disponibles en Argentina, con costos aproximados, tiempos de trámite y cuándo convi"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 139,
+        "rag": 461,
+        "llm": 2733,
+        "total": 3333
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-01",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Se murió mi inquilino, ¿qué hago con el contrato?",
+      "keywords_esperadas": [
+        "1190",
+        "continuación",
+        "familiar"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "ley_nacional",
+            "tipo": "legislacion_nacional",
+            "titulo": "Mediación previa obligatoria en juicios de alquiler — Ley 26.589 (Parte A: excepciones del art. 5 y regla práctica para desalojo y cobro)",
+            "similarity": 0.597,
+            "preview": " mediación antes de presentar la demanda, bajo pena de inadmisibilidad del escrito.\n\nEXCEPCIONES DEL ART. 5 — CASOS EXCLUIDOS DE MEDIACIÓN OBLIGATORIA\nEl art. 5 de la Ley 26.589 en"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 131,
+        "rag": 311,
+        "llm": 1662,
+        "total": 2104
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-02",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo prohibirle al inquilino tener perro en el contrato?",
+      "keywords_esperadas": [
+        "DNU",
+        "1204 bis",
+        "sí"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés prohibirle tener perro. Es parte de la libertad de pactar las condiciones del contrato, bajo el principio de libre acuerdo.\n\nRecordá que esto es orientación; para tu caso puntual, lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 105,
+        "rag": 473,
+        "llm": 1651,
+        "total": 2229
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-03",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Soy extranjero sin DNI, ¿me pueden alquilar?",
+      "keywords_esperadas": [
+        "sí",
+        "pasaporte",
+        "garantía"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para registrarte en AlquilApp, necesitás un DNI, CUIL o CUIT. Sobre los requisitos de documentación para extranjeros sin DNI al momento de alquilar, no tengo esa información específica en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.6687,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          },
+          {
+            "orden": 2,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6681,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.6653,
+            "preview": " los contratos con destino a vivienda permanente, con o sin muebles, será de dos (2) años; y (iii) para los restantes destinos será de tres (3) años.\"\n**Qué cambió:** antes había u"
+          },
+          {
+            "orden": 4,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.6642,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6633,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.655,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 137,
+        "rag": 172,
+        "llm": 12809,
+        "total": 13118
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-04",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Me estoy divorciando y el inmueble alquilado es ganancial, ¿qué pasa con el contrato?",
+      "keywords_esperadas": [
+        "sigue",
+        "subroga"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento. AlquilApp es una herramienta tecnológica y no emite opinión legal vinculante sobre temas de derecho de familia.\n\nPara casos puntuales como este, lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6393,
+            "preview": ", con fuerte soporte probatorio.\n- Para actos que requieran firma digital cualificada (escrituras, poderes notariales, etc.), consultá a un escribano.\n8. LIMITACIÓN DE RESPONSABILI"
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6195,
+            "preview": "Cobros**, con la propiedad que elegiste. Requiere que el inquilino tenga banco habilitado (casi todos lo están).\n\n### Mi inquilino no paga, ¿qué hago?\n1. Primero avisá por el chat "
+          },
+          {
+            "orden": 3,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.614,
+            "preview": "eriores, se mantiene la fórmula de la Ley 27.551 o 27.737 según corresponda.\n\n## Servicios y expensas\n\n### ¿Quién paga los servicios? ¿Y las expensas?\nLa regla supletoria del CCyC "
+          },
+          {
+            "orden": 4,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.6133,
+            "preview": "en paralelo** — maximizás la presión sobre el deudor.\n3. **Conservá el contrato original** físico, firmado en todas las hojas, por si hay impugnación.\n**Para el locatario:**\n1. **A"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6112,
+            "preview": "e WhatsApp para consultas e interacción (integrado vía Twilio).\n- Integraciones con servicios externos (Gmail OAuth, IMAP genérico, API EPE Santa Fe).\n4. ROL DE ALQUILAPP EN LA REL"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5978,
+            "preview": "Última actualización: abril de 2026.\n\nEn AlquilApp nos tomamos en serio la privacidad de los datos de los usuarios. Esta Política describe qué información recolectamos, cómo la usa"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 111,
+        "rag": 299,
+        "llm": 4267,
+        "total": 4677
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-05",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Quiero vender el inmueble que tengo alquilado, ¿puedo echar al inquilino?",
+      "keywords_esperadas": [
+        "no",
+        "1189",
+        "continúa"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6761,
+            "preview": "Cobros**, con la propiedad que elegiste. Requiere que el inquilino tenga banco habilitado (casi todos lo están).\n\n### Mi inquilino no paga, ¿qué hago?\n1. Primero avisá por el chat "
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6281,
+            "preview": "eriores, se mantiene la fórmula de la Ley 27.551 o 27.737 según corresponda.\n\n## Servicios y expensas\n\n### ¿Quién paga los servicios? ¿Y las expensas?\nLa regla supletoria del CCyC "
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6,
+            "preview": ", con fuerte soporte probatorio.\n- Para actos que requieran firma digital cualificada (escrituras, poderes notariales, etc.), consultá a un escribano.\n8. LIMITACIÓN DE RESPONSABILI"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5991,
+            "preview": "Última actualización: abril de 2026.\n\nEn AlquilApp nos tomamos en serio la privacidad de los datos de los usuarios. Esta Política describe qué información recolectamos, cómo la usa"
+          },
+          {
+            "orden": 5,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.5911,
+            "preview": "en paralelo** — maximizás la presión sobre el deudor.\n3. **Conservá el contrato original** físico, firmado en todas las hojas, por si hay impugnación.\n**Para el locatario:**\n1. **A"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5882,
+            "preview": "e WhatsApp para consultas e interacción (integrado vía Twilio).\n- Integraciones con servicios externos (Gmail OAuth, IMAP genérico, API EPE Santa Fe).\n4. ROL DE ALQUILAPP EN LA REL"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 149,
+        "rag": 432,
+        "llm": 2463,
+        "total": 3044
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-06",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja y yo firmamos juntos el alquiler y nos separamos, ¿puedo irme sin pagar nada?",
+      "keywords_esperadas": [
+        "solidari",
+        "cesión"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si los dos firmaron el contrato, ambos son responsables del alquiler. No te podés ir sin pagar nada si rescindís el contrato antes de tiempo.\n\nPodés rescindir el alquiler después de los 6 meses, avisando con 30 días de anticipación. Si lo hacés antes del año de contrato, pagás una multa de 1,5 meses de alquiler. Después del año, la multa es de 1 mes.\n\nPara tu caso puntual, lo mejor es que consultes a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "ley_nacional",
+            "tipo": "legislacion_nacional",
+            "titulo": "Mediación previa obligatoria en juicios de alquiler — Ley 26.589 (Parte A: excepciones del art. 5 y regla práctica para desalojo y cobro)",
+            "similarity": 0.5968,
+            "preview": " mediación antes de presentar la demanda, bajo pena de inadmisibilidad del escrito.\n\nEXCEPCIONES DEL ART. 5 — CASOS EXCLUIDOS DE MEDIACIÓN OBLIGATORIA\nEl art. 5 de la Ley 26.589 en"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 148,
+        "rag": 169,
+        "llm": 4803,
+        "total": 5120
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-07",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo trabajar desde casa si mi contrato dice que es vivienda?",
+      "keywords_esperadas": [
+        "home office",
+        "destino",
+        "público"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "La documentación no especifica si podés trabajar desde casa si tu contrato es solo para vivienda.\n\nGeneralmente, si tu actividad no altera el uso residencial del inmueble ni genera movimiento de público, no suele haber problema. Revisá bien tu contrato para ver si hay alguna cláusula que lo prohíba expresamente o consultalo con el propietario.\n\nRecordá que esta es una orientación informativa. Para tu caso puntual, lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.5702,
+            "preview": "- Llaves de portón de cochera: [N] juegos\n   - Tarjetas/controles de acceso al edificio: [N] unidades\n   - Códigos de alarma: [LOS RECIBE / NO APLICA]\n2. ESTADO GENERAL. Las partes"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 128,
+        "rag": 445,
+        "llm": 8192,
+        "total": 8765
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-08",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Tengo un perro guía por mi discapacidad, ¿me pueden prohibir entrar con él?",
+      "keywords_esperadas": [
+        "no",
+        "discriminación",
+        "26.378"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, no te pueden prohibir la entrada con tu perro guía. La ley protege el derecho de las personas con discapacidad a acceder con sus perros de asistencia. No es una mascota común, es una herramienta necesaria para tu autonomía. Para casos puntuales, consultá un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 133,
+        "rag": 436,
+        "llm": 4475,
+        "total": 5044
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-09",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo alquilar por habitación?",
+      "keywords_esperadas": [
+        "parte",
+        "material",
+        "1187"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés alquilar por habitación. Cada alquiler de habitación sería un contrato de locación independiente, donde se pactan libremente las condiciones para ese espacio específico y el uso de las áreas comunes.\n\nRecordá que es una orientación. Para casos puntuales, siempre consultá con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 149,
+        "rag": 563,
+        "llm": 6860,
+        "total": 7572
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-10",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "El inmueble está en sucesión, ¿puedo seguir alquilando?",
+      "keywords_esperadas": [
+        "declaratoria",
+        "herederos"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento. Para un caso puntual como un inmueble en sucesión, lo mejor es que consultes con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 3,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6472,
+            "preview": "nes eximen el alquiler de hasta N inmuebles de vivienda propiedad de personas humanas. El umbral y condiciones varían.\n\n### 3.3. Convenio Multilateral\nSi el contribuyente tiene inm"
+          },
+          {
+            "orden": 2,
+            "fuente": "regimen_tributario_alquilapp",
+            "tipo": "legislacion_nacional",
+            "titulo": "Régimen tributario del locador — Monotributo, IVA, Ganancias, Bienes Personales y retenciones",
+            "similarity": 0.6308,
+            "preview": "locadores\n\n### Marco normativo\n- **Ley 24.977** (Monotributo).\n- Actualizaciones periódicas del **Régimen Simplificado para Pequeños Contribuyentes**.\n### Monotributo simplificado:"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.5949,
+            "preview": "te (valuados según reglas fiscales) supera este monto, paga Bienes Personales sobre el excedente.\n\n### 1.3. Deducción especial por vivienda habitación\nLa **casa habitación** del co"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 138,
+        "rag": 177,
+        "llm": 2538,
+        "total": 2853
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-01",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Qué es el score que aparece en AlquilApp?",
+      "keywords_esperadas": [
+        "0",
+        "1000",
+        "bilateral",
+        "comportamiento"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El score de AlquilApp es un puntaje entre 0 y 1000 que evalúa tu comportamiento en la plataforma. Para vos, como propietario, se calcula por tu tiempo de respuesta a reclamos, el porcentaje de reclamos resueltos satisfactoriamente, las calificaciones de los inquilinos y el cumplimiento de tus obligaciones.\n\nLo ves en tu dashboard, en tu perfil y también en un scorecard con el detalle de cómo se forma. Es un score interno de AlquilApp, no se comparte con Veraz ni otras entidades externas.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.8168,
+            "preview": " cierre de contratos, reclamos resueltos, firmas completadas y otras señales de comportamiento. No es un score bancario ni reemplaza el Veraz / Nosis.\n### ¿Cómo mejoro mi score?\n\nP"
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Inquilino",
+            "similarity": 0.7923,
+            "preview": " \"Scoring crediticio\": ve su puntaje actual, la historia de cambios y las reglas que lo afectan. Click en \"¿Cómo se calcula?\" abre el modal de reglas.\n- Link a Términos y Condicion"
+          },
+          {
+            "orden": 3,
+            "fuente": "alquilapp_feature",
+            "tipo": "feature_producto",
+            "titulo": "Scoring crediticio bilateral de AlquilApp — escala 0-1000 para 3 roles",
+            "similarity": 0.7796,
+            "preview": " del score\n\nPara que el score del propietario refleje su responsabilidad con los reclamos, AlquilApp provee un módulo de **tickets de mantenimiento**:\n**Accesos:**\n- Topbar del pan"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.7623,
+            "preview": "acidad, \"Eliminar cuenta\".\n- Diagrama WhatsApp Automatic Flow (WAF): visualización de qué tareas automatiza el bot.\n\nALQUIL.APP SCORE PARA PROPIETARIO\nPuntaje 0–1000 que surge de:\n"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.7462,
+            "preview": "a la propiedad y al servicio correspondiente. El propietario puede escanear facturas en nombre de cualquiera de sus propiedades.\n\nPANTALLA \"MI PERFIL\"\nMuestra y permite editar:\n- D"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_feature",
+            "tipo": "feature_producto",
+            "titulo": "Scoring crediticio bilateral de AlquilApp — escala 0-1000 para 3 roles",
+            "similarity": 0.7327,
+            "preview": "as las calificaciones **activas y liberadas** que recibió el usuario (de actos y de cierre).\n- Muestra estadísticas: promedio, cantidad, distribución.\n### Score de la contraparte\n-"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 121,
+        "rag": 192,
+        "llm": 5069,
+        "total": 5382
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-02",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo subo mi score?",
+      "keywords_esperadas": [
+        "pag",
+        "tiempo",
+        "calificaciones"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.5687,
+            "preview": "# Impuestos del propietario 2026 — Parte 1: Monotributo y Ganancias\n\n> Información fiscal vigente en abril de 2026 para propietarios que alquilan inmuebles en Argentina. Se incluye"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 120,
+        "rag": 439,
+        "llm": 1594,
+        "total": 2153
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-03",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Qué significa que mi contrato está anclado en Bitcoin?",
+      "keywords_esperadas": [
+        "hash",
+        "inmutab",
+        "blockchain",
+        "OpenTimestamps"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Significa que el precio del alquiler o sus ajustes están pactados para seguir el valor de Bitcoin. La ley permite que el precio y la moneda se definan por libre acuerdo entre las partes.\n\nPara casos específicos, siempre es mejor consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.5536,
+            "preview": " caldera, instalación de ascensor nuevo). Las paga el **propietario**, salvo pacto.\n\n## 5. Resumen del paquete fiscal 2026 del propietario de vivienda\n| Tributo | Propietario 1-2 v"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 143,
+        "rag": 191,
+        "llm": 1810,
+        "total": 2144
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-04",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo califico a mi inquilino?",
+      "keywords_esperadas": [
+        "estrellas",
+        "calificar"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "AlquilApp tiene un sistema de scoring bilateral (0-1000) que califica tanto a inquilinos como a propietarios, basado en tus interacciones y el historial del contrato. El score de tu inquilino se construye a partir de varios factores clave.\n\nLos principales elementos que pesan en la calificación de tu inquilino son: su historial financiero (pagos), la responsividad a tus comunicaciones, la calidad de su documentación y cómo resuelve los conflictos. Cualquier evento o calificación puede ser disputado en los 15 días posteriores a su generación.\n\nPara casos puntuales, siempre es bueno consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_feature",
+            "tipo": "feature_producto",
+            "titulo": "Scoring crediticio bilateral de AlquilApp — escala 0-1000 para 3 roles",
+            "similarity": 0.7084,
+            "preview": "anciera | 35% |\n| Responsividad | 20% |\n| Documentación | 15% |\n| Resolución de conflictos | 15% |\n| Reputación dual (propietario + inquilino) | 15% |\nEl administrador **solo puede"
+          },
+          {
+            "orden": 2,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.6539,
+            "preview": "# Glosario de términos de alquileres\n\nDefiniciones simples de los términos que más confusión generan en un contrato de locación en Argentina. Todas las referencias legales son al *"
+          },
+          {
+            "orden": 3,
+            "fuente": "regimen_tributario_alquilapp",
+            "tipo": "legislacion_nacional",
+            "titulo": "Régimen tributario del locador — Monotributo, IVA, Ganancias, Bienes Personales y retenciones",
+            "similarity": 0.6403,
+            "preview": "--\n\n## 5. Retenciones — RG ARCA 830 (ex AFIP 830)\n\n### Marco normativo\n- **RG 830/2000 y modificatorias** (hoy ARCA).\n- **RG 4622** y actualizaciones.\n### Retención de Ganancias po"
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.6383,
+            "preview": ": qué impuestos paga un propietario en 2026\n\nEl propietario que alquila un inmueble en Argentina puede quedar alcanzado por estos tributos nacionales:\n- **Monotributo** — si su act"
+          },
+          {
+            "orden": 5,
+            "fuente": "regimen_tributario_alquilapp",
+            "tipo": "legislacion_nacional",
+            "titulo": "Régimen tributario del locador — Monotributo, IVA, Ganancias, Bienes Personales y retenciones",
+            "similarity": 0.6354,
+            "preview": "IBP).\n\n### Qué se grava\nEl **patrimonio** del contribuyente al 31 de diciembre de cada año, incluyendo inmuebles (propios, no alquilados de terceros).\n**Base para inmuebles:** mayo"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6351,
+            "preview": ") → si el locatario es consumidor final o monotributista.\n- Factura C → si el locador es monotributista.\n\n### 2.3. Alquileres temporarios y turísticos\nEl alquiler temporario con fi"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 136,
+        "rag": 207,
+        "llm": 10930,
+        "total": 11273
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-05",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo creo un reclamo de mantenimiento?",
+      "keywords_esperadas": [
+        "ticket",
+        "reclamo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 2,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.599,
+            "preview": " no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley 25.326.\nLa AGENCIA DE ACCESO A LA INF"
+          },
+          {
+            "orden": 2,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.5929,
+            "preview": "do.\n- **Desalojo por falta de pago en CABA**: también está exceptuado, porque se considera procedimiento urgente.\n\n### Cómo funciona (nacional / CABA)\n1. El **reclamante** (locador"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 134,
+        "rag": 460,
+        "llm": 6274,
+        "total": 6868
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-06",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Cuánto cuesta AlquilApp?",
+      "keywords_esperadas": [
+        "gratuit",
+        "gratis"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "firma",
+            "titulo": "Firma electrónica de contratos en AlquilApp",
+            "similarity": 0.722,
+            "preview": "AlquilApp ofrece firma electrónica de contratos con evidencia legal reforzada. La firma electrónica tiene validez según el art. 288 del Código Civil y Comercial y la Ley 25.506 de "
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.7127,
+            "preview": "o a las partes correspondientes).\n- AlquilApp puede remover contenido que infrinja estos Términos, sin preaviso, y suspender cuentas con uso indebido.\n7. FIRMA ELECTRÓNICA Y ANCLAJ"
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Inquilino",
+            "similarity": 0.7118,
+            "preview": "errarse un reclamo, el inquilino puede calificar al propietario (👍 / ⚪ / 👎), lo que alimenta el scoring del propietario.\n\nPANTALLA \"ASISTENTE LEGAL\"\nChatbot interno con la base d"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.7098,
+            "preview": "También podés presentar reclamos ante la Agencia de Acceso a la Información Pública (AAIP), autoridad de control argentina: www.argentina.gob.ar/aaip.\n9. COOKIES\nUsamos cookies y t"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "contrato",
+            "titulo": "Cómo crear un contrato de alquiler en AlquilApp",
+            "similarity": 0.706,
+            "preview": "En AlquilApp podés generar el contrato de alquiler desde la sección \"Mis Contratos\" del panel de propietario.\n\nPasos:\n1. Iniciá sesión en alquil.app con tu cuenta de propietario.\n2"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.6913,
+            "preview": "a intimación; el resto se hace con un abogado.\n\n## Firma electrónica y validez legal\n\n### ¿Qué diferencia hay entre firma electrónica y firma digital?\n**Firma digital** requiere un"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 143,
+        "rag": 506,
+        "llm": 1916,
+        "total": 2565
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-07",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo firmo el contrato electrónicamente?",
+      "keywords_esperadas": [
+        "firma",
+        "electrónica"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para firmar el contrato electrónicamente, recibís un link nominativo, confirmás tu identidad y marcás una casilla de aceptación. Luego, el sistema calcula el hash SHA-256 del contrato firmado y lo ancla a la blockchain de Bitcoin vía OpenTimestamps. Es orientación informativa, para casos puntuales consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Inquilino",
+            "similarity": 0.7388,
+            "preview": "cimiento.\n- Hacer consultas legales sobre su contrato usando el RAG (mismo que el Asistente Legal del sitio).\n\nFIRMA ELECTRÓNICA CON ANCLAJE A BITCOIN\nCuando el propietario le enví"
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.7262,
+            "preview": "CyCN art. 1182 + DNU 70/2023).\n- PH / Dúplex (CCyCN art. 2037 + Ley 13.512 + DNU 70/2023).\n- Cochera / Garaje.\n- Temporal / Turístico (hasta 3 meses).\nCada plantilla incluye sus cl"
+          },
+          {
+            "orden": 3,
+            "fuente": "plantilla",
+            "tipo": "contrato-locacion",
+            "titulo": "Plantilla base de contrato de locación con destino habitacional (Argentina, 2026)",
+            "similarity": 0.7213,
+            "preview": "n a los Tribunales Ordinarios de [JURISDICCIÓN], renunciando a cualquier otro fuero.\n\nSe firman [N] ejemplares de un mismo tenor en [CIUDAD], [FECHA].\nEL LOCADOR                   "
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.7024,
+            "preview": "trato en tiempo real (\"pendiente de firma\", \"firmado\", \"vencido\").\n\n### ¿Puedo firmar con más de una persona del lado del propietario o del inquilino?\nSí. La función multi-firmante"
+          },
+          {
+            "orden": 5,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.7012,
+            "preview": "email y te llega un link para resetearla. Si no te llega, revisá la carpeta de spam.\n\n### ¿Cómo cambio mi rol de inquilino a propietario (o al revés)?\nDesde tu perfil, sección \"Dat"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 2 — Contratos modelo de locación",
+            "similarity": 0.6865,
+            "preview": "as a cargo del/la Locador/a\n(regla supletoria art. 1209 CCyC). Ante duda sobre la naturaleza de\nun rubro, se aplicará el criterio del administrador/a.\n**CLÁUSULA — REPRESENTACIÓN E"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 138,
+        "rag": 494,
+        "llm": 6059,
+        "total": 6691
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-08",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "Quiero pagar el alquiler, ¿cómo hago?",
+      "keywords_esperadas": [
+        "cobro"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.6463,
+            "preview": "# Impuestos del propietario 2026 — Parte 1: Monotributo y Ganancias\n\n> Información fiscal vigente en abril de 2026 para propietarios que alquilan inmuebles en Argentina. Se incluye"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 131,
+        "rag": 462,
+        "llm": 955,
+        "total": 1548
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-09",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo invito a un administrador a mi cuenta?",
+      "keywords_esperadas": [
+        "delega",
+        "invitar",
+        "admin"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.5279,
+            "preview": "# Impuestos del propietario 2026 — Parte 1: Monotributo y Ganancias\n\n> Información fiscal vigente en abril de 2026 para propietarios que alquilan inmuebles en Argentina. Se incluye"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 135,
+        "rag": 225,
+        "llm": 983,
+        "total": 1343
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-10",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo descargo el dossier de un contrato?",
+      "keywords_esperadas": [
+        "PDF",
+        "dossier",
+        "descargar"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.6441,
+            "preview": " de una. **Fue derogada por el DNU 70/2023. No se aplica a contratos firmados después del 29/12/2023.**\n\n## Excepción — contratos anteriores al DNU 70\nLos contratos firmados entre "
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 1 — Intimaciones y cartas documento",
+            "similarity": 0.6339,
+            "preview": "e locaciones.\n- Ley Bases 27.742 (julio 2024), que ratifica el DNU 70.\n- Las plantillas reflejan el régimen vigente a abril de 2026.\n\n## 8. Disclaimer\nLas plantillas son **modelos "
+          },
+          {
+            "orden": 3,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 1 — Intimaciones y cartas documento",
+            "similarity": 0.6337,
+            "preview": "reclamar los daños y perjuicios derivados.\n\nQueda usted notificado/a.\n\n[NOMBRE Y APELLIDO DEL LOCADOR]\nDNI [NÚMERO]\n```\n\n## 6. Mini-glosario operativo\n- **Intimación fehaciente** →"
+          },
+          {
+            "orden": 4,
+            "fuente": "tendencias_jurisprudenciales_alquilapp",
+            "tipo": "doctrina",
+            "titulo": "Tendencias jurisprudenciales consolidadas en alquileres (Argentina)",
+            "similarity": 0.6305,
+            "preview": "o antes de dar curso a ciertos actos procesales.\n- En tribunales comerciales, hay obligación del juez de informar a la administración tributaria.\n\n---\n## Observaciones generales so"
+          },
+          {
+            "orden": 5,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.6243,
+            "preview": " pesos o en moneda extranjera. El inquilino no puede exigir pagar en otra moneda distinta de la pactada.\n\n### ¿Qué índice tengo que usar para ajustar?\nLo que pacten las partes. Pue"
+          },
+          {
+            "orden": 6,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Juicio de desalojo en Argentina — causales, etapas, plazos y costas",
+            "similarity": 0.6063,
+            "preview": "n mora por otra causa).\n2. **Mediación previa obligatoria** en jurisdicciones que la exigen (CABA — Ley 26.589 nacional). Ver doc 22c para el detalle.\n### Etapa 2 — Demanda\n1. El l"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 144,
+        "rag": 194,
+        "llm": 7449,
+        "total": 7787
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-01",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que estar en Monotributo para alquilar mi departamento?",
+      "keywords_esperadas": [
+        "opción",
+        "Monotributo",
+        "Responsable"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, la documentación no dice que sea un requisito obligatorio estar en Monotributo para alquilar tu departamento.\n\nExiste un \"régimen Monotributo propietarios\" que se menciona en relación con beneficios fiscales, como la exención de Ganancias para 2026, y el registro de contratos ante ARCA.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "faq",
+            "tipo": "registro-afip",
+            "titulo": "¿Cómo se registra un contrato de alquiler en AFIP?",
+            "similarity": 0.7242,
+            "preview": "ran en este régimen (tienen su propio registro).\n- Contratos por menos de 3 meses (por ejemplo, alquileres temporarios de turismo) no están obligados.\nCómo registrar:\n1. Ingresá a "
+          },
+          {
+            "orden": 2,
+            "fuente": "casos_especiales_alquileres",
+            "tipo": "casos_practicos",
+            "titulo": "Casos especiales — mascotas, locatarios extranjeros, accesibilidad y home office",
+            "similarity": 0.6916,
+            "preview": "ía) requieren **consentimiento del locador**. La negativa del locador **no puede ser discriminatoria** pero sí puede fundarse en la no reversibilidad.\n### Prohibición de discrimina"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 3 — Extinción del contrato y síntesis del DNU 70/2023 (arts. 1216 a 1226)",
+            "similarity": 0.6823,
+            "preview": " 3. Síntesis de cambios clave del DNU 70/2023\n\nEstos son los puntos centrales para responder \"¿qué cambió con la derogación de la ley de alquileres?\":\n1. **Plazo libre** — ya no ha"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 2 — Contratos modelo de locación",
+            "similarity": 0.682,
+            "preview": "as a cargo del/la Locador/a\n(regla supletoria art. 1209 CCyC). Ante duda sobre la naturaleza de\nun rubro, se aplicará el criterio del administrador/a.\n**CLÁUSULA — REPRESENTACIÓN E"
+          },
+          {
+            "orden": 5,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.6724,
+            "preview": "no extingue** la locación (art. 1189 CCyC). El comprador debe respetar el contrato hasta su vencimiento y pasa automáticamente a ser el nuevo locador.\n### Soy inquilino y el propie"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.6705,
+            "preview": " nuevo: **libertad total** de plazo, moneda, índice de ajuste, frecuencia de ajuste, depósito y garantías.\n\n### ¿Cuánto dura ahora mínimo un alquiler?\nNo hay mínimo obligatorio. La"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 147,
+        "rag": 197,
+        "llm": 4804,
+        "total": 5148
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-02",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler de vivienda paga IVA?",
+      "keywords_esperadas": [
+        "exento",
+        "art",
+        "7"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, el alquiler de inmuebles con destino a vivienda está exento de IVA. Esto es por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA).\n\nSiempre es una orientación, para casos puntuales lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.7658,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 2,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.7198,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 3,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.6631,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.637,
+            "preview": "ón impositiva. Emitís factura C (Monotributo) o la que corresponda a tu categoría. La exención se aplica al cálculo del impuesto, no a la facturación.\n**¿Qué pasa si no declaro?**\n"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.6154,
+            "preview": " los contratos con destino a vivienda permanente, con o sin muebles, será de dos (2) años; y (iii) para los restantes destinos será de tres (3) años.\"\n**Qué cambió:** antes había u"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.6116,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 105,
+        "rag": 206,
+        "llm": 2711,
+        "total": 3023
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-03",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el RELI?",
+      "keywords_esperadas": [
+        "registro",
+        "locaciones",
+        "ARCA",
+        "AFIP"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento. La documentación solo menciona que se realiza un \"trato en RELI a pedido del propietario\", pero no define qué es.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.6502,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          },
+          {
+            "orden": 2,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.5901,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.5859,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.5816,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5774,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.5757,
+            "preview": "ón impositiva. Emitís factura C (Monotributo) o la que corresponda a tu categoría. La exención se aplica al cálculo del impuesto, no a la facturación.\n**¿Qué pasa si no declaro?**\n"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 172,
+        "rag": 190,
+        "llm": 1700,
+        "total": 2062
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-04",
+      "bloque": "impuestos",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo deducir el alquiler del impuesto a las ganancias?",
+      "keywords_esperadas": [
+        "40",
+        "RELI",
+        "registrado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Hasta el ejercicio fiscal 2025, podías deducir el 40% del alquiler de tu Impuesto a las Ganancias.\n\nA partir de 2026, con la exención para propietarios, el tratamiento para alquileres de vivienda cambia. Se recomienda consultar a un contador para tu caso particular.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.7211,
+            "preview": "xención de Ganancias 2026, Monotributo, etc.) subsiste por disposición de ARCA. Cada jurisdicción puede además mantener su propio registro provincial.\n**En AlquilApp:** la platafor"
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.6372,
+            "preview": "NÚMERO], la\nsuma de [MONEDA] [MONTO EN NÚMEROS Y LETRAS] en concepto de\nalquiler del mes de [MES-AÑO] correspondiente al inmueble sito en\n[DIRECCIÓN].\nForma de pago: [TRANSFERENCIA"
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.6286,
+            "preview": "ail/IMAP): el bot escanea facturas recibidas por mail.\n  3. Integraciones directas donde existen (ej. portal EPE Santa Fe con credenciales guardadas).\nPanel \"Expensas\" (para propie"
+          },
+          {
+            "orden": 4,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.6249,
+            "preview": "abitualmente 1 a 3 meses de alquiler, se puede pactar más). Se devuelve al final del contrato deducidos daños y deudas. Libre pacto de monto y moneda.\n4. Recibos de sueldo o compro"
+          },
+          {
+            "orden": 5,
+            "fuente": "faq",
+            "tipo": "garantias",
+            "titulo": "¿Qué garantías puede pedir un propietario en Argentina?",
+            "similarity": 0.6196,
+            "preview": "# ¿Qué garantías puede pedir un propietario en Argentina?\n\n**Régimen vigente (post-DNU 70/2023):** libertad contractual plena. Tras la derogación de la Ley 27.551 por el DNU 70/202"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Inquilino",
+            "similarity": 0.6141,
+            "preview": "AL\n- Dashboard (vista general de la cuenta, es la pantalla de inicio).\n- Alertas (centro de notificaciones con badge que indica cuántas hay sin leer).\nGESTIÓN\n- Propiedades (renomb"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 129,
+        "rag": 456,
+        "llm": 6964,
+        "total": 7550
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-05",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Me pueden retener ganancias al pagarme el alquiler?",
+      "keywords_esperadas": [
+        "830",
+        "6",
+        "28"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Desde el 1° de enero de 2026, el alquiler de vivienda está exento del Impuesto a las Ganancias. Por eso, no deberían retenerte ganancias al pagarte el alquiler de una vivienda. Igual, para tu caso particular, siempre lo mejor es consultar con un contador matriculado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.6975,
+            "preview": "# Impuestos del propietario 2026 — Parte 1: Monotributo y Ganancias\n\n> Información fiscal vigente en abril de 2026 para propietarios que alquilan inmuebles en Argentina. Se incluye"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 140,
+        "rag": 178,
+        "llm": 2582,
+        "total": 2900
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-06",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler comercial lleva IVA?",
+      "keywords_esperadas": [
+        "21",
+        "gravado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el alquiler comercial lleva IVA. Está gravado al 21% si el propietario es responsable inscripto. Si sos monotributista, no cobrás IVA.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.7561,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 2,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.702,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6886,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.6331,
+            "preview": "ón impositiva. Emitís factura C (Monotributo) o la que corresponda a tu categoría. La exención se aplica al cálculo del impuesto, no a la facturación.\n**¿Qué pasa si no declaro?**\n"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.598,
+            "preview": " los contratos con destino a vivienda permanente, con o sin muebles, será de dos (2) años; y (iii) para los restantes destinos será de tres (3) años.\"\n**Qué cambió:** antes había u"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5921,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 127,
+        "rag": 188,
+        "llm": 2444,
+        "total": 2760
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-07",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Pago Bienes Personales por un inmueble que alquilo?",
+      "keywords_esperadas": [
+        "sí",
+        "patrimonio",
+        "mínimo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, pagás Bienes Personales por el inmueble que alquilás. Es una de las cargas que recaen sobre el propietario.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.768,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 2,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.7276,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 3,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.6796,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.6635,
+            "preview": "ón impositiva. Emitís factura C (Monotributo) o la que corresponda a tu categoría. La exención se aplica al cálculo del impuesto, no a la facturación.\n**¿Qué pasa si no declaro?**\n"
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.6404,
+            "preview": "trato en RELI a pedido del propietario.\n\nAlquilApp no vende tus datos ni los cede a terceros con fines comerciales o publicitarios ajenos al servicio.\nLos servidores de algunos pro"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6403,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 131,
+        "rag": 489,
+        "llm": 1815,
+        "total": 2435
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-01",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿La cláusula que prohíbe tener chicos es válida?",
+      "keywords_esperadas": [
+        "no",
+        "discriminatori",
+        "niño"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.6035,
+            "preview": "o a las partes correspondientes).\n- AlquilApp puede remover contenido que infrinja estos Términos, sin preaviso, y suspender cuentas con uso indebido.\n7. FIRMA ELECTRÓNICA Y ANCLAJ"
+          },
+          {
+            "orden": 2,
+            "fuente": "sitio",
+            "tipo": "contrato",
+            "titulo": "Cómo crear un contrato de alquiler en AlquilApp",
+            "similarity": 0.6018,
+            "preview": "En AlquilApp podés generar el contrato de alquiler desde la sección \"Mis Contratos\" del panel de propietario.\n\nPasos:\n1. Iniciá sesión en alquil.app con tu cuenta de propietario.\n2"
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "firma",
+            "titulo": "Firma electrónica de contratos en AlquilApp",
+            "similarity": 0.5994,
+            "preview": "AlquilApp ofrece firma electrónica de contratos con evidencia legal reforzada. La firma electrónica tiene validez según el art. 288 del Código Civil y Comercial y la Ley 25.506 de "
+          },
+          {
+            "orden": 4,
+            "fuente": "tendencias_jurisprudenciales_alquilapp",
+            "tipo": "doctrina",
+            "titulo": "Tendencias jurisprudenciales consolidadas en alquileres (Argentina)",
+            "similarity": 0.5961,
+            "preview": "el cumplimiento de la intimación previa de 10 días. Sin intimación formal, la demanda de desalojo por falta de pago **se rechaza**, aunque haya deuda.\n**Criterios:**\n- La intimació"
+          },
+          {
+            "orden": 5,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 2 — DNU 70, legalidad, administración, scoring y WhatsApp",
+            "similarity": 0.595,
+            "preview": "a intimación; el resto se hace con un abogado.\n\n## Firma electrónica y validez legal\n\n### ¿Qué diferencia hay entre firma electrónica y firma digital?\n**Firma digital** requiere un"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.594,
+            "preview": " seguros, comisiones.\n- Comparación de rentabilidad vs. otras alternativas (plazo fijo, MEP, etc.) — referencial, no financiera.\n\nPANTALLA \"CONTRATOS\"\nHeader: \"Contratos · Gestión,"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 132,
+        "rag": 178,
+        "llm": 1969,
+        "total": 2279
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-02",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo hacer arreglos urgentes yo mismo y descontarlos del alquiler?",
+      "keywords_esperadas": [
+        "urgente",
+        "intimación",
+        "reembolso"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, si el propietario no te responde, podés hacer los arreglos urgentes y después reclamarle el reembolso.\n\nRecordá que esta es una orientación informativa. Para tu caso particular, lo mejor es que consultes a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.5761,
+            "preview": "- Llaves de portón de cochera: [N] juegos\n   - Tarjetas/controles de acceso al edificio: [N] unidades\n   - Códigos de alarma: [LOS RECIBE / NO APLICA]\n2. ESTADO GENERAL. Las partes"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 134,
+        "rag": 185,
+        "llm": 1657,
+        "total": 1976
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-03",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden no devolver el depósito si rompí un vidrio?",
+      "keywords_esperadas": [
+        "daño",
+        "descontar",
+        "reparación"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, te pueden descontar el costo del vidrio. El depósito está para cubrir daños o deudas al finalizar el contrato.\n\nFijate qué dice tu acuerdo de alquiler, porque ahí debe estar especificado cómo se manejan estas situaciones. Para casos puntuales, siempre consultá con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 137,
+        "rag": 460,
+        "llm": 3169,
+        "total": 3766
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-01",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "¿Cómo se hace un asado correctamente?",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Solo te ayudo con temas de alquileres y con AlquilApp. No tengo información sobre recetas.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6031,
+            "preview": "email y te llega un link para resetearla. Si no te llega, revisá la carpeta de spam.\n\n### ¿Cómo cambio mi rol de inquilino a propietario (o al revés)?\nDesde tu perfil, sección \"Dat"
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 2 — Contratos modelo de locación",
+            "similarity": 0.5932,
+            "preview": "as a cargo del/la Locador/a\n(regla supletoria art. 1209 CCyC). Ante duda sobre la naturaleza de\nun rubro, se aplicará el criterio del administrador/a.\n**CLÁUSULA — REPRESENTACIÓN E"
+          },
+          {
+            "orden": 3,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.5917,
+            "preview": "ario recibe las llaves y toma posesión**.\n\n### Texto del acta\n\n```\nACTA DE ENTREGA DE INMUEBLE\n(Anexo I del Contrato de Locación celebrado el [FECHA])\nEn la Ciudad de [CIUDAD], a l"
+          },
+          {
+            "orden": 4,
+            "fuente": "sitio",
+            "tipo": "walkthrough-rol",
+            "titulo": "Recorrido completo del sitio AlquilApp para el rol Propietario",
+            "similarity": 0.5843,
+            "preview": "CyCN art. 1182 + DNU 70/2023).\n- PH / Dúplex (CCyCN art. 2037 + Ley 13.512 + DNU 70/2023).\n- Cochera / Garaje.\n- Temporal / Turístico (hasta 3 meses).\nCada plantilla incluye sus cl"
+          },
+          {
+            "orden": 5,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 2 — Contratos modelo de locación",
+            "similarity": 0.5814,
+            "preview": "otro fuero que pudiera\ncorresponder. Se aplica la legislación de la República Argentina,\nen particular el CCyC con las modificaciones del DNU 70/2023.\n**CLÁUSULA DECIMOQUINTA — INV"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 1 — Intimaciones y cartas documento",
+            "similarity": 0.581,
+            "preview": "sted debidamente notificado/a.\n\n[NOMBRE Y APELLIDO DEL LOCADOR/A]\nDNI [NÚMERO]\n[DOMICILIO DEL LOCADOR O DE SU ADMINISTRADOR]\n```\n\n### Cómo completarla\n- **Fecha de vencimiento del "
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 115,
+        "rag": 183,
+        "llm": 981,
+        "total": 1280
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-02",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "ganador del mundial 2022",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento. Solo te ayudo con alquileres y AlquilApp.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "politica-privacidad",
+            "titulo": "Política de Privacidad de AlquilApp",
+            "similarity": 0.5497,
+            "preview": "Última actualización: abril de 2026.\n\nEn AlquilApp nos tomamos en serio la privacidad de los datos de los usuarios. Esta Política describe qué información recolectamos, cómo la usa"
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.5431,
+            "preview": "eriores, se mantiene la fórmula de la Ley 27.551 o 27.737 según corresponda.\n\n## Servicios y expensas\n\n### ¿Quién paga los servicios? ¿Y las expensas?\nLa regla supletoria del CCyC "
+          },
+          {
+            "orden": 3,
+            "fuente": "procedimiento_legal_alquilapp",
+            "tipo": "procedimiento",
+            "titulo": "Mediación previa, juicio ejecutivo por alquileres y Defensoría del Inquilino",
+            "similarity": 0.5391,
+            "preview": "en paralelo** — maximizás la presión sobre el deudor.\n3. **Conservá el contrato original** físico, firmado en todas las hojas, por si hay impugnación.\n**Para el locatario:**\n1. **A"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.5389,
+            "preview": "Cobros**, con la propiedad que elegiste. Requiere que el inquilino tenga banco habilitado (casi todos lo están).\n\n### Mi inquilino no paga, ¿qué hago?\n1. Primero avisá por el chat "
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5374,
+            "preview": ", con fuerte soporte probatorio.\n- Para actos que requieran firma digital cualificada (escrituras, poderes notariales, etc.), consultá a un escribano.\n8. LIMITACIÓN DE RESPONSABILI"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5287,
+            "preview": "e WhatsApp para consultas e interacción (integrado vía Twilio).\n- Integraciones con servicios externos (Gmail OAuth, IMAP genérico, API EPE Santa Fe).\n4. ROL DE ALQUILAPP EN LA REL"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 126,
+        "rag": 176,
+        "llm": 582,
+        "total": 884
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-03",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "alquiler",
+      "keywords_esperadas": [
+        "AlquilApp"
+      ],
+      "ambigua": true,
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El alquiler es la base de todo. Como propietario/locador, ¿qué querés saber sobre tu contrato, impuestos, o la app?",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.6883,
+            "preview": "# Glosario de términos de alquileres\n\nDefiniciones simples de los términos que más confusión generan en un contrato de locación en Argentina. Todas las referencias legales son al *"
+          },
+          {
+            "orden": 2,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.6801,
+            "preview": ".742, julio 2024)** — ratificó el capítulo de alquileres del DNU 70/2023. A abril de 2026 el régimen está plenamente consolidado por ley del Congreso.\n## 2. Régimen transitorio seg"
+          },
+          {
+            "orden": 3,
+            "fuente": "regimen_tributario_alquilapp",
+            "tipo": "legislacion_nacional",
+            "titulo": "Régimen tributario del locador — Monotributo, IVA, Ganancias, Bienes Personales y retenciones",
+            "similarity": 0.6762,
+            "preview": "--\n\n## 5. Retenciones — RG ARCA 830 (ex AFIP 830)\n\n### Marco normativo\n- **RG 830/2000 y modificatorias** (hoy ARCA).\n- **RG 4622** y actualizaciones.\n### Retención de Ganancias po"
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_provincial_alquilapp",
+            "tipo": "legislacion_local",
+            "titulo": "Alquileres en Mendoza — sellado, corredores, procedimiento y Defensoría",
+            "similarity": 0.6747,
+            "preview": "fensoriadelpueblo.mendoza.gov.ar\n**Teléfono**: (0261) 420-5575 / 0800-222-2334\n**Sede**: Mendoza capital, con delegaciones en San Rafael y San Martín.\nTemas que atiende:\n- Asesoram"
+          },
+          {
+            "orden": 5,
+            "fuente": "regimen_tributario_alquilapp",
+            "tipo": "legislacion_nacional",
+            "titulo": "Régimen tributario del locador — Monotributo, IVA, Ganancias, Bienes Personales y retenciones",
+            "similarity": 0.6735,
+            "preview": "idades agropecuarias y inmuebles cuyos locatarios sean el Estado Nacional, las provincias, las municipalidades o la Ciudad Autónoma de Buenos Aires.\"*\nAdemás, **cuando el canon men"
+          },
+          {
+            "orden": 6,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6731,
+            "preview": ") → si el locatario es consumidor final o monotributista.\n- Factura C → si el locador es monotributista.\n\n### 2.3. Alquileres temporarios y turísticos\nEl alquiler temporario con fi"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 127,
+        "rag": 187,
+        "llm": 1877,
+        "total": 2191
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-04",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "dónde queda la sección de cobros en la página",
+      "keywords_esperadas": [
+        "Cobros",
+        "alquil.app"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para ver tus pagos y facturas, andá a la sección \"Servicios\" y luego a \"Facturas\" en tu perfil. Ahí tenés todo lo que necesitás pagar.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "sitio",
+            "tipo": "servicios",
+            "titulo": "Servicios y facturas en AlquilApp",
+            "similarity": 0.6743,
+            "preview": "nte (factura vs comprobante de pago) con Gemini AI.\n3. Te pregunta con un menú numérico: 1) cargar en servicios, 2) solo guardar imagen, 3) descartar.\nOpción C (automática desde em"
+          },
+          {
+            "orden": 2,
+            "fuente": "alquilapp_faqs",
+            "tipo": "faq",
+            "titulo": "FAQs AlquilApp — Parte 1 — Uso de la plataforma (contratos, cobros, servicios, reclamos)",
+            "similarity": 0.6715,
+            "preview": "l historial de facturas queda guardado por propiedad y por servicio.\n\n### ¿Cómo cambio la titularidad de un servicio cuando empieza un alquiler nuevo?\nNo la cambia AlquilApp, eso e"
+          },
+          {
+            "orden": 3,
+            "fuente": "sitio",
+            "tipo": "servicios",
+            "titulo": "Servicios y facturas en AlquilApp",
+            "similarity": 0.666,
+            "preview": "AlquilApp permite cargar y gestionar los servicios asociados a cada propiedad alquilada: luz, gas, agua, expensas, internet, ABL, etc. Al crear el contrato se define el responsable"
+          },
+          {
+            "orden": 4,
+            "fuente": "alquilapp_feature",
+            "tipo": "feature_producto",
+            "titulo": "Anclaje a Bitcoin vía OpenTimestamps — prueba criptográfica de no manipulación",
+            "similarity": 0.6514,
+            "preview": "nde quedó embebido.\n- `anchored_at`: timestamp en que se creó el anchor.\n- `upgraded_at`: timestamp en que la prueba se consolidó.\n\n### Edge Functions\n**`audit-log-anchor-batch`** "
+          },
+          {
+            "orden": 5,
+            "fuente": "sitio",
+            "tipo": "firma",
+            "titulo": "Firma electrónica de contratos en AlquilApp",
+            "similarity": 0.651,
+            "preview": " queda inmutable.\n\nEl banner \"Firmado electrónicamente\" aparece solo si hay evidencia real registrada en la tabla contrato_firmantes o contratos_hash.\nPodés descargar el dossier co"
+          },
+          {
+            "orden": 6,
+            "fuente": "alquilapp_sitio",
+            "tipo": "walkthrough",
+            "titulo": "Walkthrough de alquil.app — rol Administrador (cuenta delegada)",
+            "similarity": 0.6403,
+            "preview": "sta consolidada\n\nUna ventaja central del rol administrador es que puede atender a **varios propietarios a la vez**. El switcher del dashboard permite:\n- **Consolidar** — ver KPIs y"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 145,
+        "rag": 185,
+        "llm": 10387,
+        "total": 10717
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-05",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "",
+      "keywords_esperadas": [],
+      "vacia": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 400,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 31
+      },
+      "raw": "{\"error\":\"Falta pregunta\"}",
+      "clasificacion": "⚪",
+      "matcher_warning": "pregunta vacía o marcada vacia=true — test inválido, excluido del total real"
+    },
+    {
+      "id": "ccyc-01",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Qué dice el art. 1198 del CCyC?",
+      "keywords_esperadas": [
+        "1198"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El art. 1198 del CCyC establece un plazo mínimo supletorio de 2 años para la locación habitacional.\n\nDe todas formas, con el DNU 70/2023, este plazo es un derecho disponible. Se puede pactar un plazo diferente en el contrato, por ejemplo, 1 año o 6 meses, y ese plazo es válido.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 6,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "legislacion_nacional",
+            "tipo": "ley",
+            "titulo": "CCyC locación — Parte 1 — Marco normativo 2026 y definición (arts. 1187 a 1199)",
+            "similarity": 0.6846,
+            "preview": " los contratos con destino a vivienda permanente, con o sin muebles, será de dos (2) años; y (iii) para los restantes destinos será de tres (3) años.\"\n**Qué cambió:** antes había u"
+          },
+          {
+            "orden": 2,
+            "fuente": "glosario_interno_alquilapp",
+            "tipo": "glosario",
+            "titulo": "Glosario de términos de alquileres (Argentina, post-DNU 70/2023)",
+            "similarity": 0.651,
+            "preview": "recho a ocupar un local con clientela ya instalada (fondo de comercio). Aplica a **locales comerciales**, no a viviendas.\n\n---\n\n## Ajuste del alquiler\n**Índice de ajuste** — Fórmul"
+          },
+          {
+            "orden": 3,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.628,
+            "preview": "ienda: exento\n\nEl **alquiler de inmuebles con destino vivienda está exento de IVA** por el art. 7 inc. h) de la Ley 23.349 (Ley del IVA). Esto aplica:\n- Al propietario, que no incl"
+          },
+          {
+            "orden": 4,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 2 — Bienes Personales, IVA, Ingresos Brutos y otras cargas",
+            "similarity": 0.6277,
+            "preview": " sólo para vivienda), IVA 21% si sos RI, Ingresos Brutos según provincia, Bienes Personales por el inmueble, ABL/Inmobiliario. Es el régimen completo.\n**¿El ABL y el inmobiliario l"
+          },
+          {
+            "orden": 5,
+            "fuente": "legislacion_nacional",
+            "tipo": "impuestos",
+            "titulo": "Impuestos del propietario 2026 — Parte 1 — Monotributo y Ganancias",
+            "similarity": 0.6217,
+            "preview": "ón impositiva. Emitís factura C (Monotributo) o la que corresponda a tu categoría. La exención se aplica al cálculo del impuesto, no a la facturación.\n**¿Qué pasa si no declaro?**\n"
+          },
+          {
+            "orden": 6,
+            "fuente": "sitio",
+            "tipo": "terminos-condiciones",
+            "titulo": "Términos y Condiciones de uso de AlquilApp",
+            "similarity": 0.5983,
+            "preview": "un corredor inmobiliario o administrador de consorcio).\n- \"Contenido\": textos, imágenes, PDF, datos y archivos cargados por usuarios en la Plataforma.\n2. REGISTRO Y CUENTA\n- Para u"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 139,
+        "rag": 174,
+        "llm": 1660,
+        "total": 1973
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-02",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Cuándo puedo resolver el contrato por culpa del inquilino?",
+      "keywords_esperadas": [
+        "1219"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No tengo esa información en mi base de conocimiento.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "ley_nacional",
+            "tipo": "legislacion_nacional",
+            "titulo": "Mediación previa obligatoria en juicios de alquiler — Ley 26.589 (Parte A: excepciones del art. 5 y regla práctica para desalojo y cobro)",
+            "similarity": 0.612,
+            "preview": " mediación antes de presentar la demanda, bajo pena de inadmisibilidad del escrito.\n\nEXCEPCIONES DEL ART. 5 — CASOS EXCLUIDOS DE MEDIACIÓN OBLIGATORIA\nEl art. 5 de la Ley 26.589 en"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 124,
+        "rag": 175,
+        "llm": 5504,
+        "total": 5803
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-03",
+      "bloque": "ccyc_articulos",
+      "rol": "inquilino",
+      "pregunta": "¿Cuáles son mis obligaciones como inquilino según el Código Civil?",
+      "keywords_esperadas": [
+        "1206",
+        "conservar",
+        "pagar"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Según el Código Civil y Comercial, con las modificaciones del DNU 70/2023, algunas de tus obligaciones como inquilino son:\n\n*   No sublocar el inmueble, a menos que haya un pacto expreso que lo permita.\n*   Si rescindís el contrato, avisar con 30 días de anticipación. Si lo hacés antes del primer año, tenés una penalidad de 1,5 meses de alquiler; si es después, 1 mes.\n*   En caso de reparaciones urgentes, notificar al propietario. Si no responde, podés hacerlas y reclamar el reembolso.\n\nEsta es una orientación informativa. Para tu caso puntual, siempre es mejor consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 1,
+        "umbral": 0.35,
+        "k": 4,
+        "docs": [
+          {
+            "orden": 1,
+            "fuente": "alquilapp_plantillas",
+            "tipo": "plantilla_legal",
+            "titulo": "Plantillas legales — Parte 3 — Actas de entrega, restitución y notificaciones",
+            "similarity": 0.639,
+            "preview": "- Llaves de portón de cochera: [N] juegos\n   - Tarjetas/controles de acceso al edificio: [N] unidades\n   - Códigos de alarma: [LOS RECIBE / NO APLICA]\n2. ESTADO GENERAL. Las partes"
+          }
+        ]
+      },
+      "tiempos_ms": {
+        "embedding": 138,
+        "rag": 220,
+        "llm": 8638,
+        "total": 8996
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    }
+  ]
+}
