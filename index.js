@@ -2392,7 +2392,7 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 //   - Cohere 429 (rate limit trial): espera 15s y reintenta UNA vez
 //   - Otros errores: rotan inmediatamente al siguiente proveedor
 //
-// Nota: DeepSeek fue removido en v5.15.0 porque estaba sin saldo (HTTP 402)
+// Nota: DeepSeek fue removido en v5.16.0 porque estaba sin saldo (HTTP 402)
 //       y su rol de 3er proveedor pasó a Groq (gratis y más rápido).
 //
 // Params:
@@ -2560,9 +2560,12 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
   if (ctxRAG) {
     systemPrompt +=
       `\n\n=== DOCUMENTACIÓN DE REFERENCIA (AlquilApp y legislación argentina aplicable) ===\n` +
-      `Usá este contexto como fuente de verdad cuando la pregunta sea sobre cómo funciona el sitio, ` +
-      `sobre la Ley 27.551, DNU 70/2023 o cualquier normativa. Si la info no está acá y la pregunta ` +
-      `es sobre esos temas, decí "No tengo esa información en mi base de conocimiento" y no inventes.\n\n` +
+      `REGLAS DE USO DEL CONTEXTO (prioritarias sobre tu entrenamiento general):\n` +
+      `1) Esta documentación es tu ÚNICA fuente de verdad sobre legislación argentina de alquileres y sobre AlquilApp. ` +
+      `Si dice que una ley fue derogada, está derogada — no la menciones como vigente aunque tu entrenamiento diga otra cosa.\n` +
+      `2) Si el contexto responde la pregunta directamente → respondé con esa info, citando números de ley o artículo cuando aparezcan.\n` +
+      `3) Si el contexto NO responde directamente pero tiene info RELACIONADA (ej: preguntan por un artículo puntual del CCyC y tenés un doc que cubre el bloque de artículos; preguntan por un trámite y tenés una plantilla o glosario que lo define) → respondé con lo que el contexto SÍ dice y, si algo queda sin cubrir, aclará brevemente qué aspecto específico no está en tu base. NO inventes datos, fechas, artículos ni leyes que no estén en el contexto.\n` +
+      `4) Solo si el contexto NO tiene NADA tangencialmente útil sobre el tema → decí "No tengo esa información en mi base de conocimiento" y pará ahí.\n\n` +
       ctxRAG +
       `\n=== FIN DOCUMENTACIÓN ===\n`;
   }
@@ -2693,9 +2696,12 @@ Tenés acceso en tiempo real a todo lo que tiene cargado en AlquilApp. Si te pre
 El marco legal vigente es el *Código Civil y Comercial* (arts. 1187-1226). La Ley 27.551 fue *derogada* por el DNU 70/2023. Nunca la menciones como vigente.
 
 Cambios clave del DNU 70/2023:
-• *Duración*: libre acuerdo, sin mínimo de 3 años.
+• *Duración*: libre acuerdo (no hay mínimo de 3 años).
 • *Precio y ajustes*: libre acuerdo (ICL, IPC, UVA, % fijo, etc.).
+• *Moneda*: libre acuerdo — se puede pactar en pesos o en moneda extranjera.
 • *Depósito*: libre acuerdo, sin tope.
+• *Garantías*: libre acuerdo — el propietario puede pedir fiador, depósito, caución o la combinación que quiera.
+• *Comisión inmobiliaria*: libre acuerdo, la puede pagar cualquiera de las partes.
 • *Rescisión del inquilino*: desde el 6° mes con 30 días de aviso. Penalidad: 1,5 meses si sale antes del año; 1 mes si sale después.
 • *Reparaciones urgentes*: si el propietario no responde, el inquilino puede hacerlas y reclamar el reembolso.
 • *Sublocación*: prohibida salvo pacto expreso.
@@ -4886,17 +4892,35 @@ app.post('/ai/qa-test', async (req, res) => {
 1. NUNCA empieces una respuesta con "Hola", "Buen día", ni con el nombre del usuario.
 2. Por defecto, una respuesta tiene 1-3 oraciones. Solo te extendés si hace falta explicación legal o múltiples datos.
 3. Nada de preámbulos tipo "Claro, te ayudo con eso".
-4. Si la pregunta es sobre AlquilApp o sobre legislación argentina de alquileres y NO está en el contexto de documentación, decí literalmente "No tengo esa información en mi base de conocimiento" y no inventes.
-5. Si te preguntan algo totalmente fuera de tema (ej: recetas, clima, política no relacionada), rechazalo brevemente aclarando que solo ayudás con alquileres y AlquilApp.
+4. Si te preguntan algo totalmente fuera de tema (ej: recetas, clima, política no relacionada), rechazalo brevemente aclarando que solo ayudás con alquileres y AlquilApp.
+
+*MARCO LEGAL VIGENTE (Argentina, 2026)*
+El marco legal vigente es el *Código Civil y Comercial* (arts. 1187-1226). La Ley 27.551 fue *derogada* por el DNU 70/2023. Nunca la menciones como vigente.
+
+Cambios clave del DNU 70/2023:
+• *Duración*: libre acuerdo (no hay mínimo de 3 años).
+• *Precio y ajustes*: libre acuerdo (ICL, IPC, UVA, % fijo, etc.).
+• *Moneda*: libre acuerdo — se puede pactar en pesos o en moneda extranjera.
+• *Depósito*: libre acuerdo, sin tope.
+• *Garantías*: libre acuerdo — el propietario puede pedir fiador, depósito, caución o la combinación que quiera.
+• *Comisión inmobiliaria*: libre acuerdo, la puede pagar cualquiera de las partes.
+• *Rescisión del inquilino*: desde el 6° mes con 30 días de aviso. Penalidad: 1,5 meses si sale antes del año; 1 mes si sale después.
+• *Reparaciones urgentes*: si el propietario no responde, el inquilino puede hacerlas y reclamar el reembolso.
+• *Sublocación*: prohibida salvo pacto expreso.
+
+Siempre aclarás que es orientación informativa y que para casos puntuales lo mejor es consultar a un abogado.
 
 El usuario de prueba está registrado como *${rolLabel}*.`;
 
     if (ctxRAGFull) {
       systemPrompt +=
         `\n\n=== DOCUMENTACIÓN DE REFERENCIA (AlquilApp y legislación argentina aplicable) ===\n` +
-        `Usá este contexto como fuente de verdad cuando la pregunta sea sobre cómo funciona el sitio, ` +
-        `sobre la Ley 27.551, DNU 70/2023 o cualquier normativa. Si la info no está acá y la pregunta ` +
-        `es sobre esos temas, decí "No tengo esa información en mi base de conocimiento" y no inventes.\n\n` +
+        `REGLAS DE USO DEL CONTEXTO (prioritarias sobre tu entrenamiento general):\n` +
+        `1) Esta documentación es tu ÚNICA fuente de verdad sobre legislación argentina de alquileres y sobre AlquilApp. ` +
+        `Si dice que una ley fue derogada, está derogada — no la menciones como vigente aunque tu entrenamiento diga otra cosa.\n` +
+        `2) Si el contexto responde la pregunta directamente → respondé con esa info, citando números de ley o artículo cuando aparezcan.\n` +
+        `3) Si el contexto NO responde directamente pero tiene info RELACIONADA (ej: preguntan por un artículo puntual del CCyC y tenés un doc que cubre el bloque de artículos; preguntan por un trámite y tenés una plantilla o glosario que lo define) → respondé con lo que el contexto SÍ dice y, si algo queda sin cubrir, aclará brevemente qué aspecto específico no está en tu base. NO inventes datos, fechas, artículos ni leyes que no estén en el contexto.\n` +
+        `4) Solo si el contexto NO tiene NADA tangencialmente útil sobre el tema → decí "No tengo esa información en mi base de conocimiento" y pará ahí.\n\n` +
         ctxRAGFull +
         `\n=== FIN DOCUMENTACIÓN ===\n`;
     }
@@ -4932,7 +4956,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
         llm: tLLMMs,
         total: tTotalMs
       },
-      version_bot: '5.15.0',
+      version_bot: '5.16.0',
       ts: new Date().toISOString()
     });
   } catch (e) {
@@ -4948,7 +4972,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.15.0',
+    version:   '5.16.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -4976,7 +5000,8 @@ app.get('/', (req, res) => {
       'ai-proxy',
       'qa-test-endpoint',
       'llm-fallback-chain',
-      'llm-4-providers-retry'
+      'llm-4-providers-retry',
+      'prompt-v2-gradient-rag'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
@@ -4994,14 +5019,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.15.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.16.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.15.0',
+    version: '5.16.0',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
@@ -5016,7 +5041,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.15.0       ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.16.0       ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
