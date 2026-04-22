@@ -1,0 +1,66 @@
+name: QA Bot WhatsApp
+
+on:
+  schedule:
+    # Abril–julio 2026: cada 2 días a las 03:00 UTC (00:00 ART).
+    # A partir de agosto 2026 cambiar a cron cada 15 días: '0 3 1,16 * *'
+    - cron: '0 3 */2 * *'
+  workflow_dispatch: {}  # permite corrida manual desde la UI de GitHub
+
+jobs:
+  qa:
+    name: Corrida QA del bot
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # necesario para commitear qa-reports/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Correr banco de preguntas QA
+        env:
+          BOT_URL: ${{ secrets.QA_BOT_URL }}
+          QA_SECRET: ${{ secrets.QA_SECRET }}
+          QA_CONCURRENCY: '2'
+          QA_TIMEOUT_MS: '90000'
+        run: node scripts/qa/runner.mjs
+        continue-on-error: true  # dejamos que falle con exit 1 pero commiteamos el reporte igual
+        id: qa_run
+
+      - name: Commitear reportes
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -d qa-reports ] && [ -n "$(ls -A qa-reports 2>/dev/null)" ]; then
+            git add qa-reports/
+            if ! git diff --cached --quiet; then
+              git commit -m "qa: reporte automático $(date -u +%Y-%m-%d)"
+              git push
+            else
+              echo "Sin cambios en qa-reports/"
+            fi
+          else
+            echo "No se generaron reportes"
+          fi
+
+      - name: Subir reportes como artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-report-${{ github.run_number }}
+          path: qa-reports/
+          retention-days: 90
+
+      - name: Marcar fallo si QA tuvo críticos
+        if: steps.qa_run.outcome == 'failure'
+        run: |
+          echo "::error::QA runner encontró fallos críticos (🔴 o ⚫). Revisar qa-reports/"
+          exit 1

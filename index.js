@@ -4644,13 +4644,163 @@ app.post('/ai/deepseek', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
+// QA TEST ENDPOINT — usado por scripts/qa/runner.mjs
+//
+// Ejecuta el mismo flujo que el bot (embedding → RAG → Gemini)
+// pero SIN historial y SIN contexto de usuario, para evaluar
+// de forma aislada la calidad del RAG + el prompt de estilo.
+//
+// Auth: header x-qa-secret == process.env.QA_TEST_SECRET
+// Body: { pregunta: string, rol?: 'inquilino'|'propietario'|'administrador' }
+// ═══════════════════════════════════════════════════════════
+app.post('/ai/qa-test', async (req, res) => {
+  const t0 = Date.now();
+  const secret = req.get('x-qa-secret') || req.body?.secret || '';
+  const expected = process.env.QA_TEST_SECRET || '';
+
+  if (!expected) {
+    return res.status(500).json({ error: 'QA_TEST_SECRET no configurada en el servidor' });
+  }
+  if (!secret || secret !== expected) {
+    return res.status(401).json({ error: 'QA secret inválido' });
+  }
+
+  const pregunta = (req.body?.pregunta || '').toString().trim();
+  const rol = (req.body?.rol || 'propietario').toString();
+  if (!pregunta) {
+    return res.status(400).json({ error: 'Falta pregunta' });
+  }
+  if (pregunta.length > 2000) {
+    return res.status(400).json({ error: 'Pregunta demasiado larga (max 2000)' });
+  }
+
+  try {
+    // 1) Embedding + match
+    const tEmbStart = Date.now();
+    const emb = await obtenerEmbedding(pregunta, 'RETRIEVAL_QUERY');
+    const tEmbMs = Date.now() - tEmbStart;
+
+    let docs = [];
+    let ctxRAGFull = '';
+    let tRagMs = 0;
+    if (emb) {
+      const tRagStart = Date.now();
+      const { data, error } = await supabase.rpc('match_documentos_chatbot', {
+        query_embedding: emb,
+        match_threshold: 0.35,
+        match_count: 4,
+        p_fuente: null
+      });
+      tRagMs = Date.now() - tRagStart;
+      if (error) {
+        console.warn('QA match error:', error.message);
+      } else if (data && data.length) {
+        docs = data.map((m, i) => ({
+          orden: i + 1,
+          fuente: m.fuente,
+          tipo: m.tipo,
+          titulo: m.titulo,
+          similarity: typeof m.similarity === 'number' ? +m.similarity.toFixed(4) : null,
+          preview: String(m.contenido || '').slice(0, 180)
+        }));
+        ctxRAGFull = data
+          .map((m, i) => `[Fuente ${i + 1}] (${m.fuente}/${m.tipo}) — ${m.titulo}\n${m.contenido}`)
+          .join('\n\n---\n\n');
+      }
+    }
+
+    // 2) System prompt mínimo (replica las reglas de estilo + instrucción RAG del bot real)
+    const rolLabel = rol === 'administrador'
+      ? 'administrador/gestor'
+      : (rol === 'inquilino' ? 'inquilino/locatario' : 'propietario/locador');
+
+    let systemPrompt = `Sos *Alquil*, el asistente de WhatsApp de AlquilApp. Hablás en español rioplatense, directo, sin rodeos ni saludos.
+
+*REGLAS DE ESTILO — PRIORITARIAS*
+1. NUNCA empieces una respuesta con "Hola", "Buen día", ni con el nombre del usuario.
+2. Por defecto, una respuesta tiene 1-3 oraciones. Solo te extendés si hace falta explicación legal o múltiples datos.
+3. Nada de preámbulos tipo "Claro, te ayudo con eso".
+4. Si la pregunta es sobre AlquilApp o sobre legislación argentina de alquileres y NO está en el contexto de documentación, decí literalmente "No tengo esa información en mi base de conocimiento" y no inventes.
+5. Si te preguntan algo totalmente fuera de tema (ej: recetas, clima, política no relacionada), rechazalo brevemente aclarando que solo ayudás con alquileres y AlquilApp.
+
+El usuario de prueba está registrado como *${rolLabel}*.`;
+
+    if (ctxRAGFull) {
+      systemPrompt +=
+        `\n\n=== DOCUMENTACIÓN DE REFERENCIA (AlquilApp y legislación argentina aplicable) ===\n` +
+        `Usá este contexto como fuente de verdad cuando la pregunta sea sobre cómo funciona el sitio, ` +
+        `sobre la Ley 27.551, DNU 70/2023 o cualquier normativa. Si la info no está acá y la pregunta ` +
+        `es sobre esos temas, decí "No tengo esa información en mi base de conocimiento" y no inventes.\n\n` +
+        ctxRAGFull +
+        `\n=== FIN DOCUMENTACIÓN ===\n`;
+    }
+
+    // 3) Llamada a Gemini (sin historial)
+    const tLLMStart = Date.now();
+    let respuesta = '';
+    let llmError = null;
+    try {
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: 'user', parts: [{ text: pregunta }] }]
+          })
+        }
+      );
+      if (!r.ok) {
+        llmError = `HTTP ${r.status}`;
+        const errText = await r.text();
+        console.warn('QA Gemini error:', r.status, errText.slice(0, 200));
+      } else {
+        const j = await r.json();
+        respuesta = j?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+      }
+    } catch (e) {
+      llmError = e.message;
+    }
+    const tLLMMs = Date.now() - tLLMStart;
+
+    const tTotalMs = Date.now() - t0;
+
+    return res.json({
+      ok: !llmError && !!respuesta,
+      pregunta,
+      rol,
+      respuesta,
+      llm_error: llmError,
+      rag: {
+        docs_recuperados: docs.length,
+        umbral: 0.35,
+        k: 4,
+        docs // array con orden, fuente, tipo, titulo, similarity, preview
+      },
+      tiempos_ms: {
+        embedding: tEmbMs,
+        rag: tRagMs,
+        llm: tLLMMs,
+        total: tTotalMs
+      },
+      version_bot: '5.12.0',
+      ts: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('QA test endpoint error:', e);
+    return res.status(500).json({ error: e.message, tiempo_ms: Date.now() - t0 });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
 // HEALTH CHECK
 // ═══════════════════════════════════════════════════════════
 app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.9.1',
+    version:   '5.12.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -4675,7 +4825,8 @@ app.get('/', (req, res) => {
       'menu-foto-factura',
       'admin-delegados',
       'permiso-expensas',
-      'ai-proxy'
+      'ai-proxy',
+      'qa-test-endpoint'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
@@ -4693,14 +4844,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.11.1 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.12.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.11.1',
+    version: '5.12.0',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
