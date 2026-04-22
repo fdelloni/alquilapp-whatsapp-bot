@@ -5,7 +5,11 @@ on:
     # Abril–julio 2026: cada 2 días a las 03:00 UTC (00:00 ART).
     # A partir de agosto 2026 cambiar a cron cada 15 días: '0 3 1,16 * *'
     - cron: '0 3 */2 * *'
-  workflow_dispatch: {}  # permite corrida manual desde la UI de GitHub
+  workflow_dispatch: {}
+  push:
+    paths:
+      - .qa-trigger
+      - .github/workflows/qa-bot.yml  # permite corrida manual desde la UI de GitHub
 
 jobs:
   qa:
