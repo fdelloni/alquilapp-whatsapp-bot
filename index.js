@@ -2372,7 +2372,141 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 }
 
 // ═══════════════════════════════════════════════════════════
-// CONSULTAR A GEMINI AI — Texto
+// LLM CON FALLBACK: Gemini → Cohere → DeepSeek
+//
+// Acepta el mismo formato que usa Gemini (system_instruction + contents)
+// y devuelve { texto, provider, error }. Intenta Gemini primero; si
+// devuelve HTTP no-OK, respuesta vacía o tira excepción, rota a Cohere
+// y después a DeepSeek. Solo aplica a consultas de TEXTO: vision/audio
+// siguen llamando directo a Gemini (los otros providers no son
+// multimodales equivalentes).
+//
+// Params:
+//   systemPrompt : string
+//   contents     : [{ role:'user'|'model', parts:[{ text }] }, ...]
+//   opts.label   : string — para logs
+//   opts.temperature : number (default 0.7)
+//
+// Return:
+//   { texto: string, provider: 'gemini'|'cohere'|'deepseek'|null, error: string|null }
+// ═══════════════════════════════════════════════════════════
+async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
+  const label = opts.label || 'llm';
+  const temperature = typeof opts.temperature === 'number' ? opts.temperature : 0.7;
+  const errores = [];
+
+  // Helper: convertir contents de formato Gemini a OpenAI/Cohere
+  // (role 'model' → 'assistant'; parts:[{text}] → string plano)
+  const toChatMessages = (sys, conts) => {
+    const msgs = [];
+    if (sys) msgs.push({ role: 'system', content: sys });
+    for (const c of (conts || [])) {
+      const role = c.role === 'model' ? 'assistant' : (c.role === 'user' ? 'user' : c.role);
+      const text = (c.parts || []).map(p => typeof p?.text === 'string' ? p.text : '').join('');
+      if (text) msgs.push({ role, content: text });
+    }
+    return msgs;
+  };
+
+  // ── 1) Intento Gemini 2.5 Flash ──
+  if (GEMINI_KEY) {
+    try {
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents,
+            generationConfig: { temperature }
+          })
+        }
+      );
+      if (r.ok) {
+        const j = await r.json();
+        const txt = j?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+        if (txt) return { texto: txt, provider: 'gemini', error: null };
+        errores.push('gemini: respuesta vacía');
+      } else {
+        const t = await r.text().catch(() => '');
+        errores.push(`gemini: HTTP ${r.status} ${t.slice(0, 120)}`);
+        console.warn(`[${label}] Gemini ${r.status} → fallback`);
+      }
+    } catch (e) {
+      errores.push(`gemini: ${e.message}`);
+    }
+  } else {
+    errores.push('gemini: sin key');
+  }
+
+  // ── 2) Fallback Cohere command-a-03-2025 ──
+  if (COHERE_KEY) {
+    try {
+      const r = await fetch('https://api.cohere.com/v2/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + COHERE_KEY },
+        body: JSON.stringify({
+          model: 'command-a-03-2025',
+          messages: toChatMessages(systemPrompt, contents),
+          temperature
+        })
+      });
+      if (r.ok) {
+        const j = await r.json();
+        // Cohere v2: message.content es array de {type,text}
+        const parts = j?.message?.content || [];
+        const txt = Array.isArray(parts)
+          ? parts.map(p => p?.text || '').join('').trim()
+          : (typeof parts === 'string' ? parts.trim() : '');
+        if (txt) return { texto: txt, provider: 'cohere', error: null };
+        errores.push('cohere: respuesta vacía');
+      } else {
+        const t = await r.text().catch(() => '');
+        errores.push(`cohere: HTTP ${r.status} ${t.slice(0, 120)}`);
+        console.warn(`[${label}] Cohere ${r.status} → fallback`);
+      }
+    } catch (e) {
+      errores.push(`cohere: ${e.message}`);
+    }
+  } else {
+    errores.push('cohere: sin key');
+  }
+
+  // ── 3) Fallback DeepSeek (OpenAI-compatible) ──
+  if (DEEPSEEK_KEY) {
+    try {
+      const r = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_KEY },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: toChatMessages(systemPrompt, contents),
+          temperature
+        })
+      });
+      if (r.ok) {
+        const j = await r.json();
+        const txt = j?.choices?.[0]?.message?.content?.trim() || '';
+        if (txt) return { texto: txt, provider: 'deepseek', error: null };
+        errores.push('deepseek: respuesta vacía');
+      } else {
+        const t = await r.text().catch(() => '');
+        errores.push(`deepseek: HTTP ${r.status} ${t.slice(0, 120)}`);
+        console.warn(`[${label}] DeepSeek ${r.status}`);
+      }
+    } catch (e) {
+      errores.push(`deepseek: ${e.message}`);
+    }
+  } else {
+    errores.push('deepseek: sin key');
+  }
+
+  return { texto: '', provider: null, error: errores.join(' | ') };
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONSULTAR A GEMINI AI — Texto (con fallback Cohere/DeepSeek)
 // ═══════════════════════════════════════════════════════════
 async function consultarGemini(telefono, pregunta, usuario, datos) {
   const historial = await obtenerHistorial(telefono);
@@ -2393,36 +2527,28 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
       `\n=== FIN DOCUMENTACIÓN ===\n`;
   }
 
-  const requestBody  = {
-    system_instruction: { parts: [{ text: systemPrompt }] },
-    contents: historial
-  };
-
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) }
+    const { texto, provider, error } = await llamarLLMConFallback(
+      systemPrompt,
+      historial,
+      { label: 'whatsapp-text', temperature: 0.7 }
     );
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error('Gemini error:', response.status, errText);
+    if (!texto) {
+      console.error('[whatsapp-text] Todos los proveedores fallaron:', error);
       return '⚠️ Hubo un error al procesar tu consulta. Intentá de nuevo en un momento.';
     }
 
-    const json = await response.json();
-    if (!json.candidates?.[0]?.content) {
-      console.error('Gemini respuesta vacía:', JSON.stringify(json));
-      return '⚠️ No pude generar una respuesta. Intentá reformular tu pregunta.';
+    if (provider && provider !== 'gemini') {
+      console.log(`[whatsapp-text] ✅ Respuesta generada por ${provider} (fallback)`);
     }
 
-    const respuesta = json.candidates[0].content.parts[0].text.trim();
-    historial.push({ role: 'model', parts: [{ text: respuesta }] });
+    historial.push({ role: 'model', parts: [{ text: texto }] });
     await guardarHistorial(telefono, historial);
-    return formatearParaWhatsApp(respuesta);
+    return formatearParaWhatsApp(texto);
 
   } catch (err) {
-    console.error('Gemini error:', err);
+    console.error('consultarGemini error:', err);
     return '⚠️ Error de conexión con el asistente. Intentá de nuevo.';
   }
 }
@@ -4735,33 +4861,14 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
         `\n=== FIN DOCUMENTACIÓN ===\n`;
     }
 
-    // 3) Llamada a Gemini (sin historial)
+    // 3) Llamada a LLM con fallback (Gemini → Cohere → DeepSeek)
     const tLLMStart = Date.now();
-    let respuesta = '';
-    let llmError = null;
-    try {
-      const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemPrompt }] },
-            contents: [{ role: 'user', parts: [{ text: pregunta }] }]
-          })
-        }
+    const { texto: respuesta, provider: llmProvider, error: llmError } =
+      await llamarLLMConFallback(
+        systemPrompt,
+        [{ role: 'user', parts: [{ text: pregunta }] }],
+        { label: 'qa-test', temperature: 0.7 }
       );
-      if (!r.ok) {
-        llmError = `HTTP ${r.status}`;
-        const errText = await r.text();
-        console.warn('QA Gemini error:', r.status, errText.slice(0, 200));
-      } else {
-        const j = await r.json();
-        respuesta = j?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-      }
-    } catch (e) {
-      llmError = e.message;
-    }
     const tLLMMs = Date.now() - tLLMStart;
 
     const tTotalMs = Date.now() - t0;
@@ -4771,7 +4878,8 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
       pregunta,
       rol,
       respuesta,
-      llm_error: llmError,
+      llm_provider: llmProvider,      // gemini | cohere | deepseek | null
+      llm_error: llmError,             // string con errores de los providers que fallaron
       rag: {
         docs_recuperados: docs.length,
         umbral: 0.35,
@@ -4784,7 +4892,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
         llm: tLLMMs,
         total: tTotalMs
       },
-      version_bot: '5.12.0',
+      version_bot: '5.13.0',
       ts: new Date().toISOString()
     });
   } catch (e) {
@@ -4800,7 +4908,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.12.0',
+    version:   '5.13.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -4826,7 +4934,8 @@ app.get('/', (req, res) => {
       'admin-delegados',
       'permiso-expensas',
       'ai-proxy',
-      'qa-test-endpoint'
+      'qa-test-endpoint',
+      'llm-fallback-chain'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
@@ -4844,14 +4953,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.12.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.13.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.12.0',
+    version: '5.13.0',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
