@@ -37,6 +37,7 @@ const {
   GEMINI_KEY,
   COHERE_KEY,
   DEEPSEEK_KEY,
+  GROQ_KEY,
   SUPABASE_URL,
   SUPABASE_SERVICE_KEY,
   GOOGLE_CLIENT_ID,
@@ -2372,14 +2373,19 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 }
 
 // ═══════════════════════════════════════════════════════════
-// LLM CON FALLBACK: Gemini → Cohere → DeepSeek
+// LLM CON FALLBACK: Gemini → Cohere → DeepSeek → Groq
 //
 // Acepta el mismo formato que usa Gemini (system_instruction + contents)
 // y devuelve { texto, provider, error }. Intenta Gemini primero; si
-// devuelve HTTP no-OK, respuesta vacía o tira excepción, rota a Cohere
-// y después a DeepSeek. Solo aplica a consultas de TEXTO: vision/audio
+// devuelve HTTP no-OK, respuesta vacía o tira excepción, rota al
+// siguiente proveedor. Solo aplica a consultas de TEXTO: vision/audio
 // siguen llamando directo a Gemini (los otros providers no son
 // multimodales equivalentes).
+//
+// Retry con backoff:
+//   - Gemini 503 (overload): espera 3s y reintenta UNA vez antes de rotar
+//   - Cohere 429 (rate limit trial): espera 15s y reintenta UNA vez
+//   - Otros errores: rotan inmediatamente al siguiente proveedor
 //
 // Params:
 //   systemPrompt : string
@@ -2388,12 +2394,14 @@ async function obtenerContextoRAG(pregunta, { k = 4, threshold = 0.35, fuente = 
 //   opts.temperature : number (default 0.7)
 //
 // Return:
-//   { texto: string, provider: 'gemini'|'cohere'|'deepseek'|null, error: string|null }
+//   { texto, provider: 'gemini'|'cohere'|'deepseek'|'groq'|null, error }
 // ═══════════════════════════════════════════════════════════
 async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
   const label = opts.label || 'llm';
   const temperature = typeof opts.temperature === 'number' ? opts.temperature : 0.7;
   const errores = [];
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
   // Helper: convertir contents de formato Gemini a OpenAI/Cohere
   // (role 'model' → 'assistant'; parts:[{text}] → string plano)
@@ -2408,66 +2416,86 @@ async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
     return msgs;
   };
 
-  // ── 1) Intento Gemini 2.5 Flash ──
+  // ── 1) Intento Gemini 2.5 Flash (con retry en 503) ──
   if (GEMINI_KEY) {
-    try {
-      const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemPrompt }] },
-            contents,
-            generationConfig: { temperature }
-          })
+    for (let intento = 1; intento <= 2; intento++) {
+      try {
+        const r = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system_instruction: { parts: [{ text: systemPrompt }] },
+              contents,
+              generationConfig: { temperature }
+            })
+          }
+        );
+        if (r.ok) {
+          const j = await r.json();
+          const txt = j?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+          if (txt) return { texto: txt, provider: 'gemini', error: null };
+          errores.push('gemini: respuesta vacía');
+          break;
         }
-      );
-      if (r.ok) {
-        const j = await r.json();
-        const txt = j?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-        if (txt) return { texto: txt, provider: 'gemini', error: null };
-        errores.push('gemini: respuesta vacía');
-      } else {
         const t = await r.text().catch(() => '');
+        // Retry sólo en 503 (overload) y sólo una vez
+        if (r.status === 503 && intento === 1) {
+          console.warn(`[${label}] Gemini 503 → espero 3s y reintento`);
+          await sleep(3000);
+          continue;
+        }
         errores.push(`gemini: HTTP ${r.status} ${t.slice(0, 120)}`);
         console.warn(`[${label}] Gemini ${r.status} → fallback`);
+        break;
+      } catch (e) {
+        errores.push(`gemini: ${e.message}`);
+        break;
       }
-    } catch (e) {
-      errores.push(`gemini: ${e.message}`);
     }
   } else {
     errores.push('gemini: sin key');
   }
 
-  // ── 2) Fallback Cohere command-a-03-2025 ──
+  // ── 2) Fallback Cohere command-a-03-2025 (con retry en 429) ──
   if (COHERE_KEY) {
-    try {
-      const r = await fetch('https://api.cohere.com/v2/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + COHERE_KEY },
-        body: JSON.stringify({
-          model: 'command-a-03-2025',
-          messages: toChatMessages(systemPrompt, contents),
-          temperature
-        })
-      });
-      if (r.ok) {
-        const j = await r.json();
-        // Cohere v2: message.content es array de {type,text}
-        const parts = j?.message?.content || [];
-        const txt = Array.isArray(parts)
-          ? parts.map(p => p?.text || '').join('').trim()
-          : (typeof parts === 'string' ? parts.trim() : '');
-        if (txt) return { texto: txt, provider: 'cohere', error: null };
-        errores.push('cohere: respuesta vacía');
-      } else {
+    for (let intento = 1; intento <= 2; intento++) {
+      try {
+        const r = await fetch('https://api.cohere.com/v2/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + COHERE_KEY },
+          body: JSON.stringify({
+            model: 'command-a-03-2025',
+            messages: toChatMessages(systemPrompt, contents),
+            temperature
+          })
+        });
+        if (r.ok) {
+          const j = await r.json();
+          // Cohere v2: message.content es array de {type,text}
+          const parts = j?.message?.content || [];
+          const txt = Array.isArray(parts)
+            ? parts.map(p => p?.text || '').join('').trim()
+            : (typeof parts === 'string' ? parts.trim() : '');
+          if (txt) return { texto: txt, provider: 'cohere', error: null };
+          errores.push('cohere: respuesta vacía');
+          break;
+        }
         const t = await r.text().catch(() => '');
+        // Retry sólo en 429 (rate limit trial) y sólo una vez
+        if (r.status === 429 && intento === 1) {
+          console.warn(`[${label}] Cohere 429 → espero 15s y reintento`);
+          await sleep(15000);
+          continue;
+        }
         errores.push(`cohere: HTTP ${r.status} ${t.slice(0, 120)}`);
         console.warn(`[${label}] Cohere ${r.status} → fallback`);
+        break;
+      } catch (e) {
+        errores.push(`cohere: ${e.message}`);
+        break;
       }
-    } catch (e) {
-      errores.push(`cohere: ${e.message}`);
     }
   } else {
     errores.push('cohere: sin key');
@@ -2493,13 +2521,44 @@ async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
       } else {
         const t = await r.text().catch(() => '');
         errores.push(`deepseek: HTTP ${r.status} ${t.slice(0, 120)}`);
-        console.warn(`[${label}] DeepSeek ${r.status}`);
+        console.warn(`[${label}] DeepSeek ${r.status} → fallback`);
       }
     } catch (e) {
       errores.push(`deepseek: ${e.message}`);
     }
   } else {
     errores.push('deepseek: sin key');
+  }
+
+  // ── 4) Fallback final: Groq llama-3.3-70b-versatile (OpenAI-compatible) ──
+  // Groq ofrece llama-3.3-70b gratis con ~100 req/min. Red de seguridad
+  // cuando los tres proveedores anteriores fallan simultáneamente.
+  if (GROQ_KEY) {
+    try {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: toChatMessages(systemPrompt, contents),
+          temperature
+        })
+      });
+      if (r.ok) {
+        const j = await r.json();
+        const txt = j?.choices?.[0]?.message?.content?.trim() || '';
+        if (txt) return { texto: txt, provider: 'groq', error: null };
+        errores.push('groq: respuesta vacía');
+      } else {
+        const t = await r.text().catch(() => '');
+        errores.push(`groq: HTTP ${r.status} ${t.slice(0, 120)}`);
+        console.warn(`[${label}] Groq ${r.status}`);
+      }
+    } catch (e) {
+      errores.push(`groq: ${e.message}`);
+    }
+  } else {
+    errores.push('groq: sin key');
   }
 
   return { texto: '', provider: null, error: errores.join(' | ') };
@@ -4878,7 +4937,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
       pregunta,
       rol,
       respuesta,
-      llm_provider: llmProvider,      // gemini | cohere | deepseek | null
+      llm_provider: llmProvider,      // gemini | cohere | deepseek | groq | null
       llm_error: llmError,             // string con errores de los providers que fallaron
       rag: {
         docs_recuperados: docs.length,
@@ -4892,7 +4951,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
         llm: tLLMMs,
         total: tTotalMs
       },
-      version_bot: '5.13.0',
+      version_bot: '5.14.0',
       ts: new Date().toISOString()
     });
   } catch (e) {
@@ -4908,7 +4967,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.13.0',
+    version:   '5.14.0',
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -4935,7 +4994,8 @@ app.get('/', (req, res) => {
       'permiso-expensas',
       'ai-proxy',
       'qa-test-endpoint',
-      'llm-fallback-chain'
+      'llm-fallback-chain',
+      'llm-4-providers-retry'
     ],
     env_check: {
       TWILIO_ACCOUNT_SID:    TWILIO_ACCOUNT_SID    ? 'SET' : '❌ UNSET',
@@ -4953,14 +5013,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.13.0 — Webhook activo ✅');
+  res.send('AlquilApp WhatsApp Bot v5.14.0 — Webhook activo ✅');
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.13.0',
+    version: '5.14.0',
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
@@ -4975,7 +5035,7 @@ if (process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
     console.log('╔════════════════════════════════════════╗');
-    console.log('║   AlquilApp WhatsApp Bot v5.11.0       ║');
+    console.log('║   AlquilApp WhatsApp Bot v5.14.0       ║');
     console.log(`║   Escuchando en puerto ${PORT}            ║`);
     console.log('╚════════════════════════════════════════╝');
     console.log('');
