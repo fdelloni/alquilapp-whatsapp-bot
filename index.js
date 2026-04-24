@@ -1,5 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
+// v5.19.0 — Intent classifier contextual con LLM: reemplaza regex
+//          "recibo → flow recibo" por clasificación semántica (Gemini
+//          Flash, temperature 0.0). Evita falsos positivos tipo
+//          "¿qué pasa si recibo la casa rota?" → disparar flujo recibo.
 // v5.18.0 — Retrieval RAG mejorado: threshold 0.25→0.50, k 6→8,
 //          prompt con nivel de contexto (fuerte/parcial/débil) y
 //          guardrails explícitos contra el régimen 27.551 derogado.
@@ -1015,83 +1019,115 @@ async function buscarFacturaServicio(usuario, texto) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// DETECTAR INTENCIÓN DEL MENSAJE (regex antes de Gemini)
+// CLASIFICADOR DE INTENCIÓN — LLM (contextual)
+// v5.19.0 — Reemplaza regex puras para evitar falsos positivos del tipo
+// "¿qué pasa si recibo la casa en mal estado?" → disparar flujo recibo
+// (porque la palabra "recibo" es verbo, no sustantivo).
+// Usa Gemini Flash con temperature 0.0 para clasificación determinista.
+// En caso de error o ambigüedad devuelve CONSULTA_GENERAL (default seguro:
+// cualquier pregunta puede ser contestada por el flujo conversacional).
 // ═══════════════════════════════════════════════════════════
-function detectarIntencion(texto) {
+async function clasificarIntencionLLM(texto, rol) {
+  const systemPrompt =
+`Sos un clasificador de intents para un asistente de WhatsApp de AlquilApp (plataforma argentina de alquileres).
+
+Tu tarea: leer el mensaje del usuario y elegir UNA sola etiqueta entre estas 7:
+
+- ACCION_GENERAR_RECIBO: el usuario pide explícitamente que se le envíe, genere o mande el RECIBO de pago del alquiler. Ej: "mandame el recibo de marzo", "generame un recibo", "pasame el recibo del mes", "necesito el recibo".
+- ACCION_ENVIAR_FACTURA: el usuario pide que se le envíe una FACTURA de servicio domiciliario (luz, gas, agua, internet, expensas, ABL) por WhatsApp. Ej: "mandame la factura de luz", "pasame la boleta de gas de mayo".
+- ACCION_REPORTAR_RECLAMO: el usuario está reportando AHORA, como hecho actual, un problema de mantenimiento concreto. Ej: "se rompió el termotanque", "hay una filtración en el baño", "no funciona la heladera".
+- ACCION_CONSULTAR_RECLAMOS: el usuario pide ver el estado o la lista de sus reclamos YA REGISTRADOS. Ej: "cuáles son mis reclamos abiertos", "qué reclamos tengo", "lista de reclamos".
+- ACCION_CAMBIAR_ESTADO_RECLAMO: un propietario quiere marcar como resuelto / cerrado / en curso un reclamo existente identificado por número. Ej: "marcá resuelto el reclamo 3", "reclamo 5 en progreso", "cerrá el reclamo 2".
+- ACCION_CONFIRMAR_PAGO: el usuario confirma o avisa que ya realizó un pago de alquiler. Ej: "ya pagué el alquiler", "transferí el pago de marzo", "el inquilino pagó, confirmá".
+- CONSULTA_GENERAL: todo lo demás — preguntas sobre legislación, dudas sobre AlquilApp, hipotéticas, pedidos de información, explicaciones, quejas, saludos, y cualquier caso ambiguo.
+
+REGLAS CRÍTICAS PARA EVITAR FALSOS POSITIVOS:
+1. Una PREGUNTA o DUDA que contenga las palabras "recibo", "factura", "reclamo", "pago", "pagué" es CONSULTA_GENERAL, no acción. Analizá el sentido de la oración completa, no palabras aisladas.
+   Ejemplos obligatorios:
+   • "¿qué pasa si recibo la casa en mal estado?" → CONSULTA_GENERAL (acá "recibo" es VERBO, no sustantivo)
+   • "Nunca recibo respuesta del propietario" → CONSULTA_GENERAL
+   • "¿qué es una boleta de sellado?" → CONSULTA_GENERAL
+   • "¿cómo hago un reclamo de mantenimiento?" → CONSULTA_GENERAL (pregunta sobre el procedimiento, no reporte de problema)
+   • "no pude pagar porque no llegó el contrato" → CONSULTA_GENERAL
+   • "¿qué pasa si no pago?" → CONSULTA_GENERAL
+   • "¿El garante tiene que firmar también el recibo?" → CONSULTA_GENERAL
+
+2. ACCION requiere una ORDEN o SOLICITUD clara (imperativo: mandame, envía, dame, generá, pasame, marcá; o declarativo directo: "se rompió", "ya pagué", "transferí"). Sin verbo de acción claro → CONSULTA_GENERAL.
+
+3. Ante cualquier duda, elegí CONSULTA_GENERAL. Es el default seguro.
+
+Rol del usuario: ${rol || 'desconocido'}.
+
+Respondé ÚNICAMENTE con la etiqueta exacta en mayúsculas, sin explicación, sin puntuación, sin comillas, sin nada más.`;
+
+  try {
+    const { texto: respuesta } = await llamarLLMConFallback(
+      systemPrompt,
+      [{ role: 'user', parts: [{ text: String(texto).slice(0, 500) }] }],
+      { label: 'intent-classifier', temperature: 0.0 }
+    );
+    const etiqueta = String(respuesta || '').trim().toUpperCase().replace(/[^A-Z_]/g, '');
+    const VALIDOS = new Set([
+      'ACCION_GENERAR_RECIBO',
+      'ACCION_ENVIAR_FACTURA',
+      'ACCION_REPORTAR_RECLAMO',
+      'ACCION_CONSULTAR_RECLAMOS',
+      'ACCION_CAMBIAR_ESTADO_RECLAMO',
+      'ACCION_CONFIRMAR_PAGO',
+      'CONSULTA_GENERAL'
+    ]);
+    if (VALIDOS.has(etiqueta)) {
+      console.log(`🧠 Intent LLM: "${String(texto).slice(0, 80).replace(/\n/g, ' ')}" → ${etiqueta}`);
+      return etiqueta;
+    }
+    console.warn(`⚠️ Intent LLM respuesta no válida: "${etiqueta}" — default CONSULTA_GENERAL`);
+    return 'CONSULTA_GENERAL';
+  } catch (e) {
+    console.warn('⚠️ clasificarIntencionLLM error:', e.message, '— default CONSULTA_GENERAL');
+    return 'CONSULTA_GENERAL';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// DETECTAR INTENCIÓN DEL MENSAJE
+// v5.19.0 — Híbrido: regex solo para comandos INEQUÍVOCOS (/ayuda, /menu).
+// Para cualquier mensaje que contenga palabras potencialmente-accionables
+// (recibo, factura, reclamo, pagué, etc.) se llama al clasificador LLM
+// que interpreta la oración en su contexto completo. Evita falsos positivos
+// tipo "¿qué pasa si recibo la casa rota?" → flow recibo.
+// ═══════════════════════════════════════════════════════════
+async function detectarIntencion(texto, rol = null) {
   const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  // ── Helper: detectar si la frase incluye una negación previa ──
-  // Ej: "todavia no pague", "aun no pague", "no pague", "no me acuerdo si pague"
-  // Si negado, NO es confirmación de pago — que vaya a Gemini para diálogo natural.
-  function esNegado(patron) {
-    // Buscamos negaciones dentro de los ~20 caracteres previos al match
-    const re = new RegExp('(no|todavia no|aun no|nunca|tampoco)\\s+[\\w\\s]{0,15}?(' + patron + ')', 'i');
-    return re.test(t);
-  }
-
-  // ── Comando ayuda / menú ──
+  // ── FAST-PATH: comando ayuda / menú (inequívoco) ──
   if (/^(ayuda|menu|help|\/ayuda|\/menu|\/help|comandos|que puedo|qué puedo|que podes hacer|qué podés hacer)(\b|[?!.]|$)/i.test(t)) {
     return { tipo: 'ayuda', texto };
   }
 
-  // ── Consulta reclamos abiertos ──
-  // "reclamos abiertos", "mis reclamos", "qué reclamos tengo", "estado reclamos"
-  if (/\breclamos?\b/.test(t) &&
-      /\b(abierto|abiertas|pendiente|mis|tengo|que|cual|cuales|estado|ver|lista|listar)\b/.test(t) &&
-      !/nuevo|registrar|crear|hay un|tengo un/.test(t)) {
-    return { tipo: 'consultar_reclamos', texto };
+  // ── Heurística de short-circuit: si el mensaje NO contiene ninguna
+  // palabra potencialmente-accionable, devolvemos null sin llamar al LLM.
+  // null → el webhook enruta a Gemini/RAG (flujo conversacional normal).
+  // Esto ahorra ~300ms de latencia en la mayoría de las consultas legales.
+  const tienePalabraAccionable = /\b(recibo|recibos|recibi|recibí|comprobante|comprobantes|factura|facturas|boleta|boletas|reclamo|reclamos|pago|pagos|pague|pagué|pagar|pagaste|pago|transferi|transferí|transferid|deposit|depositar|rompio|rompió|roto|rota|arregla|arreglar|reparar|mantenimiento|filtra|filtración|gotea|gotera|humedad|fuga|resuelt|resolver|cerrar|cerrad|curso|en progres)\b/i.test(texto);
+  if (!tienePalabraAccionable) {
+    return null;
   }
 
-  // ── Propietario: cambiar estado de reclamo ──
-  // "marcá resuelto reclamo 3", "resolver reclamo 5", "reclamo 2 en curso", "cerrar reclamo 1"
-  if (/\breclamo\b/.test(t) && /\b\d+\b/.test(t) &&
-      /(resuelt|resolver|cerrar|cerrad|curso|en progres|trabaj|solucionad|termina)/.test(t)) {
-    return { tipo: 'cambiar_estado_reclamo', texto };
+  // ── Clasificador LLM contextual para el resto ──
+  const etiqueta = await clasificarIntencionLLM(texto, rol);
+  switch (etiqueta) {
+    case 'ACCION_GENERAR_RECIBO':         return { tipo: 'recibo', texto };
+    case 'ACCION_ENVIAR_FACTURA':         return { tipo: 'factura_servicio', texto };
+    case 'ACCION_REPORTAR_RECLAMO':       return { tipo: 'reclamo', texto };
+    case 'ACCION_CONSULTAR_RECLAMOS':     return { tipo: 'consultar_reclamos', texto };
+    case 'ACCION_CAMBIAR_ESTADO_RECLAMO': return { tipo: 'cambiar_estado_reclamo', texto };
+    case 'ACCION_CONFIRMAR_PAGO':
+      // El sistema distingue inquilino vs propietario por rol.
+      return { tipo: rol === 'propietario' ? 'confirmar_pago_propietario' : 'confirmar_pago_inquilino', texto };
+    case 'CONSULTA_GENERAL':
+    default:
+      return null;
   }
-
-  // Pedido de recibo
-  if (/recibo|comprobante|comprobant/.test(t) && /mand|envi|pasa|quiero|necesito|dame|genera/.test(t)) {
-    return { tipo: 'recibo', texto };
-  }
-  // "mandame el recibo de marzo", etc.
-  if (/recibo/.test(t)) {
-    return { tipo: 'recibo', texto };
-  }
-
-  // Pedido de factura de servicio
-  if (/factura|boleta/.test(t) && /mand|envi|pasa|quiero|necesito|dame/.test(t)) {
-    return { tipo: 'factura_servicio', texto };
-  }
-  // "pasame la factura de luz"
-  if (/factura/.test(t) && /luz|gas|agua|internet|cable|abl|expensas|servicio/.test(t)) {
-    return { tipo: 'factura_servicio', texto };
-  }
-  // "mandame la de luz/gas/agua" (sin decir factura explícitamente)
-  if (/mand|envi|pasa/.test(t) && /\b(luz|gas|agua|epe|epec|edenor|edesur|enersa)\b/.test(t) && !/recibo/.test(t)) {
-    return { tipo: 'factura_servicio', texto };
-  }
-
-  // Confirmación de pago (inquilino: "ya pagué", "pagué el alquiler", "transferí el pago")
-  // IMPORTANTE: si hay negación previa ("no pagué", "todavía no pagué"), NO es confirmación.
-  if (/pague|pago|transfiri|transferi|deposit|mande|mandate|envi|pasar/.test(t) &&
-      /alquiler|pago|rent/.test(t) &&
-      !esNegado('pague|pago|transfiri|transferi|deposit')) {
-    return { tipo: 'confirmar_pago_inquilino', texto };
-  }
-
-  // Reclamos y mantenimiento (inquilino: "reclamo", "se rompió", "arreglar", etc.)
-  if (/reclamo|se rompio|roto|arreglar|reparar|mantenimiento|problema|no funciona|rotura|perdida|gotea|filtra|humedad|grieta|fuga|gotazo/.test(t)) {
-    return { tipo: 'reclamo', texto };
-  }
-
-  // Propietario confirmando pago: "confirmar pago", "confirmá el pago", "marcar como pagado", "ya pagó"
-  // Mismo cuidado con negaciones: "no pagó" NO es confirmación.
-  if (/confirm.*pago|marca.*pagado|ya pago|sabes que pago/.test(t) &&
-      !esNegado('pago|pagado')) {
-    return { tipo: 'confirmar_pago_propietario', texto };
-  }
-
-  return null; // No es un comando especial → va a Gemini
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1171,9 +1207,12 @@ app.post('/webhook', async (req, res) => {
       // Si no es 1, 2 ni 3, dejar que siga el flujo normal (quizás escribió otra cosa)
     }
 
-    // ── 2. Detectar intención especial (recibo, factura) ──
+    // ── 2. Detectar intención especial (recibo, factura, reclamo, etc.) ──
+    // v5.19.0: clasificación contextual con LLM para evitar falsos positivos
+    // como "¿qué pasa si recibo la casa rota?" → flujo recibo. Pasa el rol
+    // para resolver correctamente "confirmar pago" (inquilino vs propietario).
     if (!esAudio && text) {
-      const intencion = detectarIntencion(text);
+      const intencion = await detectarIntencion(text, usuario.rol);
 
       // ── AYUDA / MENÚ (por rol) ──────────────────────────────
       if (intencion?.tipo === 'ayuda') {

@@ -52,7 +52,8 @@
       "bloque": "locacion_basica",
       "rol": "inquilino",
       "pregunta": "Quiero irme antes del contrato, ¿qué penalidad pago?",
-      "keywords_esperadas": ["1221", "rescisión", "6 meses", "un mes y medio"]
+      "keywords_esperadas": ["10%", "canon", "1221", "1 mes"],
+      "no_debe_decir": ["1,5 meses", "un mes y medio como regla vigente"]
     },
     {
       "id": "loc-08",
@@ -73,7 +74,7 @@
       "bloque": "locacion_basica",
       "rol": "inquilino",
       "pregunta": "¿Puedo subalquilar una habitación?",
-      "keywords_esperadas": ["prohibida", "salvo pacto", "expreso"]
+      "keywords_esperadas": ["autoriz", "locador", "contrato"]
     },
 
     {
@@ -96,7 +97,7 @@
       "bloque": "dnu_70",
       "rol": "inquilino",
       "pregunta": "¿Pueden pedirme varias garantías a la vez?",
-      "keywords_esperadas": ["derogado", "13", "múltiples"]
+      "keywords_esperadas": ["libertad", "DNU", "sí"]
     },
     {
       "id": "dnu-04",
@@ -478,7 +479,7 @@
       "bloque": "edge_cases",
       "rol": "inquilino",
       "pregunta": "dónde queda la sección de cobros en la página",
-      "keywords_esperadas": ["Cobros", "alquil.app"]
+      "keywords_esperadas": ["Cobros", "menú"]
     },
     {
       "id": "edge-05",
