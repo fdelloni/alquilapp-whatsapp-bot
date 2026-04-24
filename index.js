@@ -1,5 +1,8 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
+// v5.18.0 — Retrieval RAG mejorado: threshold 0.25→0.50, k 6→8,
+//          prompt con nivel de contexto (fuerte/parcial/débil) y
+//          guardrails explícitos contra el régimen 27.551 derogado.
 // v5.11.0 — RAG con pgvector + /ai/gemini-embed proxy
 // v5.10.0 — Recibos PDF, facturas servicios, recordatorios,
 //          confirmar pagos, reclamos, comprobantes, morosidad,
@@ -2346,10 +2349,15 @@ async function obtenerEmbedding(texto, taskType = 'RETRIEVAL_QUERY') {
   }
 }
 
-async function obtenerContextoRAG(pregunta, { k = 6, threshold = 0.25, fuente = null } = {}) {
+// v5.18.0 — threshold subido a 0.50 y k a 8 para reducir ruido semántico
+// y mejorar recuperación de chunks específicos (sellado provincial, fianza,
+// desalojo, arts. CCyC). Devuelve además un "nivel de contexto" para que
+// el prompt de consultarGemini lo use y evite responder "no tengo info"
+// cuando el contexto es parcialmente útil.
+async function obtenerContextoRAG(pregunta, { k = 8, threshold = 0.50, fuente = null } = {}) {
   try {
     const emb = await obtenerEmbedding(pregunta, 'RETRIEVAL_QUERY');
-    if (!emb) return '';
+    if (!emb) return { bloque: '', nivel: 'ninguno', topSim: 0 };
     const { data, error } = await supabase.rpc('match_documentos_chatbot', {
       query_embedding: emb,
       match_threshold: threshold,
@@ -2358,17 +2366,20 @@ async function obtenerContextoRAG(pregunta, { k = 6, threshold = 0.25, fuente = 
     });
     if (error) {
       console.warn('⚠️ match_documentos_chatbot error:', error.message);
-      return '';
+      return { bloque: '', nivel: 'ninguno', topSim: 0 };
     }
-    if (!data || data.length === 0) return '';
+    if (!data || data.length === 0) return { bloque: '', nivel: 'ninguno', topSim: 0 };
+    const topSim = Number(data[0]?.similarity) || 0;
+    // nivel: fuerte ≥0.70 (match claro), parcial ≥0.55 (hay algo útil), débil resto
+    const nivel = topSim >= 0.70 ? 'fuerte' : topSim >= 0.55 ? 'parcial' : 'debil';
     const bloque = data
-      .map((m, i) => `[Fuente ${i + 1}] (${m.fuente}/${m.tipo}) — ${m.titulo}\n${m.contenido}`)
+      .map((m, i) => `[Fuente ${i + 1} | sim=${Number(m.similarity).toFixed(2)}] (${m.fuente}/${m.tipo}) — ${m.titulo}\n${m.contenido}`)
       .join('\n\n---\n\n');
-    console.log(`📚 RAG: ${data.length} fragmentos recuperados (top sim: ${data[0]?.similarity?.toFixed?.(3)})`);
-    return bloque;
+    console.log(`📚 RAG: ${data.length} fragmentos | top sim: ${topSim.toFixed(3)} | nivel: ${nivel}`);
+    return { bloque, nivel, topSim };
   } catch (e) {
     console.warn('⚠️ RAG error:', e.message);
-    return '';
+    return { bloque: '', nivel: 'ninguno', topSim: 0 };
   }
 }
 
@@ -2555,17 +2566,37 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
   let systemPrompt = buildSystemPrompt(usuario, datos);
 
   // ── RAG: inyectar contexto de documentos_chatbot ──
-  // Se recupera siempre; si no hay matches el prompt queda igual.
-  const ctxRAG = await obtenerContextoRAG(pregunta);
+  // v5.18.0 — obtenerContextoRAG devuelve { bloque, nivel, topSim }. El
+  // "nivel" (fuerte/parcial/debil/ninguno) condiciona las reglas de uso para
+  // evitar que el bot responda "no tengo info" cuando hay contexto parcial
+  // útil, y para que no invente cuando el contexto es débil.
+  const { bloque: ctxRAG, nivel: ctxNivel, topSim: ctxSim } = await obtenerContextoRAG(pregunta);
   if (ctxRAG) {
+    const reglaPorNivel = {
+      fuerte:
+        `Nivel de contexto: FUERTE (top sim=${ctxSim.toFixed(2)}). La documentación cubre directamente el tema. ` +
+        `Respondé usando exclusivamente la información de las [Fuente N] de abajo. ` +
+        `Citá números de artículo, ley o DNU cuando aparezcan. NO digas "no tengo esa información".`,
+      parcial:
+        `Nivel de contexto: PARCIAL (top sim=${ctxSim.toFixed(2)}). Hay fragmentos relacionados pero no perfectamente alineados con la pregunta. ` +
+        `Respondé con lo que la documentación SÍ dice, siendo explícito sobre qué aspecto específico no está cubierto. ` +
+        `Si la pregunta es de AlquilApp (precio, funciones, cómo hacer X) y el contexto tiene info general sobre la plataforma, respondé con eso antes de decir "no sé". ` +
+        `NO inventes datos, fechas, artículos, leyes ni funcionalidades que no aparezcan textualmente en las [Fuente N].`,
+      debil:
+        `Nivel de contexto: DÉBIL (top sim=${ctxSim.toFixed(2)}). Los fragmentos recuperados pueden ser ruido. ` +
+        `Si al leer las [Fuente N] confirmás que tratan el tema preguntado, respondé con esa info. ` +
+        `Si son tangenciales o no-relacionadas, decí "No tengo información específica sobre esto en mi base de conocimiento" y ofrecé redirigir a un abogado o a la sección correspondiente de AlquilApp.`
+    };
     systemPrompt +=
       `\n\n=== DOCUMENTACIÓN DE REFERENCIA (AlquilApp y legislación argentina aplicable) ===\n` +
       `REGLAS DE USO DEL CONTEXTO (prioritarias sobre tu entrenamiento general):\n` +
       `1) Esta documentación es tu ÚNICA fuente de verdad sobre legislación argentina de alquileres y sobre AlquilApp. ` +
-      `Si dice que una ley fue derogada, está derogada — no la menciones como vigente aunque tu entrenamiento diga otra cosa.\n` +
-      `2) Si el contexto responde la pregunta directamente → respondé con esa info, citando números de ley o artículo cuando aparezcan.\n` +
-      `3) Si el contexto NO responde directamente pero tiene info RELACIONADA (ej: preguntan por un artículo puntual del CCyC y tenés un doc que cubre el bloque de artículos; preguntan por un trámite y tenés una plantilla o glosario que lo define) → respondé con lo que el contexto SÍ dice y, si algo queda sin cubrir, aclará brevemente qué aspecto específico no está en tu base. NO inventes datos, fechas, artículos ni leyes que no estén en el contexto.\n` +
-      `4) Solo si el contexto NO tiene NADA tangencialmente útil sobre el tema → decí "No tengo esa información en mi base de conocimiento" y pará ahí.\n\n` +
+      `Si dice que una ley fue derogada, está derogada — no la menciones como vigente aunque tu entrenamiento diga otra cosa. ` +
+      `Atención: el DNU 70/2023 (ratificado por Ley 27.742) derogó parte de la Ley 27.551 y modificó el art. 1221 CCyC. ` +
+      `NO uses los montos del régimen viejo (1,5 meses / 1 mes / 6 meses de espera) como regla vigente para contratos post 29/12/2023 — esos valores solo aplican por ultraactividad a contratos firmados antes de esa fecha.\n` +
+      `2) Antes de responder, identificá si la consulta es sobre legislación nacional, legislación provincial (sellado, ARBA/DGR/AGIP/ATM), una funcionalidad de AlquilApp, o un trámite práctico — y usá el fragmento más específico para esa dimensión.\n` +
+      `3) ${reglaPorNivel[ctxNivel] || reglaPorNivel.debil}\n` +
+      `4) NUNCA inventes artículos, números de ley, porcentajes, plazos, alícuotas ni funcionalidades que no aparezcan textualmente en las [Fuente N] de abajo. Si dudás, es preferible decir "no está cubierto en mi base" antes que afirmar un dato falso.\n\n` +
       ctxRAG +
       `\n=== FIN DOCUMENTACIÓN ===\n`;
   }
