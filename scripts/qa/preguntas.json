@@ -31,7 +31,7 @@
       "bloque": "locacion_basica",
       "rol": "propietario",
       "pregunta": "¿Cada cuánto puedo actualizar el canon?",
-      "keywords_esperadas": ["acuerdo", "índice", "libre"]
+      "keywords_esperadas": ["pact", "libre", "contrato"]
     },
     {
       "id": "loc-05",

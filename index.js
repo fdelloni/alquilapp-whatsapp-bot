@@ -1,5 +1,11 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
+// v5.20.0 — Prompt RAG reforzado: 2 reglas nuevas (5 y 6) para manejar
+//          chunks huérfanos (fragmentos cortados) y temporalidad de
+//          normas (vigente vs derogada por ultraactividad). BOT_VERSION
+//          ahora se lee dinámicamente del package.json (antes hardcoded
+//          en /health, / y /webhook). Keywords del loc-04 del QA
+//          actualizadas ("pact", "libre", "contrato").
 // v5.19.0 — Intent classifier contextual con LLM: reemplaza regex
 //          "recibo → flow recibo" por clasificación semántica (Gemini
 //          Flash, temperature 0.0). Evita falsos positivos tipo
@@ -22,6 +28,16 @@ const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
 const { ImapFlow } = require('imapflow');
 const { simpleParser } = require('mailparser');
+
+// v5.20.0 — leer versión dinámicamente del package.json
+// en lugar de hardcodear en /health, / y /webhook.
+const BOT_VERSION = (() => {
+  try {
+    return require('./package.json').version || 'unknown';
+  } catch {
+    return 'unknown';
+  }
+})();
 
 const app = express();
 app.use(express.json({ limit: '25mb' })); // subimos límite para PDFs/imágenes base64 en proxy IA
@@ -2635,7 +2651,12 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
       `NO uses los montos del régimen viejo (1,5 meses / 1 mes / 6 meses de espera) como regla vigente para contratos post 29/12/2023 — esos valores solo aplican por ultraactividad a contratos firmados antes de esa fecha.\n` +
       `2) Antes de responder, identificá si la consulta es sobre legislación nacional, legislación provincial (sellado, ARBA/DGR/AGIP/ATM), una funcionalidad de AlquilApp, o un trámite práctico — y usá el fragmento más específico para esa dimensión.\n` +
       `3) ${reglaPorNivel[ctxNivel] || reglaPorNivel.debil}\n` +
-      `4) NUNCA inventes artículos, números de ley, porcentajes, plazos, alícuotas ni funcionalidades que no aparezcan textualmente en las [Fuente N] de abajo. Si dudás, es preferible decir "no está cubierto en mi base" antes que afirmar un dato falso.\n\n` +
+      `4) NUNCA inventes artículos, números de ley, porcentajes, plazos, alícuotas ni funcionalidades que no aparezcan textualmente en las [Fuente N] de abajo. Si dudás, es preferible decir "no está cubierto en mi base" antes que afirmar un dato falso.\n` +
+      `5) Alerta sobre FRAGMENTOS CORTADOS: si una [Fuente N] empieza a mitad de oración, lista o tabla (ej: arranca con letra minúscula, con "- ", con "| ", o sin encabezado), asumí que hay contexto previo que no ves. En ese caso:\n` +
+      `   a) Priorizá los fragmentos con encabezado completo (títulos, ##, ###) sobre los fragmentos huérfanos.\n` +
+      `   b) Si el fragmento huérfano menciona plazos, montos, porcentajes o reglas SIN indicar si corresponden a la regla vigente o a un régimen anterior/derogado, NO los cites como vigentes; aclará que la documentación no especifica ese punto con certeza.\n` +
+      `   c) Cruzá la información contra los otros fragmentos — si hay contradicción entre un fragmento con contexto claro y uno huérfano, confiá en el que tiene contexto.\n` +
+      `6) TEMPORALIDAD: cuando respondas sobre montos, plazos o procedimientos legales, asegurate de distinguir entre "régimen vigente" y "régimen derogado por ultraactividad". Si la pregunta no especifica fecha del contrato, asumí régimen vigente (post 29/12/2023) y aclaralo en la respuesta ("bajo la regla vigente ..."). Si el usuario menciona que su contrato es anterior a esa fecha, recién ahí aplicá la regla derogada.\n\n` +
       ctxRAG +
       `\n=== FIN DOCUMENTACIÓN ===\n`;
   }
@@ -5026,7 +5047,7 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
         llm: tLLMMs,
         total: tTotalMs
       },
-      version_bot: '5.17.0',
+      version_bot: BOT_VERSION,
       ts: new Date().toISOString()
     });
   } catch (e) {
@@ -5042,7 +5063,7 @@ app.get('/', (req, res) => {
   res.json({
     status:    'ok',
     app:       'AlquilApp WhatsApp Bot (Twilio)',
-    version:   '5.17.0',
+    version:   BOT_VERSION,
     timestamp: new Date().toISOString(),
     features:  [
       'recibos-pdf',
@@ -5090,14 +5111,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  res.send('AlquilApp WhatsApp Bot v5.17.0 — Webhook activo ✅');
+  res.send(`AlquilApp WhatsApp Bot v${BOT_VERSION} — Webhook activo ✅`);
 });
 
 // ── /health — endpoint simple para monitoreo (sin detalles sensibles) ──
 app.get('/health', (req, res) => {
   res.json({
     status:  'ok',
-    version: '5.17.0',
+    version: BOT_VERSION,
     uptime:  Math.round(process.uptime()),
     ts:      new Date().toISOString()
   });
