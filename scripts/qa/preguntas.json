@@ -1,7 +1,7 @@
 {
-  "version": "1.0",
-  "actualizado": "2026-04-22",
-  "descripcion": "Banco de preguntas para QA automatizado del chatbot WhatsApp de AlquilApp. Simula consultas reales de usuarios. Cada pregunta tiene un tag de bloque, un rol simulado y, cuando es posible, keywords que DEBEN aparecer en la respuesta correcta.",
+  "version": "1.1",
+  "actualizado": "2026-04-24",
+  "descripcion": "Banco de preguntas para QA automatizado del chatbot WhatsApp de AlquilApp. Simula consultas reales de usuarios. Cada pregunta tiene un tag de bloque, un rol simulado y, cuando es posible, keywords que DEBEN aparecer en la respuesta correcta. v1.1 (2026-04-24): +39 preguntas — provincias extra (Neuquén, Río Negro, Tucumán, Salta, Chaco), alquiler temporario, mediación previa, juicio ejecutivo, locación comercial con fondo de comercio, garante avanzado, familia avanzado, coloquial con typos, e intent classifier (pares verbo/sustantivo).",
   "preguntas": [
     {
       "id": "loc-01",
@@ -361,7 +361,7 @@
       "bloque": "features_alquilapp",
       "rol": "inquilino",
       "pregunta": "Quiero pagar el alquiler, ¿cómo hago?",
-      "keywords_esperadas": ["cobro"]
+      "keywords_esperadas": ["pag", "transfer"]
     },
     {
       "id": "fea-09",
@@ -510,6 +510,265 @@
       "rol": "inquilino",
       "pregunta": "¿Cuáles son mis obligaciones como inquilino según el Código Civil?",
       "keywords_esperadas": ["1206", "conservar", "pagar"]
+    },
+
+    {
+      "id": "prov-neu-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cómo funciona el sellado de un alquiler en Neuquén?",
+      "keywords_esperadas": ["sellado", "Neuquén", "DPR"]
+    },
+    {
+      "id": "prov-rio-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Río Negro hay que sellar el contrato de alquiler?",
+      "keywords_esperadas": ["sellado", "Río Negro"]
+    },
+    {
+      "id": "prov-tuc-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en Tucumán?",
+      "keywords_esperadas": ["Tucumán", "sellado", "alícuota"]
+    },
+    {
+      "id": "prov-sal-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Salta hay exención de sellado para vivienda única?",
+      "keywords_esperadas": ["Salta", "sellado"]
+    },
+    {
+      "id": "prov-cha-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Quién regula el sellado en Chaco?",
+      "keywords_esperadas": ["Chaco", "sellado"]
+    },
+
+    {
+      "id": "tem-01",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un alquiler temporario turístico y por cuánto tiempo se puede pactar?",
+      "keywords_esperadas": ["temporario", "tres meses", "1199"]
+    },
+    {
+      "id": "tem-02",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Necesito habilitación municipal para alquilar mi depto por Airbnb?",
+      "keywords_esperadas": ["habilitación", "municipal"]
+    },
+    {
+      "id": "tem-03",
+      "bloque": "alquiler_temporario",
+      "rol": "inquilino",
+      "pregunta": "Si alquilo por 6 meses por temporada, ¿se aplica el régimen de vivienda?",
+      "keywords_esperadas": ["temporario", "vivienda"]
+    },
+    {
+      "id": "tem-04",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que registrar el alquiler temporario en ARCA?",
+      "keywords_esperadas": ["registro", "temporario"]
+    },
+
+    {
+      "id": "med-01",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿La mediación previa es obligatoria para iniciar un desalojo?",
+      "keywords_esperadas": ["26.589", "exenta", "desalojo"]
+    },
+    {
+      "id": "med-02",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que mediar antes de demandar el cobro de alquileres atrasados?",
+      "keywords_esperadas": ["26.589", "mediación", "obligatoria"]
+    },
+    {
+      "id": "med-03",
+      "bloque": "mediacion",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto cuesta una mediación previa en CABA?",
+      "keywords_esperadas": ["mediación", "honorarios"]
+    },
+    {
+      "id": "med-04",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si el inquilino no se presenta a la mediación?",
+      "keywords_esperadas": ["acta", "incomparecencia"]
+    },
+
+    {
+      "id": "ejec-01",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Puedo iniciar un juicio ejecutivo por alquileres impagos?",
+      "keywords_esperadas": ["ejecutivo", "título", "contrato"]
+    },
+    {
+      "id": "ejec-02",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Qué documentos preparo para un juicio ejecutivo de alquileres?",
+      "keywords_esperadas": ["contrato", "intimación", "carta documento"]
+    },
+    {
+      "id": "ejec-03",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Es más rápido el ejecutivo que el desalojo?",
+      "keywords_esperadas": ["plazos", "ejecutivo", "desalojo"]
+    },
+
+    {
+      "id": "comer-01",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambia en un alquiler comercial respecto a uno de vivienda?",
+      "keywords_esperadas": ["comercial", "destino", "1187"]
+    },
+    {
+      "id": "comer-02",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino se va y deja la clientela del local, ¿hay transferencia de fondo de comercio?",
+      "keywords_esperadas": ["fondo", "comercio", "Ley 11.867"]
+    },
+    {
+      "id": "comer-03",
+      "bloque": "locacion_comercial",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo modificar el local que alquilo para mi negocio?",
+      "keywords_esperadas": ["mejoras", "autoriz", "1211"]
+    },
+    {
+      "id": "comer-04",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿El IVA se cobra en alquiler comercial?",
+      "keywords_esperadas": ["IVA", "comercial", "21"]
+    },
+
+    {
+      "id": "gar-01",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "Mi garante quiere vender el inmueble que dio en garantía, ¿puedo oponerme?",
+      "keywords_esperadas": ["garantía", "venta", "preferencia"]
+    },
+    {
+      "id": "gar-02",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "¿Puedo cambiar al garante a mitad del contrato si no me deja tranquilo?",
+      "keywords_esperadas": ["sustituir", "fiador", "acuerdo"]
+    },
+    {
+      "id": "gar-03",
+      "bloque": "garante_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi garante me llamó porque el banco le bloqueó la cuenta por una deuda mía, ¿es legal?",
+      "keywords_esperadas": ["solidari", "1591"]
+    },
+
+    {
+      "id": "fam-01",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja era titular del contrato y falleció, no tenemos pacto de convivencia. ¿Puedo seguir en el depto?",
+      "keywords_esperadas": ["1190", "convivencia", "continuación"]
+    },
+    {
+      "id": "fam-02",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Tengo un hijo menor a cargo. Si nos separamos con mi marido, ¿quién se queda con el alquiler?",
+      "keywords_esperadas": ["443", "vivienda familiar", "atribución"]
+    },
+
+    {
+      "id": "coloq-01",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "el depto se viene abajo, hay humedad por todos lados que hago",
+      "keywords_esperadas": ["intim", "reparación", "1201"]
+    },
+    {
+      "id": "coloq-02",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "no me devuelven el deposito, que onda",
+      "keywords_esperadas": ["deposito", "intim", "devolu"]
+    },
+    {
+      "id": "coloq-03",
+      "bloque": "coloquial",
+      "rol": "propietario",
+      "pregunta": "el inkilino me debe 3 meses q hago",
+      "keywords_esperadas": ["intimar", "10 días", "carta"]
+    },
+    {
+      "id": "coloq-04",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "puedo tener una mascota o no",
+      "keywords_esperadas": ["mascota", "contrato", "permitida"]
+    },
+    {
+      "id": "coloq-05",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "se rompio la heladera quien paga",
+      "keywords_esperadas": ["reparación", "1201"]
+    },
+
+    {
+      "id": "intent-01",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si recibo la casa en mal estado?",
+      "keywords_esperadas": ["acta", "estado", "entrega"],
+      "no_debe_decir": ["recibo de pago", "generar recibo"]
+    },
+    {
+      "id": "intent-02",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "Nunca recibo respuesta del propietario, ¿puedo intimarlo?",
+      "keywords_esperadas": ["intim", "fehacient"],
+      "no_debe_decir": ["generando tu recibo"]
+    },
+    {
+      "id": "intent-03",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué es una boleta de sellado?",
+      "keywords_esperadas": ["sellado", "provincia"],
+      "no_debe_decir": ["enviando factura"]
+    },
+    {
+      "id": "intent-04",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿cómo hago un reclamo de mantenimiento por la app?",
+      "keywords_esperadas": ["ticket", "reclamo", "AlquilApp"],
+      "no_debe_decir": ["nuevo reclamo creado"]
+    },
+    {
+      "id": "intent-05",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si no pago un mes de alquiler?",
+      "keywords_esperadas": ["intimación", "1222", "10 días"],
+      "no_debe_decir": ["pago confirmado"]
     }
   ]
 }

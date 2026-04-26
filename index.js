@@ -1,5 +1,13 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
+// v5.21.0 — Tres ajustes: (1) regla 4-bis del prompt fuerza citación
+//          literal de leyes/DNU/artículos cuando aparecen en el
+//          contexto (cierra el caso des-04 del QA). (2) Disclaimer
+//          legal automático: post-procesador agregarDisclaimerLegal()
+//          añade nota de "consultá a un abogado" cuando la respuesta
+//          contiene referencias normativas nominadas (Ley XX, DNU XX,
+//          art. XXXX, CCyC, CPCCN, ARCA, etc.). Idempotente. (3) Banco
+//          QA ampliado de 70 a 109 preguntas (v1.1 del banco).
 // v5.20.0 — Prompt RAG reforzado: 2 reglas nuevas (5 y 6) para manejar
 //          chunks huérfanos (fragmentos cortados) y temporalidad de
 //          normas (vigente vs derogada por ultraactividad). BOT_VERSION
@@ -2652,6 +2660,7 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
       `2) Antes de responder, identificá si la consulta es sobre legislación nacional, legislación provincial (sellado, ARBA/DGR/AGIP/ATM), una funcionalidad de AlquilApp, o un trámite práctico — y usá el fragmento más específico para esa dimensión.\n` +
       `3) ${reglaPorNivel[ctxNivel] || reglaPorNivel.debil}\n` +
       `4) NUNCA inventes artículos, números de ley, porcentajes, plazos, alícuotas ni funcionalidades que no aparezcan textualmente en las [Fuente N] de abajo. Si dudás, es preferible decir "no está cubierto en mi base" antes que afirmar un dato falso.\n` +
+      `4 bis) CITAR FUENTES NORMATIVAS: cuando el contexto contenga referencias explícitas a leyes (Ley XX.XXX, DNU XX/XXX), artículos del CCyC (art. NNNN), códigos procesales (art. NNN bis CPCCN) u otra norma nominada — incluí esa cita literal en tu respuesta. No la sustituyas por términos genéricos. Ejemplo: si el contexto dice "Ley 26.589 de mediación previa" y vos respondés sobre mediación, escribí "Ley 26.589" en la respuesta, no solo "la ley aplicable". Esto vale para cualquier nivel de contexto (fuerte, parcial o débil) en el que aparezca el número.\n` +
       `5) Alerta sobre FRAGMENTOS CORTADOS: si una [Fuente N] empieza a mitad de oración, lista o tabla (ej: arranca con letra minúscula, con "- ", con "| ", o sin encabezado), asumí que hay contexto previo que no ves. En ese caso:\n` +
       `   a) Priorizá los fragmentos con encabezado completo (títulos, ##, ###) sobre los fragmentos huérfanos.\n` +
       `   b) Si el fragmento huérfano menciona plazos, montos, porcentajes o reglas SIN indicar si corresponden a la regla vigente o a un régimen anterior/derogado, NO los cites como vigentes; aclará que la documentación no especifica ese punto con certeza.\n` +
@@ -2679,7 +2688,7 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
 
     historial.push({ role: 'model', parts: [{ text: texto }] });
     await guardarHistorial(telefono, historial);
-    return formatearParaWhatsApp(texto);
+    return formatearParaWhatsApp(agregarDisclaimerLegal(texto));
 
   } catch (err) {
     console.error('consultarGemini error:', err);
@@ -2746,7 +2755,7 @@ async function consultarGeminiConAudio(telefono, audioUrl, mimeType, usuario, da
     historial.push({ role: 'model', parts: [{ text: respuesta }] });
     await guardarHistorial(telefono, historial);
     console.log(`✅ Audio procesado para ${telefono}`);
-    return formatearParaWhatsApp(respuesta);
+    return formatearParaWhatsApp(agregarDisclaimerLegal(respuesta));
 
   } catch (err) {
     console.error('Error consultando Gemini con audio:', err);
@@ -3044,6 +3053,56 @@ function formatearParaWhatsApp(texto) {
     .replace(/`(.*?)`/g, '$1')
     .replace(/\[(.*?)\]\(.*?\)/g, '$1')
     .trim();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DISCLAIMER LEGAL AUTOMÁTICO
+// v5.21.0 — Si la respuesta del bot contiene referencias normativas
+// (leyes, DNUs, artículos del CCyC/CPCCN, plazos legales, alícuotas)
+// se agrega un disclaimer breve invitando a consultar a un abogado.
+// Heurística para evitar falsos positivos: solo dispara si hay AL MENOS
+// UN identificador normativo nominado (Ley XX, DNU XX, art. XX, CCyC,
+// CPCCN, código fiscal, etc.) — no por simple uso de "días" o "meses".
+// Idempotente: si la respuesta ya contiene un disclaimer (algunas
+// generaciones lo incluyen solas), no se duplica.
+// ═══════════════════════════════════════════════════════════
+function agregarDisclaimerLegal(texto) {
+  if (!texto || typeof texto !== 'string') return texto;
+
+  const lower = texto.toLowerCase();
+
+  // Si ya tiene disclaimer (frases que el LLM suele usar), no duplicar.
+  const yaTieneDisclaimer = (
+    lower.includes('consultar a un abogado') ||
+    lower.includes('consulta a un abogado') ||
+    lower.includes('consultá a un abogado') ||
+    lower.includes('asesoramiento legal') ||
+    lower.includes('orientación informativa') ||
+    lower.includes('orientacion informativa')
+  );
+  if (yaTieneDisclaimer) return texto;
+
+  // Detectar referencias normativas nominadas. Si hay AL MENOS UNA,
+  // la respuesta es de naturaleza jurídica y conviene el disclaimer.
+  const hayReferenciaNormativa = (
+    /\bley\s*[0-9]{1,3}\.?[0-9]{3}\b/i.test(texto) ||      // Ley 27.551, Ley 26589
+    /\bdnu\s*[0-9]+\s*\/\s*[0-9]{2,4}\b/i.test(texto) ||    // DNU 70/2023
+    /\bart\.?\s*[0-9]{3,4}\b/i.test(texto) ||               // art. 1221, art 684
+    /\bart[ií]culo\s*[0-9]{3,4}\b/i.test(texto) ||          // artículo 1221
+    /\bccyc\b/i.test(texto) ||                              // CCyC
+    /\bcpccn\b/i.test(texto) ||                             // CPCCN
+    /\bcódigo\s+(civil|procesal|fiscal)\b/i.test(texto) ||
+    /\bcodigo\s+(civil|procesal|fiscal)\b/i.test(texto) ||
+    /\barba\b/i.test(texto) || /\bagip\b/i.test(texto) ||
+    /\b(dgr|atm|api)\s+(córdoba|mendoza|santa fe)/i.test(texto) ||
+    /\barca\b/i.test(texto) || /\bafip\b/i.test(texto)
+  );
+
+  if (!hayReferenciaNormativa) return texto;
+
+  return texto.trim() +
+    `\n\n_ℹ️ Orientación informativa basada en legislación argentina vigente a abril 2026. ` +
+    `Para tu caso particular consultá a un abogado matriculado._`;
 }
 
 // ═══════════════════════════════════════════════════════════
