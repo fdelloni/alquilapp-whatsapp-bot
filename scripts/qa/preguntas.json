@@ -1,15 +1,15 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "actualizado": "2026-04-26",
-  "descripcion": "Banco de preguntas para QA automatizado del chatbot WhatsApp de AlquilApp. Simula consultas reales de usuarios. Cada pregunta tiene un tag de bloque, un rol simulado y, cuando es posible, keywords que DEBEN aparecer en la respuesta correcta. v1.2 (2026-04-26): keywords ajustadas para tem-02 (RUPT/Turismo) y gar-02 (contrato/garantía/abogado), eran falsos negativos del matcher. Acompaña carga de 4 chunks nuevos en documentos_chatbot para Neuquén, Tucumán, Salta y Chaco (ya en DB).",
+  "descripcion": "Banco de preguntas para QA automatizado del chatbot WhatsApp de AlquilApp. v1.3 (2026-04-26): keywords loc-01 cambiadas a mínimo/supletori/1198 — la respuesta correcta cita art. 1198 CCyC (no modificado por DNU 70) por lo que pedir 'DNU 70' era falso negativo. Acompaña carga de chunk de Río Negro en documentos_chatbot. v1.2 (2026-04-26): keywords ajustadas para tem-02 y gar-02. Banco original ampliado en v1.1 con 39 preguntas (provincias, temporario, mediación, ejecutivo, comercial, garante, familia, coloquial, intent_classifier).",
   "preguntas": [
     {
       "id": "loc-01",
       "bloque": "locacion_basica",
       "rol": "inquilino",
       "pregunta": "¿Cuánto puede durar como mínimo un contrato de alquiler de vivienda?",
-      "keywords_esperadas": ["libre", "acuerdo", "DNU", "70", "2 años"],
-      "no_debe_decir": ["Ley 27.551 vigente", "mínimo obligatorio"]
+      "keywords_esperadas": ["mínimo", "supletori", "1198"],
+      "no_debe_decir": ["Ley 27.551 vigente", "mínimo obligatorio de 3 años"]
     },
     {
       "id": "loc-02",
