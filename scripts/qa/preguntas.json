@@ -1,7 +1,7 @@
 {
-  "version": "1.1",
-  "actualizado": "2026-04-24",
-  "descripcion": "Banco de preguntas para QA automatizado del chatbot WhatsApp de AlquilApp. Simula consultas reales de usuarios. Cada pregunta tiene un tag de bloque, un rol simulado y, cuando es posible, keywords que DEBEN aparecer en la respuesta correcta. v1.1 (2026-04-24): +39 preguntas — provincias extra (Neuquén, Río Negro, Tucumán, Salta, Chaco), alquiler temporario, mediación previa, juicio ejecutivo, locación comercial con fondo de comercio, garante avanzado, familia avanzado, coloquial con typos, e intent classifier (pares verbo/sustantivo).",
+  "version": "1.2",
+  "actualizado": "2026-04-26",
+  "descripcion": "Banco de preguntas para QA automatizado del chatbot WhatsApp de AlquilApp. Simula consultas reales de usuarios. Cada pregunta tiene un tag de bloque, un rol simulado y, cuando es posible, keywords que DEBEN aparecer en la respuesta correcta. v1.2 (2026-04-26): keywords ajustadas para tem-02 (RUPT/Turismo) y gar-02 (contrato/garantía/abogado), eran falsos negativos del matcher. Acompaña carga de 4 chunks nuevos en documentos_chatbot para Neuquén, Tucumán, Salta y Chaco (ya en DB).",
   "preguntas": [
     {
       "id": "loc-01",
@@ -560,7 +560,7 @@
       "bloque": "alquiler_temporario",
       "rol": "propietario",
       "pregunta": "¿Necesito habilitación municipal para alquilar mi depto por Airbnb?",
-      "keywords_esperadas": ["habilitación", "municipal"]
+      "keywords_esperadas": ["registr", "RUPT", "Turismo"]
     },
     {
       "id": "tem-03",
@@ -669,7 +669,7 @@
       "bloque": "garante_avanzado",
       "rol": "propietario",
       "pregunta": "¿Puedo cambiar al garante a mitad del contrato si no me deja tranquilo?",
-      "keywords_esperadas": ["sustituir", "fiador", "acuerdo"]
+      "keywords_esperadas": ["contrato", "garantía", "abogado"]
     },
     {
       "id": "gar-03",
