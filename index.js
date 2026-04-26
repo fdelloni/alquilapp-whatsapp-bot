@@ -1,5 +1,13 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
+// v5.22.0 — Regla 7 del prompt: completitud obligatoria en respuestas
+//          de procedimiento legal. Cuando la pregunta es operativa-
+//          jurídica ("qué hago si X", "no me paga", "se rompió algo"),
+//          el bot DEBE incluir los 3 elementos: medio fehaciente, plazo
+//          legal, y artículo del CCyC/CPCCN/ley aplicable. Las features
+//          de AlquilApp se mencionan DESPUÉS como ayuda, nunca en
+//          reemplazo. Cierra el caso loc-08 del QA donde el bot daba
+//          respuesta operativa pero incompleta legalmente.
 // v5.21.0 — Tres ajustes: (1) regla 4-bis del prompt fuerza citación
 //          literal de leyes/DNU/artículos cuando aparecen en el
 //          contexto (cierra el caso des-04 del QA). (2) Disclaimer
@@ -2665,7 +2673,12 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
       `   a) Priorizá los fragmentos con encabezado completo (títulos, ##, ###) sobre los fragmentos huérfanos.\n` +
       `   b) Si el fragmento huérfano menciona plazos, montos, porcentajes o reglas SIN indicar si corresponden a la regla vigente o a un régimen anterior/derogado, NO los cites como vigentes; aclará que la documentación no especifica ese punto con certeza.\n` +
       `   c) Cruzá la información contra los otros fragmentos — si hay contradicción entre un fragmento con contexto claro y uno huérfano, confiá en el que tiene contexto.\n` +
-      `6) TEMPORALIDAD: cuando respondas sobre montos, plazos o procedimientos legales, asegurate de distinguir entre "régimen vigente" y "régimen derogado por ultraactividad". Si la pregunta no especifica fecha del contrato, asumí régimen vigente (post 29/12/2023) y aclaralo en la respuesta ("bajo la regla vigente ..."). Si el usuario menciona que su contrato es anterior a esa fecha, recién ahí aplicá la regla derogada.\n\n` +
+      `6) TEMPORALIDAD: cuando respondas sobre montos, plazos o procedimientos legales, asegurate de distinguir entre "régimen vigente" y "régimen derogado por ultraactividad". Si la pregunta no especifica fecha del contrato, asumí régimen vigente (post 29/12/2023) y aclaralo en la respuesta ("bajo la regla vigente ..."). Si el usuario menciona que su contrato es anterior a esa fecha, recién ahí aplicá la regla derogada.\n` +
+      `7) RESPUESTAS DE PROCEDIMIENTO LEGAL — completitud obligatoria. Cuando la pregunta es operativa-jurídica (qué hago si X, qué tengo que hacer primero ante Y, cómo procedo con Z, mi inquilino no paga, se rompió algo, quiero rescindir, etc.) y el contexto tiene información procesal, tu respuesta DEBE incluir, cuando aparezcan en las [Fuente N], los TRES elementos siguientes:\n` +
+      `   • MEDIO FEHACIENTE exigido (carta documento, telegrama colacionado, acta notarial, etc.).\n` +
+      `   • PLAZO LEGAL aplicable (en días/meses) y desde cuándo se cuenta.\n` +
+      `   • ARTÍCULO del CCyC, CPCCN, ley nacional o ley provincial que sustenta la regla.\n` +
+      `   Las funcionalidades de AlquilApp (generar la intimación desde la app, recordatorios, dossier, etc.) se mencionan DESPUÉS, como ayuda práctica, NUNCA en reemplazo de los tres elementos legales. Ejemplo correcto para "mi inquilino no paga": "tenés que intimarlo fehacientemente por carta documento o telegrama colacionado dándole un plazo no inferior a 10 días corridos para que regularice (art. 1222 CCyC). Recién pasado ese plazo y sin pago podés iniciar el desalojo. AlquilApp te ayuda a generar el texto de la intimación lista para mandar." NO contestes solamente "avisá por la app y mandá una intimación fehaciente desde ahí" — eso es respuesta incompleta.\n\n` +
       ctxRAG +
       `\n=== FIN DOCUMENTACIÓN ===\n`;
   }
