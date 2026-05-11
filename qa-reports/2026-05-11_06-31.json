@@ -1,0 +1,2322 @@
+{
+  "version_banco": "1.3",
+  "actualizado_banco": "2026-04-26",
+  "bot_url": "https://truthful-commitment-production.up.railway.app",
+  "corrida_iniciada": "2026-05-11T06:31:39.639Z",
+  "corrida_duracion_ms": 280,
+  "total_preguntas": 105,
+  "total_evaluable": 104,
+  "excluidos": 1,
+  "matcher_warnings": 1,
+  "por_clasificacion": {
+    "🟢": 0,
+    "🟡": 0,
+    "🟠": 0,
+    "🔴": 104,
+    "⚫": 0,
+    "⚪": 1
+  },
+  "promedio_tiempo_ms": 5,
+  "promedio_docs_rag": 0,
+  "resultados": [
+    {
+      "id": "loc-01",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto puede durar como mínimo un contrato de alquiler de vivienda?",
+      "keywords_esperadas": [
+        "mínimo",
+        "supletori",
+        "1198"
+      ],
+      "no_debe_decir": [
+        "Ley 27.551 vigente",
+        "mínimo obligatorio de 3 años"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 112
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"-Je4nyIuQYGwVU3tljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-02",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme 6 meses de depósito de garantía?",
+      "keywords_esperadas": [
+        "libre",
+        "acuerdo",
+        "DNU"
+      ],
+      "no_debe_decir": [
+        "máximo 1 mes"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 80
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"jYKZytSWRHqyswdUxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-03",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿En qué moneda me pueden cobrar el alquiler?",
+      "keywords_esperadas": [
+        "dólares",
+        "moneda",
+        "acuerdo",
+        "DNU"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 45
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"d8Xjwr5IR0G5CX1s2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-04",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Cada cuánto puedo actualizar el canon?",
+      "keywords_esperadas": [
+        "pact",
+        "libre",
+        "contrato"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 4
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"BklP8OHQSDa1OsIJxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-05",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Qué índices de ajuste puedo usar en un contrato nuevo?",
+      "keywords_esperadas": [
+        "ICL",
+        "IPC",
+        "Casa Propia",
+        "UVA"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"So3tMrjOQKyl-86oljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-06",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden cobrar comisión inmobiliaria a mí?",
+      "keywords_esperadas": [
+        "derogada",
+        "libre"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"k7UIIxAZQNiuSr5txtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-07",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Quiero irme antes del contrato, ¿qué penalidad pago?",
+      "keywords_esperadas": [
+        "10%",
+        "canon",
+        "1221",
+        "1 mes"
+      ],
+      "no_debe_decir": [
+        "1,5 meses",
+        "un mes y medio como regla vigente"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 6
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"T8P3ahS4RWuw8jJMljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-08",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 2 meses, ¿qué tengo que hacer primero?",
+      "keywords_esperadas": [
+        "intimar",
+        "10 días",
+        "carta documento"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"OcQLYUa2RTqOcIDixtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-09",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Hay una filtración en el baño, ¿quién la arregla?",
+      "keywords_esperadas": [
+        "propietario",
+        "urgente",
+        "reparación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"C1GpJXHvTqSjDtvFljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-10",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo subalquilar una habitación?",
+      "keywords_esperadas": [
+        "autoriz",
+        "locador",
+        "contrato"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 4
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"AFjYRZMpTjKEIjvQxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-01",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿La Ley 27.551 sigue vigente?",
+      "keywords_esperadas": [
+        "derogada",
+        "DNU",
+        "70"
+      ],
+      "no_debe_decir": [
+        "vigente",
+        "aplica"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"XDgz0V2HREyCE9D1ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-02",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambió con el DNU 70/2023?",
+      "keywords_esperadas": [
+        "plazo",
+        "libre",
+        "ajuste",
+        "depósito"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"nlQb8FBuS-ytMFVZxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-03",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme varias garantías a la vez?",
+      "keywords_esperadas": [
+        "libertad",
+        "DNU",
+        "sí"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"BwEOClVzRu633w67ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-04",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Se puede pactar en dólares?",
+      "keywords_esperadas": [
+        "sí",
+        "DNU",
+        "moneda extranjera"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"dccO1raJS6uOVRDbxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-01",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuánto se paga de sellado de un contrato de alquiler de vivienda en CABA?",
+      "keywords_esperadas": [
+        "exent",
+        "vivienda única"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 4
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"X4jm6_ocRmuWBithljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-02",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en provincia de Buenos Aires?",
+      "keywords_esperadas": [
+        "ARBA",
+        "1,2"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"dT35UC6kQaytf5w6xtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-03",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿En Córdoba hay exención de sellado?",
+      "keywords_esperadas": [
+        "vivienda única",
+        "exento",
+        "DGR"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"s7dLhT_ASgSjzaAs2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-04",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Quién paga el sellado, yo o el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "50",
+        "pacto"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"Ejw9zuZVTv-BMnm8ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-05",
+      "bloque": "sellado_provincial",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto tengo para sellar el contrato?",
+      "keywords_esperadas": [
+        "15",
+        "días",
+        "corridos"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"QwGS8wWSSiasmWZMxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-06",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "Alquilo en Rosario, ¿dónde hago el sellado?",
+      "keywords_esperadas": [
+        "API",
+        "Santa Fe"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"o7AbEG7GRmS-2xTQ2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-07",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "En Mendoza, ¿cuánto se paga de sellado por un alquiler comercial?",
+      "keywords_esperadas": [
+        "1,5",
+        "ATM"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"mf04CExaTFWgbVerljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-01",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 3 meses, ¿cuánto tarda el desalojo?",
+      "keywords_esperadas": [
+        "intimación",
+        "10 días",
+        "meses"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"Vudvm3M8Sgm2XCLuxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-02",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el desalojo exprés?",
+      "keywords_esperadas": [
+        "intruso",
+        "684"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"pe7knxXCQgOJY62K2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-03",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "El contrato venció y no se quieren ir, ¿qué hago?",
+      "keywords_esperadas": [
+        "vencimiento",
+        "intimación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"Ccnpq6ZFRYGDxJw8ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-04",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Necesito mediación previa antes de iniciar el desalojo?",
+      "keywords_esperadas": [
+        "26.589"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"eSufPozlRp2imkBfxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-05",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es una carta documento?",
+      "keywords_esperadas": [
+        "fehaciente",
+        "correo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"f1Gtv1m1TJuiS9Nd2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-01",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué requisitos debe tener un garante?",
+      "keywords_esperadas": [
+        "propiedad",
+        "inmueble",
+        "solvencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"N6sYSmg9TXuJNSz-ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-02",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿El garante queda liberado si venden el inmueble de garantía?",
+      "keywords_esperadas": [
+        "preferencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"XjAVgl9XSgqRWHl_xtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-03",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo demandar al garante directamente sin pasar por el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "excusión"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 4
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"MmUXwjUZRiCnnsZg2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-04",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si se muere el fiador?",
+      "keywords_esperadas": [
+        "herederos",
+        "1594"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"-cqm64-NQKKp12vlljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-05",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un seguro de caución?",
+      "keywords_esperadas": [
+        "aseguradora",
+        "4",
+        "6"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"MpqK84EvTgaQJhn9xtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-06",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo exigir fiador + depósito + caución al mismo tiempo?",
+      "keywords_esperadas": [
+        "DNU",
+        "sí",
+        "derogó"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"kPv1bTngSLOLf8QSljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-01",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Se murió mi inquilino, ¿qué hago con el contrato?",
+      "keywords_esperadas": [
+        "1190",
+        "continuación",
+        "familiar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"oYrC6tnhQUC-XXPT2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-02",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo prohibirle al inquilino tener perro en el contrato?",
+      "keywords_esperadas": [
+        "DNU",
+        "1204 bis",
+        "sí"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"-NhB9DNNS3yDQ6JNxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-03",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Soy extranjero sin DNI, ¿me pueden alquilar?",
+      "keywords_esperadas": [
+        "sí",
+        "pasaporte",
+        "garantía"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"yBze4I-HT9Ct7HB7ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-04",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Me estoy divorciando y el inmueble alquilado es ganancial, ¿qué pasa con el contrato?",
+      "keywords_esperadas": [
+        "sigue",
+        "subroga"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"G1zxEyMoRgOXT_122prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-05",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Quiero vender el inmueble que tengo alquilado, ¿puedo echar al inquilino?",
+      "keywords_esperadas": [
+        "no",
+        "1189",
+        "continúa"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"RVeR8LrcQKOgvfakxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-06",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja y yo firmamos juntos el alquiler y nos separamos, ¿puedo irme sin pagar nada?",
+      "keywords_esperadas": [
+        "solidari",
+        "cesión"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"y0KL6Y19ThmZuebuljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-07",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo trabajar desde casa si mi contrato dice que es vivienda?",
+      "keywords_esperadas": [
+        "home office",
+        "destino",
+        "público"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"N5HoTXbnTmayffU72prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-08",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Tengo un perro guía por mi discapacidad, ¿me pueden prohibir entrar con él?",
+      "keywords_esperadas": [
+        "no",
+        "discriminación",
+        "26.378"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"v1Qdjrh5RPqI_B1uxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-09",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo alquilar por habitación?",
+      "keywords_esperadas": [
+        "parte",
+        "material",
+        "1187"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"qjBI_-MaSJW305EwljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-10",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "El inmueble está en sucesión, ¿puedo seguir alquilando?",
+      "keywords_esperadas": [
+        "declaratoria",
+        "herederos"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"fbndFtMgTIWhGXp82prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-01",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Qué es el score que aparece en AlquilApp?",
+      "keywords_esperadas": [
+        "0",
+        "1000",
+        "bilateral",
+        "comportamiento"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 12
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"dr_Mg-nDSZC8EnGmxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-02",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo subo mi score?",
+      "keywords_esperadas": [
+        "pag",
+        "tiempo",
+        "calificaciones"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"GMplfuy_R-uaoywVljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-03",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Qué significa que mi contrato está anclado en Bitcoin?",
+      "keywords_esperadas": [
+        "hash",
+        "inmutab",
+        "blockchain",
+        "OpenTimestamps"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"hkMULXYoR0CP0bKk2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-04",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo califico a mi inquilino?",
+      "keywords_esperadas": [
+        "estrellas",
+        "calificar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"gRH_lPCvTa-x6W4RljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-05",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo creo un reclamo de mantenimiento?",
+      "keywords_esperadas": [
+        "ticket",
+        "reclamo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"dgjhpnpVRASEACi_2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-06",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Cuánto cuesta AlquilApp?",
+      "keywords_esperadas": [
+        "gratuit",
+        "gratis"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"De6xFOHhRRatIeTIljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-07",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo firmo el contrato electrónicamente?",
+      "keywords_esperadas": [
+        "firma",
+        "electrónica"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"zLTtuYoAQXCbs-oX2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-08",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "Quiero pagar el alquiler, ¿cómo hago?",
+      "keywords_esperadas": [
+        "pag",
+        "transfer"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"8i7n1E2bR0eZDWHiljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-09",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo invito a un administrador a mi cuenta?",
+      "keywords_esperadas": [
+        "delega",
+        "invitar",
+        "admin"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"B4t7pPIlSVCe-xj5xtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-10",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo descargo el dossier de un contrato?",
+      "keywords_esperadas": [
+        "PDF",
+        "dossier",
+        "descargar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"cFIFiFl9R3CuB0eb2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-01",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que estar en Monotributo para alquilar mi departamento?",
+      "keywords_esperadas": [
+        "opción",
+        "Monotributo",
+        "Responsable"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 7
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"ggrGM33DTBuIXdzUljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-02",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler de vivienda paga IVA?",
+      "keywords_esperadas": [
+        "exento",
+        "art",
+        "7"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"UxolhuTtRxuqVr9uxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-03",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el RELI?",
+      "keywords_esperadas": [
+        "registro",
+        "locaciones",
+        "ARCA",
+        "AFIP"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"smBysJpGRCeia3A62prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-04",
+      "bloque": "impuestos",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo deducir el alquiler del impuesto a las ganancias?",
+      "keywords_esperadas": [
+        "40",
+        "RELI",
+        "registrado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"-8gmy_fpRIqlXUrOxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-05",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Me pueden retener ganancias al pagarme el alquiler?",
+      "keywords_esperadas": [
+        "830",
+        "6",
+        "28"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"gS2pmUSOQdSzatjs2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-06",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler comercial lleva IVA?",
+      "keywords_esperadas": [
+        "21",
+        "gravado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"C_MRkhUuRimY1-JyljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-07",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Pago Bienes Personales por un inmueble que alquilo?",
+      "keywords_esperadas": [
+        "sí",
+        "patrimonio",
+        "mínimo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"buLX6SsKR8ybXffBxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-01",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿La cláusula que prohíbe tener chicos es válida?",
+      "keywords_esperadas": [
+        "no",
+        "discriminatori",
+        "niño"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"5ywWq6SvTlWLuRxw2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-02",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo hacer arreglos urgentes yo mismo y descontarlos del alquiler?",
+      "keywords_esperadas": [
+        "urgente",
+        "intimación",
+        "reembolso"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"pMg2RyT6Q7OwEcr2ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-03",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden no devolver el depósito si rompí un vidrio?",
+      "keywords_esperadas": [
+        "daño",
+        "descontar",
+        "reparación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 9
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"0bIL52UiTZCy10frxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-01",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "¿Cómo se hace un asado correctamente?",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"lDXTBnM1RUW_ac732prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-02",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "ganador del mundial 2022",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"SIWhQPuwSmOJ8duTljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-03",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "alquiler",
+      "keywords_esperadas": [
+        "AlquilApp"
+      ],
+      "ambigua": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"xKOYa1j9Q5qzzjtE2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-04",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "dónde queda la sección de cobros en la página",
+      "keywords_esperadas": [
+        "Cobros",
+        "menú"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"VTcuRcCKRkGUbbeBljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-05",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "",
+      "keywords_esperadas": [],
+      "vacia": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 1
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"Yo4VcobPSQS1byjE2prcFg\"}",
+      "clasificacion": "⚪",
+      "matcher_warning": "pregunta vacía o marcada vacia=true — test inválido, excluido del total real"
+    },
+    {
+      "id": "ccyc-01",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Qué dice el art. 1198 del CCyC?",
+      "keywords_esperadas": [
+        "1198"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"HDdcCkbMSE2dKZQvxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-02",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Cuándo puedo resolver el contrato por culpa del inquilino?",
+      "keywords_esperadas": [
+        "1219"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 4
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"uwT4edcLTemKkBHgljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-03",
+      "bloque": "ccyc_articulos",
+      "rol": "inquilino",
+      "pregunta": "¿Cuáles son mis obligaciones como inquilino según el Código Civil?",
+      "keywords_esperadas": [
+        "1206",
+        "conservar",
+        "pagar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"YI65AVd9QcilETzV2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-neu-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cómo funciona el sellado de un alquiler en Neuquén?",
+      "keywords_esperadas": [
+        "sellado",
+        "Neuquén",
+        "DPR"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"4Mty1oHGQsyTMX_JxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-rio-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Río Negro hay que sellar el contrato de alquiler?",
+      "keywords_esperadas": [
+        "sellado",
+        "Río Negro"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"HiNwQDhoTaW3n3552prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-tuc-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en Tucumán?",
+      "keywords_esperadas": [
+        "Tucumán",
+        "sellado",
+        "alícuota"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"uSUKtqUtR3aBULHSljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-sal-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Salta hay exención de sellado para vivienda única?",
+      "keywords_esperadas": [
+        "Salta",
+        "sellado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"7EN2y3AvR4uZva_bxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-cha-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Quién regula el sellado en Chaco?",
+      "keywords_esperadas": [
+        "Chaco",
+        "sellado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"sp_Zcqc8SxODuQ9j2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-01",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un alquiler temporario turístico y por cuánto tiempo se puede pactar?",
+      "keywords_esperadas": [
+        "temporario",
+        "tres meses",
+        "1199"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"mCTH1fuwTZCn0rCAljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-02",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Necesito habilitación municipal para alquilar mi depto por Airbnb?",
+      "keywords_esperadas": [
+        "registr",
+        "RUPT",
+        "Turismo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"hCVmD-zNTZK9jimQxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-03",
+      "bloque": "alquiler_temporario",
+      "rol": "inquilino",
+      "pregunta": "Si alquilo por 6 meses por temporada, ¿se aplica el régimen de vivienda?",
+      "keywords_esperadas": [
+        "temporario",
+        "vivienda"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"5St8aOLASseUVLVm2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-04",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que registrar el alquiler temporario en ARCA?",
+      "keywords_esperadas": [
+        "registro",
+        "temporario"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"V-FsTxnTR32Diq6yljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-01",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿La mediación previa es obligatoria para iniciar un desalojo?",
+      "keywords_esperadas": [
+        "26.589",
+        "exenta",
+        "desalojo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"RKIeUFxhQHutLGZrxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-02",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que mediar antes de demandar el cobro de alquileres atrasados?",
+      "keywords_esperadas": [
+        "26.589",
+        "mediación",
+        "obligatoria"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"KTUU7cLSRNScqn_w2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-03",
+      "bloque": "mediacion",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto cuesta una mediación previa en CABA?",
+      "keywords_esperadas": [
+        "mediación",
+        "honorarios"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"8Ab_MbzkQpSH_GzbljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-04",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si el inquilino no se presenta a la mediación?",
+      "keywords_esperadas": [
+        "acta",
+        "incomparecencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"_qXY3grQTZO3OuAkxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-01",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Puedo iniciar un juicio ejecutivo por alquileres impagos?",
+      "keywords_esperadas": [
+        "ejecutivo",
+        "título",
+        "contrato"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"2r9GPNdjRsi-ccvO2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-02",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Qué documentos preparo para un juicio ejecutivo de alquileres?",
+      "keywords_esperadas": [
+        "contrato",
+        "intimación",
+        "carta documento"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"4tewUkjrTu-0Pu8qljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-03",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Es más rápido el ejecutivo que el desalojo?",
+      "keywords_esperadas": [
+        "plazos",
+        "ejecutivo",
+        "desalojo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"54gDH71eQISM5mt3xtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-01",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambia en un alquiler comercial respecto a uno de vivienda?",
+      "keywords_esperadas": [
+        "comercial",
+        "destino",
+        "1187"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"NVBmrYWORJmgVzyI2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-02",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino se va y deja la clientela del local, ¿hay transferencia de fondo de comercio?",
+      "keywords_esperadas": [
+        "fondo",
+        "comercio",
+        "Ley 11.867"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 3
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"D7sgCcABSWGizVFUljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-03",
+      "bloque": "locacion_comercial",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo modificar el local que alquilo para mi negocio?",
+      "keywords_esperadas": [
+        "mejoras",
+        "autoriz",
+        "1211"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 24
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"kVnBkv2DTmSvwWHXljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-04",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿El IVA se cobra en alquiler comercial?",
+      "keywords_esperadas": [
+        "IVA",
+        "comercial",
+        "21"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"aRyXoCY5QUOnoSChxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-01",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "Mi garante quiere vender el inmueble que dio en garantía, ¿puedo oponerme?",
+      "keywords_esperadas": [
+        "garantía",
+        "venta",
+        "preferencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"dyw-3ZYoSSaxbE3AljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-02",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "¿Puedo cambiar al garante a mitad del contrato si no me deja tranquilo?",
+      "keywords_esperadas": [
+        "contrato",
+        "garantía",
+        "abogado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"Y0pcPzOXTk24Fs_ixtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-03",
+      "bloque": "garante_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi garante me llamó porque el banco le bloqueó la cuenta por una deuda mía, ¿es legal?",
+      "keywords_esperadas": [
+        "solidari",
+        "1591"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"rt7GwjJCRQ2VcHZ4ljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fam-01",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja era titular del contrato y falleció, no tenemos pacto de convivencia. ¿Puedo seguir en el depto?",
+      "keywords_esperadas": [
+        "1190",
+        "convivencia",
+        "continuación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"wfHhiXaQQjmCtpaTxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fam-02",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Tengo un hijo menor a cargo. Si nos separamos con mi marido, ¿quién se queda con el alquiler?",
+      "keywords_esperadas": [
+        "443",
+        "vivienda familiar",
+        "atribución"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"syKJ0zlKQvKjUbpDljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-01",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "el depto se viene abajo, hay humedad por todos lados que hago",
+      "keywords_esperadas": [
+        "intim",
+        "reparación",
+        "1201"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"4nq3u6iDStaXcKwsxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-02",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "no me devuelven el deposito, que onda",
+      "keywords_esperadas": [
+        "deposito",
+        "intim",
+        "devolu"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"iHCcKCmWTRqc-bDUljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-03",
+      "bloque": "coloquial",
+      "rol": "propietario",
+      "pregunta": "el inkilino me debe 3 meses q hago",
+      "keywords_esperadas": [
+        "intimar",
+        "10 días",
+        "carta"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 5
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"dceF0uOfS66M8XWoxtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-04",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "puedo tener una mascota o no",
+      "keywords_esperadas": [
+        "mascota",
+        "contrato",
+        "permitida"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"gwJulAVdSkawNTVKljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-05",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "se rompio la heladera quien paga",
+      "keywords_esperadas": [
+        "reparación",
+        "1201"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"mvVzQBPjQomjmPKixtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-01",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si recibo la casa en mal estado?",
+      "keywords_esperadas": [
+        "acta",
+        "estado",
+        "entrega"
+      ],
+      "no_debe_decir": [
+        "recibo de pago",
+        "generar recibo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 4
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"NSLZcesvRwyeJVLr2prcFg\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-02",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "Nunca recibo respuesta del propietario, ¿puedo intimarlo?",
+      "keywords_esperadas": [
+        "intim",
+        "fehacient"
+      ],
+      "no_debe_decir": [
+        "generando tu recibo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 4
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"HVU-jPvwQQC0zqUVljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-03",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué es una boleta de sellado?",
+      "keywords_esperadas": [
+        "sellado",
+        "provincia"
+      ],
+      "no_debe_decir": [
+        "enviando factura"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"6fHGJ7wKSvKFyLW4xtoGcA\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-04",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿cómo hago un reclamo de mantenimiento por la app?",
+      "keywords_esperadas": [
+        "ticket",
+        "reclamo",
+        "AlquilApp"
+      ],
+      "no_debe_decir": [
+        "nuevo reclamo creado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"7vcW3F9tQBi4VygVljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-05",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si no pago un mes de alquiler?",
+      "keywords_esperadas": [
+        "intimación",
+        "1222",
+        "10 días"
+      ],
+      "no_debe_decir": [
+        "pago confirmado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 404,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 2
+      },
+      "raw": "{\"status\":\"error\",\"code\":404,\"message\":\"Application not found\",\"request_id\":\"esiWwMReRLWcqFcJljLL4A\"}",
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    }
+  ]
+}
