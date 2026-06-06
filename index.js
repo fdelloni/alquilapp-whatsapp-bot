@@ -2786,35 +2786,27 @@ async function llamarLLMConFallback(systemPrompt, contents, opts = {}) {
 // ═══════════════════════════════════════════════════════════
 // CONSULTAR A GEMINI AI — Texto (con fallback Cohere/DeepSeek)
 // ═══════════════════════════════════════════════════════════
-async function consultarGemini(telefono, pregunta, usuario, datos) {
-  const historial = await obtenerHistorial(telefono);
-  historial.push({ role: 'user', parts: [{ text: pregunta }] });
+// v5.24.0 — Bloque de reglas RAG compartido entre el flujo conversacional
+// real (consultarGemini) y el endpoint /ai/qa-test, para que el QA mida
+// exactamente el mismo pipeline que usan los usuarios.
+function construirBloqueRAG(ctxRAG, nivel, sim) {
 
-  let systemPrompt = buildSystemPrompt(usuario, datos);
-
-  // ── RAG: inyectar contexto de documentos_chatbot ──
-  // v5.18.0 — obtenerContextoRAG devuelve { bloque, nivel, topSim }. El
-  // "nivel" (fuerte/parcial/debil/ninguno) condiciona las reglas de uso para
-  // evitar que el bot responda "no tengo info" cuando hay contexto parcial
-  // útil, y para que no invente cuando el contexto es débil.
-  const { bloque: ctxRAG, nivel: ctxNivel, topSim: ctxSim } = await obtenerContextoRAG(pregunta);
-  if (ctxRAG) {
     const reglaPorNivel = {
       fuerte:
-        `Nivel de contexto: FUERTE (top sim=${ctxSim.toFixed(2)}). La documentación cubre directamente el tema. ` +
+        `Nivel de contexto: FUERTE (top sim=${sim.toFixed(2)}). La documentación cubre directamente el tema. ` +
         `Respondé usando exclusivamente la información de las [Fuente N] de abajo. ` +
         `Citá números de artículo, ley o DNU cuando aparezcan. NO digas "no tengo esa información".`,
       parcial:
-        `Nivel de contexto: PARCIAL (top sim=${ctxSim.toFixed(2)}). Hay fragmentos relacionados pero no perfectamente alineados con la pregunta. ` +
+        `Nivel de contexto: PARCIAL (top sim=${sim.toFixed(2)}). Hay fragmentos relacionados pero no perfectamente alineados con la pregunta. ` +
         `Respondé con lo que la documentación SÍ dice, siendo explícito sobre qué aspecto específico no está cubierto. ` +
         `Si la pregunta es de AlquilApp (precio, funciones, cómo hacer X) y el contexto tiene info general sobre la plataforma, respondé con eso antes de decir "no sé". ` +
         `NO inventes datos, fechas, artículos, leyes ni funcionalidades que no aparezcan textualmente en las [Fuente N].`,
       debil:
-        `Nivel de contexto: DÉBIL (top sim=${ctxSim.toFixed(2)}). Los fragmentos recuperados pueden ser ruido. ` +
+        `Nivel de contexto: DÉBIL (top sim=${sim.toFixed(2)}). Los fragmentos recuperados pueden ser ruido. ` +
         `Si al leer las [Fuente N] confirmás que tratan el tema preguntado, respondé con esa info. ` +
         `Si son tangenciales o no-relacionadas, decí "No tengo información específica sobre esto en mi base de conocimiento" y ofrecé redirigir a un abogado o a la sección correspondiente de AlquilApp.`
     };
-    systemPrompt +=
+    return (
       `\n\n=== DOCUMENTACIÓN DE REFERENCIA (AlquilApp y legislación argentina aplicable) ===\n` +
       `REGLAS DE USO DEL CONTEXTO (prioritarias sobre tu entrenamiento general):\n` +
       `1) Esta documentación es tu ÚNICA fuente de verdad sobre legislación argentina de alquileres y sobre AlquilApp. ` +
@@ -2822,7 +2814,7 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
       `Atención: el DNU 70/2023 (ratificado por Ley 27.742) derogó parte de la Ley 27.551 y modificó el art. 1221 CCyC. ` +
       `NO uses los montos del régimen viejo (1,5 meses / 1 mes / 6 meses de espera) como regla vigente para contratos post 29/12/2023 — esos valores solo aplican por ultraactividad a contratos firmados antes de esa fecha.\n` +
       `2) Antes de responder, identificá si la consulta es sobre legislación nacional, legislación provincial (sellado, ARBA/DGR/AGIP/ATM), una funcionalidad de AlquilApp, o un trámite práctico — y usá el fragmento más específico para esa dimensión.\n` +
-      `3) ${reglaPorNivel[ctxNivel] || reglaPorNivel.debil}\n` +
+      `3) ${reglaPorNivel[nivel] || reglaPorNivel.debil}\n` +
       `4) NUNCA inventes artículos, números de ley, porcentajes, plazos, alícuotas ni funcionalidades que no aparezcan textualmente en las [Fuente N] de abajo. Si dudás, es preferible decir "no está cubierto en mi base" antes que afirmar un dato falso.\n` +
       `4 bis) CITAR FUENTES NORMATIVAS: cuando el contexto contenga referencias explícitas a leyes (Ley XX.XXX, DNU XX/XXX), artículos del CCyC (art. NNNN), códigos procesales (art. NNN bis CPCCN) u otra norma nominada — incluí esa cita literal en tu respuesta. No la sustituyas por términos genéricos. Ejemplo: si el contexto dice "Ley 26.589 de mediación previa" y vos respondés sobre mediación, escribí "Ley 26.589" en la respuesta, no solo "la ley aplicable". Esto vale para cualquier nivel de contexto (fuerte, parcial o débil) en el que aparezca el número.\n` +
       `5) Alerta sobre FRAGMENTOS CORTADOS: si una [Fuente N] empieza a mitad de oración, lista o tabla (ej: arranca con letra minúscula, con "- ", con "| ", o sin encabezado), asumí que hay contexto previo que no ves. En ese caso:\n` +
@@ -2836,7 +2828,24 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
       `   • ARTÍCULO del CCyC, CPCCN, ley nacional o ley provincial que sustenta la regla.\n` +
       `   Las funcionalidades de AlquilApp (generar la intimación desde la app, recordatorios, dossier, etc.) se mencionan DESPUÉS, como ayuda práctica, NUNCA en reemplazo de los tres elementos legales. Ejemplo correcto para "mi inquilino no paga": "tenés que intimarlo fehacientemente por carta documento o telegrama colacionado dándole un plazo no inferior a 10 días corridos para que regularice (art. 1222 CCyC). Recién pasado ese plazo y sin pago podés iniciar el desalojo. AlquilApp te ayuda a generar el texto de la intimación lista para mandar." NO contestes solamente "avisá por la app y mandá una intimación fehaciente desde ahí" — eso es respuesta incompleta.\n\n` +
       ctxRAG +
-      `\n=== FIN DOCUMENTACIÓN ===\n`;
+      `\n=== FIN DOCUMENTACIÓN ===\n`
+    );
+}
+
+async function consultarGemini(telefono, pregunta, usuario, datos) {
+  const historial = await obtenerHistorial(telefono);
+  historial.push({ role: 'user', parts: [{ text: pregunta }] });
+
+  let systemPrompt = buildSystemPrompt(usuario, datos);
+
+  // ── RAG: inyectar contexto de documentos_chatbot ──
+  // v5.18.0 — obtenerContextoRAG devuelve { bloque, nivel, topSim }. El
+  // "nivel" (fuerte/parcial/debil/ninguno) condiciona las reglas de uso para
+  // evitar que el bot responda "no tengo info" cuando hay contexto parcial
+  // útil, y para que no invente cuando el contexto es débil.
+  const { bloque: ctxRAG, nivel: ctxNivel, topSim: ctxSim } = await obtenerContextoRAG(pregunta);
+  if (ctxRAG) {
+    systemPrompt += construirBloqueRAG(ctxRAG, ctxNivel, ctxSim);
   }
 
   try {
@@ -5184,8 +5193,8 @@ app.post('/ai/qa-test', async (req, res) => {
       const tRagStart = Date.now();
       const { data, error } = await supabase.rpc('match_documentos_chatbot', {
         query_embedding: emb,
-        match_threshold: 0.25,
-        match_count: 6,
+        match_threshold: 0.50,
+        match_count: 8,
         p_fuente: null
       });
       tRagMs = Date.now() - tRagStart;
@@ -5238,16 +5247,10 @@ Siempre aclarás que es orientación informativa y que para casos puntuales lo m
 El usuario de prueba está registrado como *${rolLabel}*.`;
 
     if (ctxRAGFull) {
-      systemPrompt +=
-        `\n\n=== DOCUMENTACIÓN DE REFERENCIA (AlquilApp y legislación argentina aplicable) ===\n` +
-        `REGLAS DE USO DEL CONTEXTO (prioritarias sobre tu entrenamiento general):\n` +
-        `1) Esta documentación es tu ÚNICA fuente de verdad sobre legislación argentina de alquileres y sobre AlquilApp. ` +
-        `Si dice que una ley fue derogada, está derogada — no la menciones como vigente aunque tu entrenamiento diga otra cosa.\n` +
-        `2) Si el contexto responde la pregunta directamente → respondé con esa info, citando números de ley o artículo cuando aparezcan.\n` +
-        `3) Si el contexto NO responde directamente pero tiene info RELACIONADA (ej: preguntan por un artículo puntual del CCyC y tenés un doc que cubre el bloque de artículos; preguntan por un trámite y tenés una plantilla o glosario que lo define) → respondé con lo que el contexto SÍ dice y, si algo queda sin cubrir, aclará brevemente qué aspecto específico no está en tu base. NO inventes datos, fechas, artículos ni leyes que no estén en el contexto.\n` +
-        `4) Solo si el contexto NO tiene NADA tangencialmente útil sobre el tema → decí "No tengo esa información en mi base de conocimiento" y pará ahí.\n\n` +
-        ctxRAGFull +
-        `\n=== FIN DOCUMENTACIÓN ===\n`;
+      // v5.24.0 — usa el MISMO bloque de reglas que producción (consultarGemini)
+      const topSimQA = docs.length ? (docs[0].similarity || 0) : 0;
+      const nivelQA = topSimQA >= 0.70 ? 'fuerte' : topSimQA >= 0.55 ? 'parcial' : 'debil';
+      systemPrompt += construirBloqueRAG(ctxRAGFull, nivelQA, topSimQA);
     }
 
     // 3) Llamada a LLM con fallback (Gemini → Cohere → DeepSeek)
@@ -5271,8 +5274,8 @@ El usuario de prueba está registrado como *${rolLabel}*.`;
       llm_error: llmError,             // string con errores de los providers que fallaron
       rag: {
         docs_recuperados: docs.length,
-        umbral: 0.35,
-        k: 4,
+        umbral: 0.50,
+        k: 8,
         docs // array con orden, fuente, tipo, titulo, similarity, preview
       },
       tiempos_ms: {
