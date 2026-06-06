@@ -939,18 +939,43 @@ async function buscarCobroPorPeriodo(usuario, textoMes) {
 // ═══════════════════════════════════════════════════════════
 // BUSCAR FACTURA DE SERVICIO (luz, gas, agua, etc.)
 // ═══════════════════════════════════════════════════════════
+// ── Extraer criterios de busqueda de factura del texto del usuario ──
+// v5.23.0 — entiende monto ($18.450 / 26.710,27 / 18450) y dia de
+// vencimiento ("vence el 15", "vence el dia 15/6") ademas del tipo.
+function extraerCriteriosFactura(texto) {
+  const t = String(texto || '').toLowerCase();
+  const montos = new Set();
+  const agregar = (raw) => {
+    const num = Number(String(raw).replace(/\./g, '').replace(',', '.'));
+    if (Number.isFinite(num) && num >= 1000 && num <= 100000000) montos.add(num);
+  };
+  for (const m of t.matchAll(/\$\s*([\d][\d.]*(?:,\d+)?)/g)) agregar(m[1]);
+  for (const m of t.matchAll(/\b(\d{1,3}(?:\.\d{3})+(?:,\d+)?)\b/g)) agregar(m[1]);
+  for (const m of t.matchAll(/\b(\d{4,8})\b/g)) {
+    const n = parseInt(m[1], 10);
+    if (n >= 2020 && n <= 2040) continue; // probablemente un anio
+    agregar(m[1]);
+  }
+  let diaVto = null, mesVto = null;
+  const mv = /venc\w*\s*(?:el|los)?\s*(?:d[ií]a)?\s*(\d{1,2})(?:\s*[\/\-]\s*(\d{1,2}))?/.exec(t)
+          || /\b(?:el|del)\s+d[ií]a\s+(\d{1,2})(?:\s*[\/\-]\s*(\d{1,2}))?/.exec(t);
+  if (mv) {
+    const d = parseInt(mv[1], 10);
+    if (d >= 1 && d <= 31) { diaVto = d; mesVto = mv[2] ? parseInt(mv[2], 10) : null; }
+  }
+  return { montos: [...montos], diaVto, mesVto };
+}
+
 async function buscarFacturaServicio(usuario, texto) {
   const email = usuario.email || '';
   const rol = usuario.rol || 'propietario';
 
   // Detectar tipo de servicio
-  const textoLower = texto.toLowerCase();
-  // Mapa de keywords → nombre canónico del servicio
-  // Incluye empresas proveedoras regionales de Argentina
+  const textoLower = (texto || '').toLowerCase();
   const tiposMap = {
     'luz': ['luz', 'electricidad', 'electrica', 'eléctrica', 'epec', 'edenor', 'edesur', 'enersa', 'epe', 'edea', 'edelap', 'eden', 'energia', 'energía'],
     'gas': ['gas', 'gasnor', 'litoral gas', 'metrogas', 'camuzzi', 'gasnea', 'ecogas'],
-    'agua': ['agua', 'aguas', 'assa', 'aysa', 'absa', 'assa', 'dipos'],
+    'agua': ['agua', 'aguas', 'assa', 'aysa', 'absa', 'dipos'],
     'internet': ['internet', 'wifi', 'fibra', 'fibertel', 'telecentro', 'personal', 'movistar', 'claro'],
     'cable': ['cable', 'television', 'televisión', 'tv', 'directv', 'cablevision', 'cablevisión'],
     'telefono': ['telefono', 'teléfono', 'celular', 'linea', 'línea'],
@@ -968,7 +993,7 @@ async function buscarFacturaServicio(usuario, texto) {
     }
   }
 
-  // Obtener propiedad IDs según rol
+  // Obtener propiedad IDs segun rol
   let propIds = [];
   if (rol === 'inquilino') {
     const { data: contratos } = await supabase
@@ -986,8 +1011,6 @@ async function buscarFacturaServicio(usuario, texto) {
 
   if (propIds.length === 0) return { error: 'no_propiedades' };
 
-  // Buscar TODOS los servicios de las propiedades (sin filtrar por tipo en la query)
-  // porque el campo `tipo` puede decir "servicio" para todos
   const { data: todosServicios } = await supabase
     .from('servicios')
     .select('*')
@@ -997,57 +1020,139 @@ async function buscarFacturaServicio(usuario, texto) {
     return { error: 'no_servicio', tipoDetectado };
   }
 
-  // Filtrar en JS buscando por tipo Y nombre (más flexible que ilike en un solo campo)
+  // Filtrar por tipo si se detecto
   let servicios = todosServicios;
   if (tipoDetectado) {
     servicios = todosServicios.filter(s => {
-      const tipoLower = (s.tipo || '').toLowerCase();
-      const nombreLower = (s.nombre || '').toLowerCase();
-      const combinado = tipoLower + ' ' + nombreLower;
-
-      // Match directo con el nombre canónico
+      const combinado = ((s.tipo || '') + ' ' + (s.nombre || '')).toLowerCase();
       if (combinado.includes(tipoDetectado)) return true;
-
-      // Match con cualquiera de las keywords del tipo detectado
       if (keywordsUsados.some(kw => combinado.includes(kw))) return true;
-
       return false;
     });
-
-    // Si no encontró con el filtro, mostrar error
     if (servicios.length === 0) {
       return { error: 'no_servicio', tipoDetectado };
     }
   }
 
-  // Para cada servicio encontrado, buscar la factura más reciente en facturas_servicios
+  // v5.23.0 — Armar lista de candidatas: hasta 5 facturas recientes por
+  // servicio (no solo la ultima), para poder matchear por monto/vencimiento.
+  const candidatas = [];
   for (const servicio of servicios) {
+    const nombreServ = servicio.tipo || servicio.nombre || 'Servicio';
     const { data: facturas } = await supabase
       .from('facturas_servicios')
       .select('*')
       .eq('servicio_id', servicio.id)
       .order('fecha_vto', { ascending: false })
-      .limit(1);
-
-    if (facturas && facturas.length > 0 && facturas[0].factura_url) {
-      return {
-        servicio,
-        factura: facturas[0],
-        facturaUrl: facturas[0].factura_url
-      };
+      .limit(5);
+    let tieneFactura = false;
+    if (facturas) {
+      for (let i = 0; i < facturas.length; i++) {
+        const f = facturas[i];
+        if (!f.factura_url) continue;
+        candidatas.push({ servicio, factura: f, facturaUrl: f.factura_url, esUltima: !tieneFactura, nombre: nombreServ });
+        tieneFactura = true;
+      }
     }
-
-    // Si no hay en facturas_servicios, check factura_url del servicio mismo
-    if (servicio.factura_url) {
-      return {
-        servicio,
-        factura: null,
-        facturaUrl: servicio.factura_url
-      };
+    if (!tieneFactura && servicio.factura_url) {
+      candidatas.push({
+        servicio, factura: null, facturaUrl: servicio.factura_url, esUltima: true, nombre: nombreServ,
+        montoServicio: servicio.ultima_factura_monto || null, vtoServicio: servicio.ultima_factura_vto || null
+      });
     }
   }
 
-  return { error: 'no_factura', tipoDetectado, servicios };
+  if (candidatas.length === 0) return { error: 'no_factura', tipoDetectado, servicios };
+
+  const montoDe = c => c.factura ? (c.factura.monto != null ? Number(c.factura.monto) : null) : (c.montoServicio != null ? Number(c.montoServicio) : null);
+  const vtoDe = c => c.factura ? c.factura.fecha_vto : c.vtoServicio;
+
+  const criterios = extraerCriteriosFactura(texto);
+  const hayCriterios = criterios.montos.length > 0 || criterios.diaVto !== null;
+
+  if (hayCriterios) {
+    const matches = candidatas.filter(c => {
+      const monto = montoDe(c);
+      const vto = vtoDe(c);
+      if (criterios.montos.length > 0) {
+        const okMonto = monto != null && criterios.montos.some(m => Math.abs(monto - m) < 1 || Math.abs(monto - m) / m < 0.005);
+        if (!okMonto) return false;
+      }
+      if (criterios.diaVto !== null && vto) {
+        const d = new Date(vto);
+        if (d.getDate() !== criterios.diaVto) return false;
+        if (criterios.mesVto != null && (d.getMonth() + 1) !== criterios.mesVto) return false;
+      } else if (criterios.diaVto !== null && !vto && criterios.montos.length === 0) {
+        return false;
+      }
+      return true;
+    });
+
+    if (matches.length >= 1) {
+      matches.sort((a, b) => new Date(vtoDe(b) || 0) - new Date(vtoDe(a) || 0));
+      return { ...matches[0] };
+    }
+    // Pidio algo especifico y no lo tenemos: mostrar lo disponible, no adivinar.
+    return { error: 'sin_match', criterios, candidatas: candidatas.filter(c => c.esUltima), tipoDetectado };
+  }
+
+  // Sin criterios especificos: si hay tipo detectado o un solo servicio, mandar la ultima.
+  const ultimas = candidatas.filter(c => c.esUltima);
+  if (tipoDetectado || ultimas.length === 1) {
+    return { ...ultimas[0] };
+  }
+  // Varias posibles y ningun dato para elegir: menu numerado (antes se mandaba cualquiera).
+  return { error: 'elegir', candidatas: ultimas, tipoDetectado };
+}
+
+// v5.23.0 — Formatea y envia el menu numerado de facturas + deja pendiente
+// la eleccion (accion 'factura_elegir') y registra todo en el historial.
+async function responderConMenuFacturas(from, textoUsuario, resultado) {
+  const cands = (resultado.candidatas || []).slice(0, 8);
+  const fmtVto = (v) => { if (!v) return null; const d = new Date(v); return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`; };
+  const lineas = cands.map((c, i) => {
+    const monto = c.factura ? c.factura.monto : c.montoServicio;
+    const vto = fmtVto(c.factura ? c.factura.fecha_vto : c.vtoServicio);
+    let linea = `*${i + 1}.* ${c.nombre}`;
+    if (monto) linea += ` — $${Number(monto).toLocaleString('es-AR')}`;
+    if (vto) linea += ` — vence ${vto}`;
+    return linea;
+  });
+  const encabezado = resultado.error === 'sin_match'
+    ? '🔍 No encontré una factura que coincida exactamente con lo que pediste. Estas son las que tengo cargadas:'
+    : '📄 Tengo estas facturas cargadas. ¿Cuál querés?';
+  const msg = `${encabezado}\n\n${lineas.join('\n')}\n\nRespondé con el *número* de la que querés.`;
+  await setBotPendiente(from, 'factura_elegir', {
+    candidatas: cands.map(c => ({
+      nombre: c.nombre,
+      monto: (c.factura ? c.factura.monto : c.montoServicio) || null,
+      vto: fmtVto(c.factura ? c.factura.fecha_vto : c.vtoServicio),
+      url: c.facturaUrl
+    }))
+  });
+  await enviarWhatsApp(from, msg);
+  await registrarAccionEnHistorial(from, textoUsuario,
+    `Le mostré un menú numerado con las facturas disponibles (${lineas.join(' | ').replace(/\*/g, '')}) y le pedí que elija respondiendo con el número.`);
+}
+
+// v5.23.0 — Envia el PDF de la factura elegida y registra la accion.
+async function enviarFacturaYRegistrar(from, textoUsuario, resultado) {
+  const servNombre = resultado.nombre || resultado.servicio?.tipo || resultado.servicio?.nombre || 'Servicio';
+  const monto = resultado.factura ? resultado.factura.monto : resultado.montoServicio;
+  const vtoRaw = resultado.factura ? resultado.factura.fecha_vto : resultado.vtoServicio;
+  const montoMsg = monto ? `\n💰 Monto: *$${Number(monto).toLocaleString('es-AR')}*` : '';
+  let vtoTxt = '';
+  let vtoMsg = '';
+  if (vtoRaw) {
+    const d = new Date(vtoRaw);
+    vtoTxt = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    vtoMsg = `\n📅 Vencimiento: *${vtoTxt}*`;
+  }
+  const mensaje = `📄 *AlquilApp — Factura de ${servNombre}*\n` + montoMsg + vtoMsg + '\n\n📎 Acá va la factura adjunta. ¡Guardala! 📋';
+  await enviarWhatsAppConPDF(from, mensaje, resultado.facturaUrl);
+  await registrarAccionEnHistorial(from, textoUsuario,
+    `Envié al usuario el PDF de la factura de ${servNombre}${monto ? ` por $${Number(monto).toLocaleString('es-AR')}` : ''}${vtoTxt ? ` con vencimiento ${vtoTxt}` : ''}. Si el usuario dice que no era esa, hay que ofrecerle el menú de facturas.`);
+  console.log(`✅ Factura de ${servNombre} enviada a ${from}`);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1059,7 +1164,7 @@ async function buscarFacturaServicio(usuario, texto) {
 // En caso de error o ambigüedad devuelve CONSULTA_GENERAL (default seguro:
 // cualquier pregunta puede ser contestada por el flujo conversacional).
 // ═══════════════════════════════════════════════════════════
-async function clasificarIntencionLLM(texto, rol) {
+async function clasificarIntencionLLM(texto, rol, contextoReciente = '') {
   const systemPrompt =
 `Sos un clasificador de intents para un asistente de WhatsApp de AlquilApp (plataforma argentina de alquileres).
 
@@ -1088,7 +1193,10 @@ REGLAS CRÍTICAS PARA EVITAR FALSOS POSITIVOS:
 
 3. Ante cualquier duda, elegí CONSULTA_GENERAL. Es el default seguro.
 
+4. REENVIOS Y CORRECCIONES: si el usuario se queja de que el documento que se le envió es incorrecto, o pide que se busque/reenvíe OTRA factura o recibo (ej: "me pasaste la factura incorrecta", "esa no es", "esa no, la otra", "la factura está mal", "volvé a mandarla"), clasificá ACCION_ENVIAR_FACTURA o ACCION_GENERAR_RECIBO según el documento al que se refiera (mirá el contexto reciente).
+
 Rol del usuario: ${rol || 'desconocido'}.
+${contextoReciente ? `\nContexto reciente de la conversación (usalo para interpretar referencias como "esa", "la otra", "la incorrecta"):\n${contextoReciente}\n` : ''}
 
 Respondé ÚNICAMENTE con la etiqueta exacta en mayúsculas, sin explicación, sin puntuación, sin comillas, sin nada más.`;
 
@@ -1128,7 +1236,7 @@ Respondé ÚNICAMENTE con la etiqueta exacta en mayúsculas, sin explicación, s
 // que interpreta la oración en su contexto completo. Evita falsos positivos
 // tipo "¿qué pasa si recibo la casa rota?" → flow recibo.
 // ═══════════════════════════════════════════════════════════
-async function detectarIntencion(texto, rol = null) {
+async function detectarIntencion(texto, rol = null, contextoReciente = '') {
   const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   // ── FAST-PATH: comando ayuda / menú (inequívoco) ──
@@ -1146,7 +1254,7 @@ async function detectarIntencion(texto, rol = null) {
   }
 
   // ── Clasificador LLM contextual para el resto ──
-  const etiqueta = await clasificarIntencionLLM(texto, rol);
+  const etiqueta = await clasificarIntencionLLM(texto, rol, contextoReciente);
   switch (etiqueta) {
     case 'ACCION_GENERAR_RECIBO':         return { tipo: 'recibo', texto };
     case 'ACCION_ENVIAR_FACTURA':         return { tipo: 'factura_servicio', texto };
@@ -1239,12 +1347,47 @@ app.post('/webhook', async (req, res) => {
       // Si no es 1, 2 ni 3, dejar que siga el flujo normal (quizás escribió otra cosa)
     }
 
+    // ── 1.6. v5.23.0: respuesta a un menú de facturas pendiente ──
+    if (pendiente && pendiente.accion === 'factura_elegir') {
+      const fp = pendiente.payload || {};
+      const lista = Array.isArray(fp.candidatas) ? fp.candidatas : [];
+      const opcion = parseInt(text.replace(/[^\d]/g, ''), 10);
+      if (opcion >= 1 && opcion <= lista.length) {
+        const c = lista[opcion - 1];
+        await deleteBotPendiente(from);
+        res.send(`<Response><Message>${escapeXml('📄 Te mando esa factura…')}</Message></Response>`);
+        (async () => {
+          try {
+            const mensaje = `📄 *AlquilApp — Factura de ${c.nombre}*\n` +
+              (c.monto ? `\n💰 Monto: *$${Number(c.monto).toLocaleString('es-AR')}*` : '') +
+              (c.vto ? `\n📅 Vencimiento: *${c.vto}*` : '') +
+              '\n\n📎 Acá va la factura adjunta. ¡Guardala! 📋';
+            await enviarWhatsAppConPDF(from, mensaje, c.url);
+            await registrarAccionEnHistorial(from, text,
+              `Envié al usuario el PDF de la factura de ${c.nombre}${c.monto ? ` por $${Number(c.monto).toLocaleString('es-AR')}` : ''}${c.vto ? ` con vencimiento ${c.vto}` : ''} (elegida del menú, opción ${opcion}).`);
+          } catch (err) {
+            console.error('❌ Error enviando factura elegida:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error enviando la factura. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      }
+      // No respondió con un número válido: descartar el pendiente y seguir normal.
+      await deleteBotPendiente(from);
+    }
+
     // ── 2. Detectar intención especial (recibo, factura, reclamo, etc.) ──
     // v5.19.0: clasificación contextual con LLM para evitar falsos positivos
     // como "¿qué pasa si recibo la casa rota?" → flujo recibo. Pasa el rol
     // para resolver correctamente "confirmar pago" (inquilino vs propietario).
     if (!esAudio && text) {
-      const intencion = await detectarIntencion(text, usuario.rol);
+      const histReciente = await obtenerHistorial(from);
+      const contextoReciente = histReciente.slice(-4).map(m => {
+        const quien = m.role === 'user' ? 'Usuario' : 'Asistente';
+        const t = (m.parts?.[0]?.text || '').replace(/\s+/g, ' ').slice(0, 160);
+        return `${quien}: ${t}`;
+      }).join('\n');
+      const intencion = await detectarIntencion(text, usuario.rol, contextoReciente);
 
       // ── AYUDA / MENÚ (por rol) ──────────────────────────────
       if (intencion?.tipo === 'ayuda') {
@@ -1298,9 +1441,12 @@ app.post('/webhook', async (req, res) => {
             const cobro = await buscarCobroPorPeriodo(usuario, text);
             if (!cobro) {
               await enviarWhatsApp(from, '❌ No encontré un cobro pagado para ese período. Verificá que el pago esté registrado en AlquilApp.');
+              await registrarAccionEnHistorial(from, text, 'Le respondí que no encontré un cobro pagado para ese período.');
               return;
             }
             await generarYEnviarRecibo(cobro, from);
+            await registrarAccionEnHistorial(from, text,
+              `Generé y envié al usuario el PDF del recibo de pago${cobro?.monto ? ` por $${Number(cobro.monto).toLocaleString('es-AR')}` : ''}${cobro?.periodo ? ` (período ${cobro.periodo})` : ''}.`);
           } catch (err) {
             console.error('❌ Error generando recibo:', err);
             await enviarWhatsApp(from, '⚠️ Hubo un error generando el recibo. Intentá de nuevo en un momento.').catch(() => {});
@@ -1319,38 +1465,27 @@ app.post('/webhook', async (req, res) => {
 
             if (resultado.error === 'no_propiedades') {
               await enviarWhatsApp(from, '❌ No tenés propiedades asociadas en AlquilApp. Verificá tu cuenta en alquil.app.');
+              await registrarAccionEnHistorial(from, text, 'Le respondí que no tiene propiedades asociadas en AlquilApp.');
               return;
             }
             if (resultado.error === 'no_servicio') {
               const tipoMsg = resultado.tipoDetectado ? ` de *${resultado.tipoDetectado}*` : '';
               await enviarWhatsApp(from, `❌ No encontré un servicio${tipoMsg} registrado en tu propiedad. Verificá en la sección *Servicios* de alquil.app.`);
+              await registrarAccionEnHistorial(from, text, `Le respondí que no encontré un servicio${resultado.tipoDetectado ? ' de ' + resultado.tipoDetectado : ''} registrado.`);
               return;
             }
             if (resultado.error === 'no_factura') {
               const tipoMsg = resultado.tipoDetectado ? ` de *${resultado.tipoDetectado}*` : '';
               await enviarWhatsApp(from, `📄 Encontré el servicio${tipoMsg}, pero no tiene una factura cargada todavía. El propietario puede subir la factura en la sección *Servicios* de alquil.app.`);
+              await registrarAccionEnHistorial(from, text, 'Le respondí que el servicio existe pero no tiene factura cargada.');
+              return;
+            }
+            if (resultado.error === 'elegir' || resultado.error === 'sin_match') {
+              await responderConMenuFacturas(from, text, resultado);
               return;
             }
 
-            // Tenemos la factura URL
-            const servNombre = resultado.servicio.tipo || resultado.servicio.nombre || 'Servicio';
-            let montoMsg = '';
-            if (resultado.factura?.monto) {
-              montoMsg = `\n💰 Monto: *$${Number(resultado.factura.monto).toLocaleString('es-AR')}*`;
-            }
-            let vtoMsg = '';
-            if (resultado.factura?.fecha_vto) {
-              const d = new Date(resultado.factura.fecha_vto);
-              vtoMsg = `\n📅 Vencimiento: *${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}*`;
-            }
-
-            const mensaje =
-              `📄 *AlquilApp — Factura de ${servNombre}*\n` +
-              montoMsg + vtoMsg +
-              '\n\n📎 Acá va la factura adjunta. ¡Guardala! 📋';
-
-            await enviarWhatsAppConPDF(from, mensaje, resultado.facturaUrl);
-            console.log(`✅ Factura de ${servNombre} enviada a ${from}`);
+            await enviarFacturaYRegistrar(from, text, resultado);
           } catch (err) {
             console.error('❌ Error enviando factura:', err);
             await enviarWhatsApp(from, '⚠️ Hubo un error buscando la factura. Intentá de nuevo en un momento.').catch(() => {});
@@ -1918,33 +2053,38 @@ app.post('/webhook', async (req, res) => {
             const cobro = await buscarCobroPorPeriodo(usuario, comando.param);
             if (!cobro) {
               await enviarWhatsApp(from, '❌ No encontré un cobro pagado para ese período. Verificá que el pago esté registrado en AlquilApp.');
+              await registrarAccionEnHistorial(from, null, 'Le respondí que no encontré un cobro pagado para ese período.');
               return;
             }
             await generarYEnviarRecibo(cobro, from);
+            await registrarAccionEnHistorial(from, null,
+              `Generé y envié al usuario el PDF del recibo de pago${cobro?.monto ? ` por $${Number(cobro.monto).toLocaleString('es-AR')}` : ''}${cobro?.periodo ? ` (período ${cobro.periodo})` : ''}.`);
           } else if (comando.tipo === 'factura') {
-            const resultado = await buscarFacturaServicio(usuario, comando.param);
+            // v5.23.0 — comando.param puede traer tipo, monto y/o vencimiento
+            // (ej: "la de $18.450 que vence el 15"). Combinamos param + texto
+            // original del usuario para que el matcher tenga todos los datos.
+            const consulta = `${comando.param || ''} ${text || ''}`.trim();
+            const resultado = await buscarFacturaServicio(usuario, consulta);
             if (resultado.error === 'no_propiedades') {
               await enviarWhatsApp(from, '❌ No tenés propiedades asociadas en AlquilApp.');
+              await registrarAccionEnHistorial(from, null, 'Le respondí que no tiene propiedades asociadas.');
               return;
             }
             if (resultado.error === 'no_servicio') {
               await enviarWhatsApp(from, `❌ No encontré un servicio de *${comando.param}* registrado. Verificá en *Servicios* de alquil.app.`);
+              await registrarAccionEnHistorial(from, null, `Le respondí que no encontré un servicio de ${comando.param} registrado.`);
               return;
             }
             if (resultado.error === 'no_factura') {
               await enviarWhatsApp(from, `📄 Encontré el servicio de *${comando.param}*, pero no tiene factura cargada. El propietario puede subirla en *Servicios* de alquil.app.`);
+              await registrarAccionEnHistorial(from, null, 'Le respondí que el servicio existe pero no tiene factura cargada.');
               return;
             }
-            const servNombre = resultado.servicio.tipo || resultado.servicio.nombre || 'Servicio';
-            let montoMsg = resultado.factura?.monto ? `\n💰 Monto: *$${Number(resultado.factura.monto).toLocaleString('es-AR')}*` : '';
-            let vtoMsg = '';
-            if (resultado.factura?.fecha_vto) {
-              const d = new Date(resultado.factura.fecha_vto);
-              vtoMsg = `\n📅 Vencimiento: *${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}*`;
+            if (resultado.error === 'elegir' || resultado.error === 'sin_match') {
+              await responderConMenuFacturas(from, null, resultado);
+              return;
             }
-            const mensaje = `📄 *AlquilApp — Factura de ${servNombre}*\n` + montoMsg + vtoMsg + '\n\n📎 Acá va la factura adjunta. 📋';
-            await enviarWhatsAppConPDF(from, mensaje, resultado.facturaUrl);
-            console.log(`✅ Factura de ${servNombre} enviada a ${from}`);
+            await enviarFacturaYRegistrar(from, null, resultado);
           } else if (comando.tipo === 'confirmar_pago') {
             // [CMD:confirmar_pago:nombre_inquilino mes]
             const { data: cobros } = await supabase
@@ -2386,6 +2526,21 @@ async function limpiarHistorial(telefono) {
     await supabase.from('conversaciones_wa').delete().eq('telefono', telefono);
   } catch {}
   delete historialMemoria[telefono];
+}
+
+// v5.23.0 — Registra en el historial conversacional las acciones que el bot
+// ejecuta por circuitos directos (envio de facturas, recibos, menues, etc.)
+// para que el LLM las "recuerde" en los turnos siguientes y nunca niegue
+// haber enviado algo (fix amnesia).
+async function registrarAccionEnHistorial(telefono, mensajeUsuario, resumenAccion) {
+  try {
+    const historial = await obtenerHistorial(telefono);
+    if (mensajeUsuario) historial.push({ role: 'user', parts: [{ text: mensajeUsuario }] });
+    historial.push({ role: 'model', parts: [{ text: `[ACCION DEL SISTEMA] ${resumenAccion}` }] });
+    await guardarHistorial(telefono, historial);
+  } catch (e) {
+    console.warn('registrarAccionEnHistorial:', e.message);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2832,9 +2987,15 @@ El usuario puede pedir:
 
 IMPORTANTE — Cuando el usuario pide un recibo de pago o una factura de servicio (ya sea por texto o por audio), DEBÉS incluir un comando especial AL INICIO de tu respuesta para que el sistema lo procese automáticamente:
 • Para recibos: empezá tu respuesta con [CMD:recibo:PERIODO] donde PERIODO es el mes (ej: "marzo 2026", "ultimo").
-• Para facturas de servicio: empezá tu respuesta con [CMD:factura:TIPO] donde TIPO es el servicio (ej: "luz", "gas", "agua").
+• Para facturas de servicio: empezá tu respuesta con [CMD:factura:DESCRIPCION] donde DESCRIPCION es lo que el usuario pidió: tipo de servicio y/o monto y/o vencimiento (ej: "luz", "agua", "la de $18.450 que vence el 15"). Pasá la descripción COMPLETA tal como la dio el usuario; el sistema la interpreta y elige la factura correcta.
 Después del comando, escribí un mensaje corto confirmando que se está procesando (ej: "🧾 Buscando tu recibo de marzo...").
 Ejemplos: "[CMD:recibo:marzo 2026] 🧾 Buscando tu recibo de marzo, ya te lo mando!" o "[CMD:factura:luz] 📄 Buscando la factura de luz, un momento!"
+
+*ACCIONES DEL SISTEMA EN EL HISTORIAL — REGLA CRÍTICA*
+En el historial de esta conversación vas a ver mensajes del asistente que empiezan con [ACCION DEL SISTEMA]. Describen acciones REALES que el sistema ya ejecutó automáticamente: PDFs de facturas o recibos enviados, menúes mostrados, reclamos registrados, etc. Tratálas como hechos verdaderos:
+• NUNCA niegues que se envió un documento si figura una [ACCION DEL SISTEMA] que lo describe. Decir "no te mandé ninguna factura" cuando el historial muestra que sí, es un error grave.
+• Si el usuario dice que el documento que recibió es incorrecto o no es el que pidió, CREELE — el sistema pudo haber elegido mal. No discutas: emití [CMD:factura:...] o [CMD:recibo:...] con TODOS los datos que el usuario haya dado (monto, vencimiento, tipo, período) para que el sistema busque de nuevo.
+• Si el usuario menciona haber recibido algo que no figura en el historial, asumí que pudo haberse enviado igual (el registro puede estar incompleto) y actuá en consecuencia; jamás lo contradigas sobre lo que recibió.
 
 *5. Confirmación de pagos y reclamos (inquilino)*
 Los inquilinos pueden:
