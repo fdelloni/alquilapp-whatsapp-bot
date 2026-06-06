@@ -1038,7 +1038,8 @@ async function buscarFacturaServicio(usuario, texto) {
   // servicio (no solo la ultima), para poder matchear por monto/vencimiento.
   const candidatas = [];
   for (const servicio of servicios) {
-    const nombreServ = servicio.tipo || servicio.nombre || 'Servicio';
+    const tipoUtil = (servicio.tipo && servicio.tipo.toLowerCase() !== 'servicio') ? servicio.tipo : null;
+    const nombreServ = servicio.nombre || tipoUtil || servicio.tipo || 'Servicio';
     const { data: facturas } = await supabase
       .from('facturas_servicios')
       .select('*')
@@ -1137,7 +1138,7 @@ async function responderConMenuFacturas(from, textoUsuario, resultado) {
 
 // v5.23.0 — Envia el PDF de la factura elegida y registra la accion.
 async function enviarFacturaYRegistrar(from, textoUsuario, resultado) {
-  const servNombre = resultado.nombre || resultado.servicio?.tipo || resultado.servicio?.nombre || 'Servicio';
+  const servNombre = resultado.nombre || resultado.servicio?.nombre || resultado.servicio?.tipo || 'Servicio';
   const monto = resultado.factura ? resultado.factura.monto : resultado.montoServicio;
   const vtoRaw = resultado.factura ? resultado.factura.fecha_vto : resultado.vtoServicio;
   const montoMsg = monto ? `\n💰 Monto: *$${Number(monto).toLocaleString('es-AR')}*` : '';
@@ -5066,7 +5067,7 @@ function _originPermitido(req) {
 app.post('/ai/gemini', async (req, res) => {
   if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
   if (!GEMINI_KEY) return res.status(500).json({ error: 'GEMINI_KEY no configurada' });
-  const model = (req.query.model || 'gemini-2.0-flash').replace(/[^a-zA-Z0-9.-]/g, '');
+  const model = (req.query.model || 'gemini-2.5-flash').replace(/[^a-zA-Z0-9.-]/g, '');
   try {
     const r = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
