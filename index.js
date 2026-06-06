@@ -2944,6 +2944,18 @@ async function consultarGeminiConAudio(telefono, audioUrl, mimeType, usuario, da
 // ═══════════════════════════════════════════════════════════
 // SYSTEM PROMPT — Contexto completo adaptado por rol
 // ═══════════════════════════════════════════════════════════
+// v5.24.1 — Formatea la cláusula de mora (mora_config jsonb) para el prompt.
+function formatMoraConfig(mc) {
+  if (!mc || typeof mc !== 'object') return null;
+  const partes = [];
+  if (mc.valor) partes.push(`${mc.valor}% ${mc.tipo_tasa === 'diaria' ? 'por día de atraso' : (mc.tipo_tasa || '')} sobre el alquiler vigente${mc.capitalizable ? ' (capitalizable)' : ''}`);
+  if (mc.multa_fija_diaria) partes.push(`multa fija de $${Number(mc.multa_fija_diaria).toLocaleString('es-AR')} por día`);
+  if (!partes.length) return null;
+  let txt = partes.join(' + ');
+  if (mc.dias_gracia) txt += ` — ${mc.dias_gracia} días de gracia`;
+  return txt;
+}
+
 function buildSystemPrompt(usuario, datos) {
   const nombre   = usuario.nombre || 'Usuario';
   const rol      = usuario.rol || 'propietario';
@@ -3120,6 +3132,8 @@ REGLA DE ORO: Si el dato está en la base de datos, lo das directamente, sin int
         prompt += `   Contrato: ${inicio} → ${fin}\n`;
         if (c.deposito)            prompt += `   Depósito: $${Number(c.deposito).toLocaleString('es-AR')}\n`;
         if (c.proximo_ajuste_fecha) prompt += `   Próximo ajuste: ${c.proximo_ajuste_fecha.split('T')[0]} (${c.proximo_ajuste_pct || 0}%)\n`;
+        const moraTxt = formatMoraConfig(c.mora_config);
+        if (moraTxt) prompt += `   Mora pactada en el contrato: ${moraTxt}\n`;
       });
     } else {
       prompt += '\nCONTRATOS: No tiene contratos cargados.\n';
@@ -3154,6 +3168,8 @@ REGLA DE ORO: Si el dato está en la base de datos, lo das directamente, sin int
       prompt += `Vigencia: ${inicio} → ${fin} | Estado: ${c.estado || 'activo'}\n`;
       if (c.deposito)            prompt += `Depósito: $${Number(c.deposito).toLocaleString('es-AR')}\n`;
       if (c.proximo_ajuste_fecha) prompt += `Próximo ajuste: ${c.proximo_ajuste_fecha.split('T')[0]} (${c.proximo_ajuste_pct || 0}%)\n`;
+      const moraTxtInq = formatMoraConfig(c.mora_config);
+      if (moraTxtInq) prompt += `Mora pactada en el contrato: ${moraTxtInq}\n`;
 
       if (datos.contratos.length > 1) {
         prompt += `\nOTROS CONTRATOS (${datos.contratos.length - 1} más):\n`;
