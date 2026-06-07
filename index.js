@@ -3015,7 +3015,11 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
         (datos.propiedades || []).forEach(pr => { dirMap[pr.id] = pr.direccion || ''; });
         systemPrompt += `\n\n=== TEXTO COMPLETO DE LOS CONTRATOS DEL USUARIO (fuente de verdad para interpretar cláusulas) ===\n` +
           `Cuando el usuario pregunte qué dice o cómo se interpreta su contrato, respondé usando ESTE texto: citá el número de cláusula y el fragmento textual pertinente, y después explicalo en criollo. ` +
-          `Si los contratos difieren entre sí, aclará a cuál te referís. Si lo que pregunta no está en el texto, decilo explícitamente.\n\n` +
+          `Si los contratos difieren entre sí, aclará a cuál te referís.\n` +
+          `REGLAS CRÍTICAS DE FIDELIDAD:\n` +
+          `1. Solo podés citar una cláusula si aparece TEXTUALMENTE en este bloque. Verificá palabra por palabra antes de citar.\n` +
+          `2. La DOCUMENTACIÓN DE REFERENCIA de más abajo puede incluir PLANTILLAS y CONTRATOS MODELO genéricos: esos NO son el contrato del usuario. JAMÁS cites una cláusula de una plantilla como si fuera del contrato real del usuario — eso es un error gravísimo.\n` +
+          `3. Si el contrato del usuario NO trata el tema consultado, decí explícitamente "tu contrato no dice nada sobre X". Después podés agregar qué es lo habitual o qué dice la ley supletoriamente, dejando claro que eso NO está en su contrato.\n\n` +
           conTexto.map(c => `--- CONTRATO: ${dirMap[c.propiedad_id] || 'Propiedad'} (inquilino: ${c.inquilino_nombre || 's/d'}) ---\n${String(c.texto_contrato).slice(0, 16000)}`).join('\n\n') +
           `\n=== FIN TEXTO DE CONTRATOS ===\n`;
         console.log(`📜 Texto de ${conTexto.length} contrato(s) inyectado al prompt`);
