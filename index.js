@@ -3004,6 +3004,25 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
 
   let systemPrompt = buildSystemPrompt(usuario, datos);
 
+  // ── v5.26.0: si la consulta es sobre el CONTENIDO del contrato, inyectar
+  // el texto completo (contratos.texto_contrato) para poder interpretarlo ──
+  try {
+    const esConsultaContrato = /contrat|cl[aá]usul|pintur|devolver|restitu|rescind|rescis|penalidad|multa|dep[oó]sito|garant|fiador|prorrog|renovac/i.test(pregunta);
+    if (esConsultaContrato && datos && Array.isArray(datos.contratos) && datos.contratos.length) {
+      const conTexto = datos.contratos.filter(c => c.texto_contrato && String(c.texto_contrato).length > 200).slice(0, 3);
+      if (conTexto.length) {
+        const dirMap = {};
+        (datos.propiedades || []).forEach(pr => { dirMap[pr.id] = pr.direccion || ''; });
+        systemPrompt += `\n\n=== TEXTO COMPLETO DE LOS CONTRATOS DEL USUARIO (fuente de verdad para interpretar cláusulas) ===\n` +
+          `Cuando el usuario pregunte qué dice o cómo se interpreta su contrato, respondé usando ESTE texto: citá el número de cláusula y el fragmento textual pertinente, y después explicalo en criollo. ` +
+          `Si los contratos difieren entre sí, aclará a cuál te referís. Si lo que pregunta no está en el texto, decilo explícitamente.\n\n` +
+          conTexto.map(c => `--- CONTRATO: ${dirMap[c.propiedad_id] || 'Propiedad'} (inquilino: ${c.inquilino_nombre || 's/d'}) ---\n${String(c.texto_contrato).slice(0, 16000)}`).join('\n\n') +
+          `\n=== FIN TEXTO DE CONTRATOS ===\n`;
+        console.log(`📜 Texto de ${conTexto.length} contrato(s) inyectado al prompt`);
+      }
+    }
+  } catch (e) { console.warn('inyección texto contratos:', e.message); }
+
   // ── RAG: inyectar contexto de documentos_chatbot ──
   // v5.18.0 — obtenerContextoRAG devuelve { bloque, nivel, topSim }. El
   // "nivel" (fuerte/parcial/debil/ninguno) condiciona las reglas de uso para
