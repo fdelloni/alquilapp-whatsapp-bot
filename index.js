@@ -939,6 +939,30 @@ async function buscarCobroPorPeriodo(usuario, textoMes) {
 // ═══════════════════════════════════════════════════════════
 // BUSCAR FACTURA DE SERVICIO (luz, gas, agua, etc.)
 // ═══════════════════════════════════════════════════════════
+// v5.25.0 — Mapa tipo de servicio → keywords (compartido por el matcher de
+// facturas y el detector de pedidos múltiples).
+const TIPOS_SERVICIO_MAP = {
+  'luz': ['luz', 'electricidad', 'electrica', 'eléctrica', 'epec', 'edenor', 'edesur', 'enersa', 'epe', 'edea', 'edelap', 'eden', 'energia', 'energía'],
+  'gas': ['gas', 'gasnor', 'litoral gas', 'metrogas', 'camuzzi', 'gasnea', 'ecogas'],
+  'agua': ['agua', 'aguas', 'assa', 'aysa', 'absa', 'dipos'],
+  'internet': ['internet', 'wifi', 'fibra', 'fibertel', 'telecentro', 'personal', 'movistar', 'claro'],
+  'cable': ['cable', 'television', 'televisión', 'tv', 'directv', 'cablevision', 'cablevisión'],
+  'telefono': ['telefono', 'teléfono', 'celular', 'linea', 'línea'],
+  'abl': ['abl', 'municipal', 'municipalidad', 'tasa', 'tasas'],
+  'expensas': ['expensas', 'consorcio', 'administracion', 'administración']
+};
+
+// Devuelve TODOS los tipos de servicio mencionados en el texto (p/ pedidos
+// múltiples tipo "mandame la factura de agua y la de luz").
+function detectarTiposServicio(texto) {
+  const t = String(texto || '').toLowerCase();
+  const tipos = [];
+  for (const [tipo, keywords] of Object.entries(TIPOS_SERVICIO_MAP)) {
+    if (keywords.some(kw => t.includes(kw))) tipos.push(tipo);
+  }
+  return tipos;
+}
+
 // ── Extraer criterios de busqueda de factura del texto del usuario ──
 // v5.23.0 — entiende monto ($18.450 / 26.710,27 / 18450) y dia de
 // vencimiento ("vence el 15", "vence el dia 15/6") ademas del tipo.
@@ -972,16 +996,7 @@ async function buscarFacturaServicio(usuario, texto) {
 
   // Detectar tipo de servicio
   const textoLower = (texto || '').toLowerCase();
-  const tiposMap = {
-    'luz': ['luz', 'electricidad', 'electrica', 'eléctrica', 'epec', 'edenor', 'edesur', 'enersa', 'epe', 'edea', 'edelap', 'eden', 'energia', 'energía'],
-    'gas': ['gas', 'gasnor', 'litoral gas', 'metrogas', 'camuzzi', 'gasnea', 'ecogas'],
-    'agua': ['agua', 'aguas', 'assa', 'aysa', 'absa', 'dipos'],
-    'internet': ['internet', 'wifi', 'fibra', 'fibertel', 'telecentro', 'personal', 'movistar', 'claro'],
-    'cable': ['cable', 'television', 'televisión', 'tv', 'directv', 'cablevision', 'cablevisión'],
-    'telefono': ['telefono', 'teléfono', 'celular', 'linea', 'línea'],
-    'abl': ['abl', 'municipal', 'municipalidad', 'tasa', 'tasas'],
-    'expensas': ['expensas', 'consorcio', 'administracion', 'administración']
-  };
+  const tiposMap = TIPOS_SERVICIO_MAP;
 
   let tipoDetectado = null;
   let keywordsUsados = [];
@@ -1106,6 +1121,90 @@ async function buscarFacturaServicio(usuario, texto) {
   return { error: 'elegir', candidatas: ultimas, tipoDetectado };
 }
 
+// v5.25.0 — Pedido de VARIAS facturas en un solo mensaje ("la de agua y la
+// de luz"): envía la última factura de cada tipo mencionado (máx 3).
+async function manejarPedidoMultiFactura(usuario, from, textoUsuario, tipos) {
+  const fallos = [];
+  let primera = true;
+  for (const tipo of tipos.slice(0, 3)) {
+    try {
+      const r = await buscarFacturaServicio(usuario, tipo);
+      if (r.error) {
+        fallos.push(tipo);
+        continue;
+      }
+      await enviarFacturaYRegistrar(from, primera ? textoUsuario : null, r);
+      primera = false;
+    } catch (e) {
+      console.error(`❌ Error enviando factura de ${tipo}:`, e.message);
+      fallos.push(tipo);
+    }
+  }
+  if (fallos.length) {
+    await enviarWhatsApp(from, `⚠️ No pude enviar la factura de: *${fallos.join(', ')}* (sin factura cargada o sin servicio registrado).`);
+    await registrarAccionEnHistorial(from, primera ? textoUsuario : null, `No pude enviar las facturas de ${fallos.join(', ')} (sin factura o servicio).`);
+  }
+}
+
+// v5.25.0 — Pedido de CONTRATO en PDF: busca los contratos del usuario,
+// matchea por dirección si la menciona, envía el PDF o muestra menú numerado.
+async function manejarPedidoContrato(usuario, from, textoUsuario) {
+  const rol = usuario.rol || 'propietario';
+  let query = supabase.from('contratos').select('*, propiedades(direccion)');
+  if (rol === 'inquilino') {
+    query = query.eq('inquilino_email', usuario.email || '');
+  } else {
+    query = query.eq('propietario_id', usuario.id);
+  }
+  const { data: contratos } = await query;
+  const lista = (contratos || []).filter(c => ['vigente', 'activo'].includes((c.estado || '').toLowerCase()));
+  const todos = lista.length ? lista : (contratos || []);
+
+  if (!todos.length) {
+    await enviarWhatsApp(from, '❌ No encontré contratos asociados a tu cuenta en AlquilApp.');
+    await registrarAccionEnHistorial(from, textoUsuario, 'Le respondí que no tiene contratos asociados.');
+    return;
+  }
+
+  const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const textoNorm = norm(textoUsuario);
+  const dirDe = c => c.propiedades?.direccion || c.direccion_propiedad || '';
+
+  // Matchear por palabras de la dirección o nombre del inquilino (>=3 chars, no genéricas)
+  let candidatos = todos;
+  const conMatch = todos.filter(c => {
+    const palabras = (norm(dirDe(c)) + ' ' + norm(c.inquilino_nombre)).split(/[^a-z0-9]+/).filter(w => w.length >= 3 && !['casa', 'depto', 'departamento', 'calle'].includes(w));
+    return palabras.some(w => textoNorm.includes(w));
+  });
+  if (conMatch.length > 0) candidatos = conMatch;
+
+  const conPdf = candidatos.filter(c => c.archivo_url);
+
+  if (conPdf.length === 1) {
+    const c = conPdf[0];
+    const dir = dirDe(c) || 'tu propiedad';
+    const mensaje = `📄 *AlquilApp — Contrato de locación*\n🏠 ${dir}${c.inquilino_nombre ? `\n👤 Inquilino: ${c.inquilino_nombre}` : ''}\n\n📎 Acá va el contrato adjunto. 📋`;
+    await enviarWhatsAppConPDF(from, mensaje, c.archivo_url);
+    await registrarAccionEnHistorial(from, textoUsuario, `Envié al usuario el PDF del contrato de ${dir}${c.inquilino_nombre ? ` (inquilino ${c.inquilino_nombre})` : ''}.`);
+    console.log(`✅ Contrato de ${dir} enviado a ${from}`);
+    return;
+  }
+
+  if (conPdf.length > 1) {
+    const cands = conPdf.slice(0, 8);
+    const lineas = cands.map((c, i) => `*${i + 1}.* ${dirDe(c) || 'Propiedad'}${c.inquilino_nombre ? ` — ${c.inquilino_nombre}` : ''}`);
+    await setBotPendiente(from, 'contrato_elegir', {
+      candidatas: cands.map(c => ({ nombre: dirDe(c) || 'Propiedad', inquilino: c.inquilino_nombre || null, url: c.archivo_url }))
+    });
+    await enviarWhatsApp(from, `📄 Tenés varios contratos. ¿Cuál querés?\n\n${lineas.join('\n')}\n\nRespondé con el *número*.`);
+    await registrarAccionEnHistorial(from, textoUsuario, `Le mostré un menú numerado de contratos (${lineas.join(' | ').replace(/\*/g, '')}) y le pedí que elija con un número.`);
+    return;
+  }
+
+  await enviarWhatsApp(from, '📄 Encontré el contrato pero no tiene el PDF cargado en AlquilApp. Podés subirlo en la sección *Contratos* de alquil.app.');
+  await registrarAccionEnHistorial(from, textoUsuario, 'Le respondí que el contrato no tiene PDF cargado.');
+}
+
 // v5.23.0 — Formatea y envia el menu numerado de facturas + deja pendiente
 // la eleccion (accion 'factura_elegir') y registra todo en el historial.
 async function responderConMenuFacturas(from, textoUsuario, resultado) {
@@ -1169,10 +1268,11 @@ async function clasificarIntencionLLM(texto, rol, contextoReciente = '') {
   const systemPrompt =
 `Sos un clasificador de intents para un asistente de WhatsApp de AlquilApp (plataforma argentina de alquileres).
 
-Tu tarea: leer el mensaje del usuario y elegir UNA sola etiqueta entre estas 7:
+Tu tarea: leer el mensaje del usuario y elegir UNA sola etiqueta entre estas 8:
 
 - ACCION_GENERAR_RECIBO: el usuario pide explícitamente que se le envíe, genere o mande el RECIBO de pago del alquiler. Ej: "mandame el recibo de marzo", "generame un recibo", "pasame el recibo del mes", "necesito el recibo".
 - ACCION_ENVIAR_FACTURA: el usuario pide que se le envíe una FACTURA de servicio domiciliario (luz, gas, agua, internet, expensas, ABL) por WhatsApp. Ej: "mandame la factura de luz", "pasame la boleta de gas de mayo".
+- ACCION_ENVIAR_CONTRATO: el usuario pide que se le envíe el CONTRATO de alquiler en PDF por WhatsApp. Ej: "mandame el contrato", "pasame el contrato de Rafaela 1328", "quiero el PDF del contrato".
 - ACCION_REPORTAR_RECLAMO: el usuario está reportando AHORA, como hecho actual, un problema de mantenimiento concreto. Ej: "se rompió el termotanque", "hay una filtración en el baño", "no funciona la heladera".
 - ACCION_CONSULTAR_RECLAMOS: el usuario pide ver el estado o la lista de sus reclamos YA REGISTRADOS. Ej: "cuáles son mis reclamos abiertos", "qué reclamos tengo", "lista de reclamos".
 - ACCION_CAMBIAR_ESTADO_RECLAMO: un propietario quiere marcar como resuelto / cerrado / en curso un reclamo existente identificado por número. Ej: "marcá resuelto el reclamo 3", "reclamo 5 en progreso", "cerrá el reclamo 2".
@@ -1211,6 +1311,7 @@ Respondé ÚNICAMENTE con la etiqueta exacta en mayúsculas, sin explicación, s
     const VALIDOS = new Set([
       'ACCION_GENERAR_RECIBO',
       'ACCION_ENVIAR_FACTURA',
+      'ACCION_ENVIAR_CONTRATO',
       'ACCION_REPORTAR_RECLAMO',
       'ACCION_CONSULTAR_RECLAMOS',
       'ACCION_CAMBIAR_ESTADO_RECLAMO',
@@ -1249,7 +1350,7 @@ async function detectarIntencion(texto, rol = null, contextoReciente = '') {
   // palabra potencialmente-accionable, devolvemos null sin llamar al LLM.
   // null → el webhook enruta a Gemini/RAG (flujo conversacional normal).
   // Esto ahorra ~300ms de latencia en la mayoría de las consultas legales.
-  const tienePalabraAccionable = /\b(recibo|recibos|recibi|recibí|comprobante|comprobantes|factura|facturas|boleta|boletas|reclamo|reclamos|pago|pagos|pague|pagué|pagar|pagaste|pago|transferi|transferí|transferid|deposit|depositar|rompio|rompió|roto|rota|arregla|arreglar|reparar|mantenimiento|filtra|filtración|gotea|gotera|humedad|fuga|resuelt|resolver|cerrar|cerrad|curso|en progres)\b/i.test(texto);
+  const tienePalabraAccionable = /\b(recibo|recibos|recibi|recibí|comprobante|comprobantes|factura|facturas|boleta|boletas|reclamo|reclamos|pago|pagos|pague|pagué|pagar|pagaste|pago|transferi|transferí|transferid|deposit|depositar|rompio|rompió|roto|rota|arregla|arreglar|reparar|mantenimiento|filtra|filtración|gotea|gotera|humedad|fuga|resuelt|resolver|cerrar|cerrad|curso|en progres|contrato|contratos|luz|gas|agua|internet|expensas|abl|tasa|mandame|mandáme|pasame|pasáme|envia|envía|enviame|envíame)\b/i.test(texto);
   if (!tienePalabraAccionable) {
     return null;
   }
@@ -1259,6 +1360,7 @@ async function detectarIntencion(texto, rol = null, contextoReciente = '') {
   switch (etiqueta) {
     case 'ACCION_GENERAR_RECIBO':         return { tipo: 'recibo', texto };
     case 'ACCION_ENVIAR_FACTURA':         return { tipo: 'factura_servicio', texto };
+    case 'ACCION_ENVIAR_CONTRATO':        return { tipo: 'enviar_contrato', texto };
     case 'ACCION_REPORTAR_RECLAMO':       return { tipo: 'reclamo', texto };
     case 'ACCION_CONSULTAR_RECLAMOS':     return { tipo: 'consultar_reclamos', texto };
     case 'ACCION_CAMBIAR_ESTADO_RECLAMO': return { tipo: 'cambiar_estado_reclamo', texto };
@@ -1377,6 +1479,30 @@ app.post('/webhook', async (req, res) => {
       await deleteBotPendiente(from);
     }
 
+    // ── 1.7. v5.25.0: respuesta a un menú de contratos pendiente ──
+    if (pendiente && pendiente.accion === 'contrato_elegir') {
+      const fp = pendiente.payload || {};
+      const lista = Array.isArray(fp.candidatas) ? fp.candidatas : [];
+      const opcion = parseInt(text.replace(/[^\d]/g, ''), 10);
+      if (opcion >= 1 && opcion <= lista.length) {
+        const c = lista[opcion - 1];
+        await deleteBotPendiente(from);
+        res.send(`<Response><Message>${escapeXml('📄 Te mando ese contrato…')}</Message></Response>`);
+        (async () => {
+          try {
+            const mensaje = `📄 *AlquilApp — Contrato de locación*\n🏠 ${c.nombre}${c.inquilino ? `\n👤 Inquilino: ${c.inquilino}` : ''}\n\n📎 Acá va el contrato adjunto. 📋`;
+            await enviarWhatsAppConPDF(from, mensaje, c.url);
+            await registrarAccionEnHistorial(from, text, `Envié al usuario el PDF del contrato de ${c.nombre} (elegido del menú, opción ${opcion}).`);
+          } catch (err) {
+            console.error('❌ Error enviando contrato elegido:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error enviando el contrato. Intentá de nuevo.').catch(() => {});
+          }
+        })();
+        return;
+      }
+      await deleteBotPendiente(from);
+    }
+
     // ── 2. Detectar intención especial (recibo, factura, reclamo, etc.) ──
     // v5.19.0: clasificación contextual con LLM para evitar falsos positivos
     // como "¿qué pasa si recibo la casa rota?" → flujo recibo. Pasa el rol
@@ -1456,12 +1582,33 @@ app.post('/webhook', async (req, res) => {
         return;
       }
 
+      if (intencion?.tipo === 'enviar_contrato') {
+        console.log('📄 Intención detectada: ENVIAR CONTRATO');
+        res.send(`<Response><Message>${escapeXml('📄 Buscando tu contrato... un momento.')}</Message></Response>`);
+        (async () => {
+          try {
+            await manejarPedidoContrato(usuario, from, text);
+          } catch (err) {
+            console.error('❌ Error enviando contrato:', err);
+            await enviarWhatsApp(from, '⚠️ Hubo un error buscando el contrato. Intentá de nuevo en un momento.').catch(() => {});
+          }
+        })();
+        return;
+      }
+
       if (intencion?.tipo === 'factura_servicio') {
         console.log('📄 Intención detectada: FACTURA SERVICIO');
         res.send(`<Response><Message>${escapeXml('📄 Buscando la factura... un momento.')}</Message></Response>`);
 
         (async () => {
           try {
+            // v5.25.0 — pedido de varias facturas en un solo mensaje
+            const tiposPedidos = detectarTiposServicio(text);
+            if (tiposPedidos.length >= 2) {
+              await manejarPedidoMultiFactura(usuario, from, text, tiposPedidos);
+              return;
+            }
+
             const resultado = await buscarFacturaServicio(usuario, text);
 
             if (resultado.error === 'no_propiedades') {
@@ -2060,11 +2207,18 @@ app.post('/webhook', async (req, res) => {
             await generarYEnviarRecibo(cobro, from);
             await registrarAccionEnHistorial(from, null,
               `Generé y envié al usuario el PDF del recibo de pago${cobro?.monto ? ` por $${Number(cobro.monto).toLocaleString('es-AR')}` : ''}${cobro?.periodo ? ` (período ${cobro.periodo})` : ''}.`);
+          } else if (comando.tipo === 'contrato') {
+            await manejarPedidoContrato(usuario, from, `${comando.param || ''} ${text || ''}`.trim());
           } else if (comando.tipo === 'factura') {
             // v5.23.0 — comando.param puede traer tipo, monto y/o vencimiento
             // (ej: "la de $18.450 que vence el 15"). Combinamos param + texto
             // original del usuario para que el matcher tenga todos los datos.
             const consulta = `${comando.param || ''} ${text || ''}`.trim();
+            const tiposPedidosCmd = detectarTiposServicio(consulta);
+            if (tiposPedidosCmd.length >= 2) {
+              await manejarPedidoMultiFactura(usuario, from, null, tiposPedidosCmd);
+              return;
+            }
             const resultado = await buscarFacturaServicio(usuario, consulta);
             if (resultado.error === 'no_propiedades') {
               await enviarWhatsApp(from, '❌ No tenés propiedades asociadas en AlquilApp.');
@@ -2529,6 +2683,18 @@ async function limpiarHistorial(telefono) {
   delete historialMemoria[telefono];
 }
 
+// v5.25.0 — El LLM a veces IMITA el marcador interno [ACCION DEL SISTEMA]
+// (lo ve en su historial) y "declara" envíos que nunca ejecutó. Esta función
+// limpia esos marcadores de la respuesta antes de mandarla al usuario.
+function sanitizarRespuestaLLM(texto) {
+  if (!texto) return texto;
+  if (!/\[ACCION DEL SISTEMA\]/i.test(texto)) return texto;
+  console.warn('⚠️ LLM imitó [ACCION DEL SISTEMA] — se elimina de la respuesta');
+  let t = texto.replace(/^[ \t]*\[ACCION DEL SISTEMA\][^\n]*$/gim, '').trim();
+  t = t.replace(/\[ACCION DEL SISTEMA\]/gi, '').trim();
+  return t || '¿Me repetís qué necesitás? Si querés que te mande una factura o un recibo, pedímelo directo (ej: "mandame la factura de luz").';
+}
+
 // v5.23.0 — Registra en el historial conversacional las acciones que el bot
 // ejecuta por circuitos directos (envio de facturas, recibos, menues, etc.)
 // para que el LLM las "recuerde" en los turnos siguientes y nunca niegue
@@ -2864,9 +3030,10 @@ async function consultarGemini(telefono, pregunta, usuario, datos) {
       console.log(`[whatsapp-text] ✅ Respuesta generada por ${provider} (fallback)`);
     }
 
-    historial.push({ role: 'model', parts: [{ text: texto }] });
+    const textoLimpio = sanitizarRespuestaLLM(texto);
+    historial.push({ role: 'model', parts: [{ text: textoLimpio }] });
     await guardarHistorial(telefono, historial);
-    return formatearParaWhatsApp(agregarDisclaimerLegal(texto));
+    return formatearParaWhatsApp(agregarDisclaimerLegal(textoLimpio));
 
   } catch (err) {
     console.error('consultarGemini error:', err);
@@ -2928,7 +3095,7 @@ async function consultarGeminiConAudio(telefono, audioUrl, mimeType, usuario, da
       return '⚠️ No pude entender el audio. Intentá escribir tu consulta.';
     }
 
-    const respuesta = json.candidates[0].content.parts[0].text.trim();
+    const respuesta = sanitizarRespuestaLLM(json.candidates[0].content.parts[0].text.trim());
     historial.push({ role: 'user',  parts: [{ text: '[Mensaje de voz]' }] });
     historial.push({ role: 'model', parts: [{ text: respuesta }] });
     await guardarHistorial(telefono, historial);
@@ -3006,9 +3173,11 @@ Por WhatsApp solo se puede *consultar*, no modificar datos.
 El usuario puede pedir:
 • *Recibo de pago*: escribiendo algo como "mandame el recibo de marzo" o "quiero el recibo del último pago". Se genera un PDF y se envía automáticamente.
 • *Factura de servicio*: escribiendo "mandame la factura de luz" o "pasame la boleta de gas". Se envía el PDF de la última factura cargada.
+• *Contrato de alquiler*: escribiendo "mandame el contrato" o "pasame el contrato de [dirección]". Se envía el PDF del contrato cargado en AlquilApp.
 
 IMPORTANTE — Cuando el usuario pide un recibo de pago o una factura de servicio (ya sea por texto o por audio), DEBÉS incluir un comando especial AL INICIO de tu respuesta para que el sistema lo procese automáticamente:
 • Para recibos: empezá tu respuesta con [CMD:recibo:PERIODO] donde PERIODO es el mes (ej: "marzo 2026", "ultimo").
+• Para contratos: empezá tu respuesta con [CMD:contrato:DESCRIPCION] donde DESCRIPCION es la dirección o el dato que dio el usuario (o "unico" si tiene uno solo).
 • Para facturas de servicio: empezá tu respuesta con [CMD:factura:DESCRIPCION] donde DESCRIPCION es lo que el usuario pidió: tipo de servicio y/o monto y/o vencimiento (ej: "luz", "agua", "la de $18.450 que vence el 15"). Pasá la descripción COMPLETA tal como la dio el usuario; el sistema la interpreta y elige la factura correcta.
 Después del comando, escribí un mensaje corto confirmando que se está procesando (ej: "🧾 Buscando tu recibo de marzo...").
 Ejemplos: "[CMD:recibo:marzo 2026] 🧾 Buscando tu recibo de marzo, ya te lo mando!" o "[CMD:factura:luz] 📄 Buscando la factura de luz, un momento!"
@@ -3018,6 +3187,8 @@ En el historial de esta conversación vas a ver mensajes del asistente que empie
 • NUNCA niegues que se envió un documento si figura una [ACCION DEL SISTEMA] que lo describe. Decir "no te mandé ninguna factura" cuando el historial muestra que sí, es un error grave.
 • Si el usuario dice que el documento que recibió es incorrecto o no es el que pidió, CREELE — el sistema pudo haber elegido mal. No discutas: emití [CMD:factura:...] o [CMD:recibo:...] con TODOS los datos que el usuario haya dado (monto, vencimiento, tipo, período) para que el sistema busque de nuevo.
 • Si el usuario menciona haber recibido algo que no figura en el historial, asumí que pudo haberse enviado igual (el registro puede estar incompleto) y actuá en consecuencia; jamás lo contradigas sobre lo que recibió.
+• Esas líneas las escribe ÚNICAMENTE el sistema. VOS NUNCA debés escribir "[ACCION DEL SISTEMA]" en una respuesta. Si el usuario pide que le mandes una factura, recibo o contrato, tu única herramienta es el comando [CMD:...]; JAMÁS afirmes que enviaste algo si no emitiste el comando.
+• NUNCA afirmes que existe una factura, monto o documento que no figure en los DATOS de abajo. Lo que se haya mencionado antes en la conversación NO es prueba de que exista.
 
 *5. Confirmación de pagos y reclamos (inquilino)*
 Los inquilinos pueden:
@@ -3235,7 +3406,7 @@ REGLA DE ORO: Si el dato está en la base de datos, lo das directamente, sin int
 // Retorna { textoLimpio, comando } donde comando es null si no hay CMD.
 // ═══════════════════════════════════════════════════════════
 function procesarComandoCMD(respuesta) {
-  const match = respuesta.match(/\[CMD:(recibo|factura|confirmar_pago|reclamo):([^\]]+)\]/i);
+  const match = respuesta.match(/\[CMD:(recibo|factura|contrato|confirmar_pago|reclamo):([^\]]+)\]/i);
   if (!match) return { textoLimpio: respuesta, comando: null };
 
   const tipo = match[1].toLowerCase();
