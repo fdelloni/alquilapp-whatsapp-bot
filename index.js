@@ -1,5 +1,13 @@
 // ═══════════════════════════════════════════════════════════
 // AlquilApp — Bot de WhatsApp con Gemini AI (via Twilio)
+// v5.27.0 — Seguridad del proxy IA y notificaciones: _originPermitido
+//          anclado al host real (antes "ferozo.com" matcheaba en cualquier
+//          parte del string), se elimina el pase con Origin vacío (requests
+//          server-to-server ya no pasan el filtro), CORS refleja el Origin
+//          de la allowlist en vez de '*', segunda capa opcional x-proxy-key
+//          (AI_PROXY_SECRET) en /ai/*, y se elimina el fallback hardcodeado
+//          'alquilapp-notif-2024' de NOTIF_SECRET. Requiere rotar el secret
+//          viejo (sigue en el historial público) y setear NODE_ENV=production.
 // v5.22.0 — Regla 7 del prompt: completitud obligatoria en respuestas
 //          de procedimiento legal. Cuando la pregunta es operativa-
 //          jurídica ("qué hago si X", "no me paga", "se rompió algo"),
@@ -15,7 +23,7 @@
 //          añade nota de "consultá a un abogado" cuando la respuesta
 //          contiene referencias normativas nominadas (Ley XX, DNU XX,
 //          art. XXXX, CCyC, CPCCN, ARCA, etc.). Idempotente. (3) Banco
-//          QA ampliado de 70 a 109 preguntas (v1.1 del banco).
+//          QA ampliado de 70 a 105 preguntas (v1.1 del banco).
 // v5.20.0 — Prompt RAG reforzado: 2 reglas nuevas (5 y 6) para manejar
 //          chunks huérfanos (fragmentos cortados) y temporalidad de
 //          normas (vigente vs derogada por ultraactividad). BOT_VERSION

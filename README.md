@@ -14,7 +14,7 @@ Asistente de gestión de alquileres por WhatsApp para [alquil.app](https://alqui
 
 El repo incluye un sistema de evaluación continua en [`scripts/qa/`](scripts/qa/):
 
-- Banco de **109 preguntas** organizadas por bloque temático (locación básica, DNU 70, sellado provincial, desalojo, fianza, impuestos, jurisprudencia, edge cases, artículos del CCyC).
+- Banco de **105 preguntas** organizadas por bloque temático (locación básica, DNU 70, sellado provincial, desalojo, fianza, impuestos, jurisprudencia, edge cases, artículos del CCyC).
 - `runner.mjs` corre el banco contra el endpoint `POST /ai/qa-test` (autenticado por `x-qa-secret`), que reproduce el pipeline real (embedding → RAG → LLM) de forma aislada.
 - GitHub Action con cron cada 2 días que ejecuta la corrida y commitea el reporte en [`qa-reports/`](qa-reports/) (JSON + Markdown).
 - El changelog de versiones (header de `index.js`) documenta qué caso del QA cierra cada cambio.
