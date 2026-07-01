@@ -60,10 +60,17 @@ app.use(express.json({ limit: '25mb' })); // subimos límite para PDFs/imágenes
 app.use(express.urlencoded({ extended: true, limit: '25mb' })); // Twilio envía form-urlencoded
 
 // CORS global (permite llamadas desde alquil.app y cualquier origen)
+// CORS (v5.27.0): en vez de '*' se refleja el Origin solo si está en la
+// allowlist (_originPermitido). Los webhooks server-to-server (Twilio, cron)
+// no usan CORS, así que no se ven afectados.
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '';
+  if (origin && _originPermitido(req)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Vary', 'Origin');
+  }
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-proxy-key');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -2390,7 +2397,11 @@ app.post('/cobro-pagado', async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Headers', 'Content-Type');
 
-  const SECRET = NOTIF_SECRET || 'alquilapp-notif-2024';
+  // SEGURIDAD (v5.27.0): se elimina el secret de fallback hardcodeado.
+  // Estaba publicado en este repo público, así que cualquiera podía autenticarse
+  // si NOTIF_SECRET no estaba seteada. Ahora sin env var el endpoint se cierra.
+  const SECRET = NOTIF_SECRET;
+  if (!SECRET) return res.status(500).json({ error: 'NOTIF_SECRET no configurada' });
   const { cobro_id, secret } = req.body;
 
   if (secret !== SECRET) {
@@ -3539,7 +3550,11 @@ async function enviarWhatsApp(to, mensaje) {
 // para COBROS de alquiler y FACTURAS DE SERVICIOS.
 // ═══════════════════════════════════════════════════════════
 app.get('/notif-automaticas', async (req, res) => {
-  const SECRET = NOTIF_SECRET || 'alquilapp-notif-2024';
+  // SEGURIDAD (v5.27.0): se elimina el secret de fallback hardcodeado.
+  // Estaba publicado en este repo público, así que cualquiera podía autenticarse
+  // si NOTIF_SECRET no estaba seteada. Ahora sin env var el endpoint se cierra.
+  const SECRET = NOTIF_SECRET;
+  if (!SECRET) return res.status(500).json({ error: 'NOTIF_SECRET no configurada' });
   if (req.query.secret !== SECRET) {
     return res.status(401).json({ error: 'No autorizado' });
   }
@@ -5274,17 +5289,37 @@ if (process.env.IMAP_INBOX_HOST && process.env.IMAP_INBOX_EMAIL && process.env.I
 // ═══════════════════════════════════════════════════════════
 function _originPermitido(req) {
   const origin = req.headers.origin || req.headers.referer || '';
-  // Permitir alquil.app, www.alquil.app, Ferozo preview y local dev
-  const ok = /(^https?:\/\/)(www\.)?alquil\.app/.test(origin)
-          || /ferozo\.com/.test(origin)
-          || /localhost|127\.0\.0\.1|file:\/\//.test(origin)
-          || origin === '';
-  return ok;
+  // SEGURIDAD (v5.27.0):
+  // - Regexes anclados al host real (antes "ferozo.com" matcheaba en cualquier
+  //   parte del string, ej. https://evil.com/?x=ferozo.com).
+  // - Se elimina el pase con origin === '': las requests server-to-server
+  //   (curl, bots, scrapers) no envían Origin y antes pasaban el filtro,
+  //   dejando el proxy de IA abierto a cualquiera que conociera la URL.
+  // - localhost/file:// solo se permite fuera de producción.
+  const esProd = process.env.NODE_ENV === 'production';
+  return /^https?:\/\/(www\.)?alquil\.app(\/|$)/.test(origin)
+      || /^https?:\/\/([a-z0-9-]+\.)*ferozo\.com(\/|$)/.test(origin)
+      || (!esProd && (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/.test(origin) || /^file:\/\//.test(origin)));
+}
+
+// Segunda capa (v5.27.0): secret compartido opcional para el proxy IA.
+// Si AI_PROXY_SECRET está configurada en el entorno, el cliente debe enviar
+// el header `x-proxy-key` con ese valor. Si NO está configurada, esta capa
+// no bloquea nada (retrocompatible: el deploy actual sigue funcionando y
+// se puede activar cuando el frontend ya envíe el header).
+// Nota honesta: un secret embebido en frontend es visible en DevTools; esta
+// capa frena scrapers y abuso casual, no a un atacante dedicado. El fix
+// definitivo es autenticación por usuario o mover estas llamadas al backend.
+function _proxyAutorizado(req) {
+  const expected = process.env.AI_PROXY_SECRET || '';
+  if (!expected) return true;
+  return (req.get('x-proxy-key') || '') === expected;
 }
 
 // ── Proxy Gemini ─────────────────────────────────────────────
 app.post('/ai/gemini', async (req, res) => {
   if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!_proxyAutorizado(req)) return res.status(403).json({ error: 'Proxy key inválida' });
   if (!GEMINI_KEY) return res.status(500).json({ error: 'GEMINI_KEY no configurada' });
   const model = (req.query.model || 'gemini-2.5-flash').replace(/[^a-zA-Z0-9.-]/g, '');
   try {
@@ -5308,6 +5343,7 @@ app.post('/ai/gemini', async (req, res) => {
 // Response: { "embedding": { "values": [...] } }
 app.post('/ai/gemini-embed', async (req, res) => {
   if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!_proxyAutorizado(req)) return res.status(403).json({ error: 'Proxy key inválida' });
   if (!GEMINI_KEY) return res.status(500).json({ error: 'GEMINI_KEY no configurada' });
   const model = (req.query.model || 'gemini-embedding-001').replace(/[^a-zA-Z0-9.-]/g, '');
   try {
@@ -5326,6 +5362,7 @@ app.post('/ai/gemini-embed', async (req, res) => {
 // ── Proxy Cohere ─────────────────────────────────────────────
 app.post('/ai/cohere', async (req, res) => {
   if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!_proxyAutorizado(req)) return res.status(403).json({ error: 'Proxy key inválida' });
   if (!COHERE_KEY) return res.status(500).json({ error: 'COHERE_KEY no configurada' });
   try {
     const r = await fetch('https://api.cohere.com/v2/chat', {
@@ -5344,6 +5381,7 @@ app.post('/ai/cohere', async (req, res) => {
 // ── Proxy DeepSeek ───────────────────────────────────────────
 app.post('/ai/deepseek', async (req, res) => {
   if (!_originPermitido(req)) return res.status(403).json({ error: 'Origen no permitido' });
+  if (!_proxyAutorizado(req)) return res.status(403).json({ error: 'Proxy key inválida' });
   if (!DEEPSEEK_KEY) return res.status(500).json({ error: 'DEEPSEEK_KEY no configurada' });
   try {
     const r = await fetch('https://api.deepseek.com/chat/completions', {
