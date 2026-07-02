@@ -7,6 +7,7 @@ on:
     - cron: '0 3 */2 * *'
   workflow_dispatch: {}
   push:
+    branches: [main]
     paths:
       - .qa-trigger
       - .github/workflows/qa-bot.yml  # permite corrida manual desde la UI de GitHub
