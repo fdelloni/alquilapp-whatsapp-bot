@@ -1,0 +1,3154 @@
+{
+  "version_banco": "1.3",
+  "actualizado_banco": "2026-04-26",
+  "bot_url": "https://alquilapp-whatsapp-bot.onrender.com",
+  "corrida_iniciada": "2026-10-17T07:22:21.650Z",
+  "corrida_duracion_ms": 272310,
+  "total_preguntas": 105,
+  "total_evaluable": 104,
+  "excluidos": 1,
+  "matcher_warnings": 2,
+  "por_clasificacion": {
+    "🟢": 15,
+    "🟡": 53,
+    "🟠": 20,
+    "🔴": 16,
+    "⚫": 0,
+    "⚪": 1
+  },
+  "promedio_tiempo_ms": 5075,
+  "promedio_docs_rag": 0,
+  "resultados": [
+    {
+      "id": "loc-01",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto puede durar como mínimo un contrato de alquiler de vivienda?",
+      "keywords_esperadas": [
+        "mínimo",
+        "supletori",
+        "1198"
+      ],
+      "no_debe_decir": [
+        "Ley 27.551 vigente",
+        "mínimo obligatorio de 3 años"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "La duración mínima del contrato de alquiler de vivienda se establece por acuerdo libre entre las partes, ya que no hay un plazo mínimo fijado por ley. Es importante que revises las cláusulas del contrato para conocer los términos específicos acordados. Esto es solo orientación informativa; para casos particulares, consulta a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 349,
+        "rag": 0,
+        "llm": 1812,
+        "total": 2161
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-02",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme 6 meses de depósito de garantía?",
+      "keywords_esperadas": [
+        "libre",
+        "acuerdo",
+        "DNU"
+      ],
+      "no_debe_decir": [
+        "máximo 1 mes"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el propietario puede pedir la cantidad de meses de depósito que quiera, ya que el DNU 70/2023 no establece un tope. Esto se define por libre acuerdo entre las partes. Es importante que quede claro en el contrato. Recordá que esta es solo orientación; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 285,
+        "rag": 0,
+        "llm": 2149,
+        "total": 2434
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-03",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿En qué moneda me pueden cobrar el alquiler?",
+      "keywords_esperadas": [
+        "dólares",
+        "moneda",
+        "acuerdo",
+        "DNU"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El propietario puede pedir el pago del alquiler en la moneda que acuerden, ya sea en pesos argentinos o en moneda extranjera. Esto se define en el contrato de alquiler. Siempre recomendamos asesoramiento legal para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 104,
+        "rag": 0,
+        "llm": 1588,
+        "total": 1692
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-04",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Cada cuánto puedo actualizar el canon?",
+      "keywords_esperadas": [
+        "pact",
+        "libre",
+        "contrato"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "La frecuencia de actualización del canon de alquiler se define por acuerdo libre entre las partes, según el DNU 70/2023. Podés pactar ajustes mensuales, semestrales, anuales o con cualquier otra periodicidad que convengas con el inquilino. También podés acordar un método de ajuste automático, como el ICL, IPC, UVA o un porcentaje fijo. Recordá que esto es orientación informativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 58,
+        "rag": 0,
+        "llm": 1924,
+        "total": 1982
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-05",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Qué índices de ajuste puedo usar en un contrato nuevo?",
+      "keywords_esperadas": [
+        "ICL",
+        "IPC",
+        "Casa Propia",
+        "UVA"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Podés usar cualquier índice de ajuste que pactes con el inquilino, como el ICL, IPC, UVA, un porcentaje fijo, etc. El marco legal actual permite libertad en este aspecto. Recuerda que es solo orientación, para casos específicos consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 69,
+        "rag": 0,
+        "llm": 1204,
+        "total": 1273
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-06",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden cobrar comisión inmobiliaria a mí?",
+      "keywords_esperadas": [
+        "derogada",
+        "libre"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el cobro de la comisión inmobiliaria puede ser pactado libremente entre las partes. Esto significa que el propietario y el inquilino pueden acordar quién la paga. Si en tu contrato figura que la asumís vos, es válido. Recordá que esta información es orientativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 62,
+        "rag": 0,
+        "llm": 1336,
+        "total": 1398
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-07",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Quiero irme antes del contrato, ¿qué penalidad pago?",
+      "keywords_esperadas": [
+        "10%",
+        "canon",
+        "1221",
+        "1 mes"
+      ],
+      "no_debe_decir": [
+        "1,5 meses",
+        "un mes y medio como regla vigente"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si te vas antes del año, la penalidad es de 1,5 meses de alquiler. Si te vas después del año, la penalidad baja a 1 mes. Esto está establecido en el DNU 70/2023, pero recordá que es una orientación informativa. Para tu caso puntual, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 63,
+        "rag": 0,
+        "llm": 1256,
+        "total": 1319
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": "\"1,5 meses\" aparece pero el contexto indica negación o derogación — tratado como no-fallo"
+    },
+    {
+      "id": "loc-08",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 2 meses, ¿qué tengo que hacer primero?",
+      "keywords_esperadas": [
+        "intimar",
+        "10 días",
+        "carta documento"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Primero, enviá un aviso de intimación de pago por escrito, detallando la deuda y un plazo breve para regularizarla. Si no responde, podés iniciar un juicio de desalojo por falta de pago, según el Código Civil y Comercial (arts. 1196 y ss.). Recordá que esta es una guía general; para tu caso específico, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 54,
+        "rag": 0,
+        "llm": 1722,
+        "total": 1776
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-09",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Hay una filtración en el baño, ¿quién la arregla?",
+      "keywords_esperadas": [
+        "propietario",
+        "urgente",
+        "reparación"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Según el Código Civil y Comercial, el propietario es responsable de mantener la propiedad en buen estado. Por lo tanto, el arreglo de la filtración le corresponde al propietario. Si el propietario no responde, podés hacer la reparación y reclamar el reembolso. Recordá que esto es orientación informativa, para casos puntuales consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 58,
+        "rag": 0,
+        "llm": 1507,
+        "total": 1565
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-10",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo subalquilar una habitación?",
+      "keywords_esperadas": [
+        "autoriz",
+        "locador",
+        "contrato"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No podés subalquilar sin autorización expresa del propietario. El DNU 70/2023 prohíbe la sublocación a menos que esté pactada en el contrato.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 938,
+        "total": 998
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-01",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿La Ley 27.551 sigue vigente?",
+      "keywords_esperadas": [
+        "derogada",
+        "DNU",
+        "70"
+      ],
+      "no_debe_decir": [
+        "vigente",
+        "aplica"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, la Ley 27.551 fue derogada por el DNU 70/2023. Ahora, los contratos de alquiler se rigen por el Código Civil y Comercial (arts. 1187-1226) y el DNU 70/2023, que permiten mayor libertad en los acuerdos entre las partes. Es solo orientación informativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 65,
+        "rag": 0,
+        "llm": 1648,
+        "total": 1713
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-02",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambió con el DNU 70/2023?",
+      "keywords_esperadas": [
+        "plazo",
+        "libre",
+        "ajuste",
+        "depósito"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El DNU 70/2023 derogó la Ley 27.551 y modificó varios aspectos clave de los alquileres en Argentina. Ahora, la duración del contrato, el precio y los ajustes, la moneda, el depósito y las garantías se pactan libremente entre las partes. También se eliminaron las restricciones sobre la comisión inmobiliaria y se modificaron las condiciones de rescisión para el inquilino. Además, se permite la sublocación solo si está expresamente acordada en el contrato. Recordá que esta es una orientación general; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 2199,
+        "total": 2259
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-03",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme varias garantías a la vez?",
+      "keywords_esperadas": [
+        "libertad",
+        "DNU",
+        "sí"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el propietario puede exigir la combinación de garantías que considere necesaria, como fiador, depósito en garantía o caución. Esto está permitido por el DNU 70/2023, que liberalizó las condiciones de los contratos de alquiler. Recordá que esta es una orientación general; para tu caso específico, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 64,
+        "rag": 0,
+        "llm": 3373,
+        "total": 3437
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-04",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Se puede pactar en dólares?",
+      "keywords_esperadas": [
+        "sí",
+        "DNU",
+        "moneda extranjera"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el DNU 70/2023 permite pactar el alquiler en moneda extranjera, como dólares. Es importante que esta condición quede establecida claramente en el contrato. Recordá que esta es una orientación general; para casos específicos, consultá con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 66,
+        "rag": 0,
+        "llm": 1240,
+        "total": 1306
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-01",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuánto se paga de sellado de un contrato de alquiler de vivienda en CABA?",
+      "keywords_esperadas": [
+        "exent",
+        "vivienda única"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El sellado en CABA es el 1,4% del total del contrato (alquileres + expensas + gastos). Se calcula sobre el monto total de todo el período, y se paga una sola vez al iniciar el contrato.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 1173,
+        "total": 1233
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-02",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en provincia de Buenos Aires?",
+      "keywords_esperadas": [
+        "ARBA",
+        "1,2"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "La alícuota de sellado en la provincia de Buenos Aires es del 1,2% sobre el total del contrato de alquiler. Este impuesto se calcula sobre el monto total del contrato, incluyendo el depósito y cualquier otro concepto que se pacte. Recordá que es una orientación informativa y que para casos puntuales lo mejor es consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 59,
+        "rag": 0,
+        "llm": 1373,
+        "total": 1432
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-03",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿En Córdoba hay exención de sellado?",
+      "keywords_esperadas": [
+        "vivienda única",
+        "exento",
+        "DGR"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, en la provincia de Córdoba hay exención del impuesto de sellado para los contratos de alquiler de vivienda única, familiar y de ocupación permanente, siempre que el inquilino sea persona física y el contrato esté registrado. Recordá que esto es una orientación general, y para casos específicos es recomendable consultar con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 59,
+        "rag": 0,
+        "llm": 1580,
+        "total": 1639
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-04",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Quién paga el sellado, yo o el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "50",
+        "pacto"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El sellado es un gasto que, según el nuevo marco legal, pueden pactar libremente las partes. No hay una regla fija, así que depende de lo que acuerden en el contrato. Es orientación informativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 54,
+        "rag": 0,
+        "llm": 1250,
+        "total": 1304
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-05",
+      "bloque": "sellado_provincial",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto tengo para sellar el contrato?",
+      "keywords_esperadas": [
+        "15",
+        "días",
+        "corridos"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El plazo para sellar el contrato de alquiler no está establecido por ley, por lo que depende del acuerdo entre las partes. Es importante hacerlo antes de ocupar la propiedad para evitar problemas legales. Si tenés dudas específicas, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 54,
+        "rag": 0,
+        "llm": 1020,
+        "total": 1074
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-06",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "Alquilo en Rosario, ¿dónde hago el sellado?",
+      "keywords_esperadas": [
+        "API",
+        "Santa Fe"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "En Rosario, el sellado de contratos de alquiler se hace en la Dirección General de Rentas de Santa Fe. Es un trámite que podés hacer online a través de su sitio web o presencialmente en las oficinas de la DGR. Asegurate de tener todos los documentos necesarios y de cumplir con los requisitos establecidos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 58,
+        "rag": 0,
+        "llm": 1487,
+        "total": 1545
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-07",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "En Mendoza, ¿cuánto se paga de sellado por un alquiler comercial?",
+      "keywords_esperadas": [
+        "1,5",
+        "ATM"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"97ab88bc-7817-42e3-80cd-f7cd858697f8\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 46,
+        "rag": 0,
+        "llm": 15210,
+        "total": 15256
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-01",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 3 meses, ¿cuánto tarda el desalojo?",
+      "keywords_esperadas": [
+        "intimación",
+        "10 días",
+        "meses"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"1f712703-ea4a-4f63-a735-9bce17c49fa3\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 57,
+        "rag": 0,
+        "llm": 15182,
+        "total": 15240
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-02",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el desalojo exprés?",
+      "keywords_esperadas": [
+        "intruso",
+        "684"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"363e03e6-52d7-4204-be56-5e38c1a49b49\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 78,
+        "rag": 0,
+        "llm": 15226,
+        "total": 15304
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-03",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "El contrato venció y no se quieren ir, ¿qué hago?",
+      "keywords_esperadas": [
+        "vencimiento",
+        "intimación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"03760110-c960-4f0f-bb78-35645b15eaae\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 48,
+        "rag": 0,
+        "llm": 15204,
+        "total": 15252
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-04",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Necesito mediación previa antes de iniciar el desalojo?",
+      "keywords_esperadas": [
+        "26.589"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, la mediación previa no es un requisito para iniciar un desalojo. Sin embargo, siempre es recomendable intentar una solución amistosa antes de acudir a la vía judicial. Si decidís avanzar con el desalojo, asegurate de cumplir con los requisitos legales y de tener un asesoramiento profesional para evitar complicaciones. Recordá que esto es solo orientación informativa.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 68,
+        "rag": 0,
+        "llm": 19181,
+        "total": 19249
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-05",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es una carta documento?",
+      "keywords_esperadas": [
+        "fehaciente",
+        "correo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Una carta documento es una comunicación formal y fehaciente que se utiliza para notificar o exigir algo a otra persona. En el contexto de los alquileres, se puede usar para intimaciones, incumplimientos o rescisiones de contrato. Es importante porque deja constancia legal de lo que se comunica. Siempre recomendamos consultar a un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 16691,
+        "total": 16751
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-01",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué requisitos debe tener un garante?",
+      "keywords_esperadas": [
+        "propiedad",
+        "inmueble",
+        "solvencia"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Según el marco legal actual, no hay requisitos específicos para ser garante. El propietario puede pedir las garantías que considere necesarias y evaluar la solvencia del garante según sus propios criterios. Lo común es que el garante demuestre capacidad económica para responder por el contrato, pero las condiciones son libres y deben pactarse por escrito. Siempre recomendamos asesoramiento legal para casos puntuales.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 78,
+        "rag": 0,
+        "llm": 1895,
+        "total": 1973
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-02",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿El garante queda liberado si venden el inmueble de garantía?",
+      "keywords_esperadas": [
+        "preferencia"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, el garante no queda liberado automáticamente si se vende el inmueble de garantía. La garantía personal (fiador) es independiente del inmueble y responde con su patrimonio en caso de incumplimiento del inquilino. Es una orientación informativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 1308,
+        "total": 1368
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-03",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo demandar al garante directamente sin pasar por el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "excusión"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés demandar al garante directamente sin necesidad de demandar primero al inquilino, siempre que el contrato de garantía lo permita. El garante es responsable solidario de las obligaciones del inquilino, por lo que podés reclamarle directamente en caso de incumplimiento. Es importante revisar el contrato de garantía para confirmar los términos acordados. Recordá que esta es orientación informativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 1817,
+        "total": 1873
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-04",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si se muere el fiador?",
+      "keywords_esperadas": [
+        "herederos",
+        "1594"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si el fiador fallece, la fianza se extingue, a menos que se haya pactado expresamente su supervivencia. En ese caso, los herederos del fiador asumen la responsabilidad, pero solo hasta el límite de la herencia recibida. Si no hay pacto de supervivencia, el propietario puede exigir al inquilino que consiga un nuevo fiador o una garantía alternativa. Siempre es recomendable consultar a un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 57,
+        "rag": 0,
+        "llm": 1846,
+        "total": 1903
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-05",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un seguro de caución?",
+      "keywords_esperadas": [
+        "aseguradora",
+        "4",
+        "6"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Un seguro de caución es una garantía que contrata el inquilino a favor del propietario, donde una compañía aseguradora se compromete a cubrir el pago de los daños o incumplimientos del contrato de alquiler. Es una alternativa a la garantía tradicional de depósito en efectivo.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 1116,
+        "total": 1172
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-06",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo exigir fiador + depósito + caución al mismo tiempo?",
+      "keywords_esperadas": [
+        "DNU",
+        "sí",
+        "derogó"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés exigir una combinación de garantías como fiador, depósito y caución. El DNU 70/2023 permite que las partes acuerden libremente las garantías que consideren necesarias. Sin embargo, recordá que esto es una orientación general. Para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 48,
+        "rag": 0,
+        "llm": 1201,
+        "total": 1249
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-01",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Se murió mi inquilino, ¿qué hago con el contrato?",
+      "keywords_esperadas": [
+        "1190",
+        "continuación",
+        "familiar"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "En caso de fallecimiento del inquilino, el contrato de alquiler no se extingue automáticamente. Según el Código Civil y Comercial (arts. 1187-1226), los herederos o convivientes pueden continuar con el contrato si así lo desean. Como propietario, tenés derecho a solicitar la actualización de la documentación y las garantías si corresponde. Si no hay interés en continuar, se procede a la rescisión del contrato y la devolución del inmueble. Es recomendable asesorarte con un abogado para manejar la situación según las circunstancias específicas.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 2278,
+        "total": 2338
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-02",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo prohibirle al inquilino tener perro en el contrato?",
+      "keywords_esperadas": [
+        "DNU",
+        "1204 bis",
+        "sí"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés prohibir mascotas en el contrato. El acuerdo entre las partes es libre, siempre que no se violen leyes o derechos de nadie. Asegurate de incluir esa cláusula de manera clara y específica. Es orientación informativa; para casos puntuales, consultar a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 1234,
+        "total": 1290
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-03",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Soy extranjero sin DNI, ¿me pueden alquilar?",
+      "keywords_esperadas": [
+        "sí",
+        "pasaporte",
+        "garantía"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés alquilar sin DNI argentino, pero el propietario puede exigir garantías adicionales, como un fiador con DNI o un depósito más alto. Esto depende del acuerdo entre las partes. Siempre recomendamos consultar a un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 1347,
+        "total": 1403
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-04",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Me estoy divorciando y el inmueble alquilado es ganancial, ¿qué pasa con el contrato?",
+      "keywords_esperadas": [
+        "sigue",
+        "subroga"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El contrato de alquiler sigue vigente con el inquilino, pero ahora tenés que definir la propiedad del inmueble con tu ex. Lo ideal es que ambos acuerden cómo seguir y notifiquen al inquilino por escrito. Si no hay acuerdo, consultá a un abogado para resolver la situación.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 53,
+        "rag": 0,
+        "llm": 1289,
+        "total": 1342
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-05",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Quiero vender el inmueble que tengo alquilado, ¿puedo echar al inquilino?",
+      "keywords_esperadas": [
+        "no",
+        "1189",
+        "continúa"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No podés echar al inquilino por vender el inmueble. La venta no extingue el contrato de alquiler, que sigue vigente con el nuevo dueño. El comprador adquiere la propiedad con el contrato en curso. Es recomendable informar al inquilino sobre la venta y asegurarte de que el comprador conozca los términos del contrato. Para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 47,
+        "rag": 0,
+        "llm": 2188,
+        "total": 2235
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-06",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja y yo firmamos juntos el alquiler y nos separamos, ¿puedo irme sin pagar nada?",
+      "keywords_esperadas": [
+        "solidari",
+        "cesión"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si ambos firmaron el contrato, son responsables solidariamente. Esto significa que cada uno responde por el total de las obligaciones, no solo por una parte. Si uno se va, el otro no queda automáticamente liberado de pagar su parte.\n\nLo mejor es llegar a un acuerdo con tu expareja y notificar al propietario. Si no hay acuerdo, el que se va puede seguir siendo responsable legalmente. Consultá a un abogado para evaluar opciones según tu caso.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 43,
+        "rag": 0,
+        "llm": 3892,
+        "total": 3935
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-07",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo trabajar desde casa si mi contrato dice que es vivienda?",
+      "keywords_esperadas": [
+        "home office",
+        "destino",
+        "público"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El contrato de alquiler para vivienda no prohíbe el trabajo desde casa, pero es importante que verifiques si hay cláusulas específicas que limiten actividades comerciales o profesionales. Si tu trabajo no altera el uso residencial ni causa molestias, generalmente no hay problema. Para casos puntuales, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 48,
+        "rag": 0,
+        "llm": 1451,
+        "total": 1499
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-08",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Tengo un perro guía por mi discapacidad, ¿me pueden prohibir entrar con él?",
+      "keywords_esperadas": [
+        "no",
+        "discriminación",
+        "26.378"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, no te pueden prohibir la entrada con tu perro guía. El Código Civil y Comercial de Argentina (art. 1200) establece que el inquilino puede tener animales en la propiedad siempre que no cause daños ni molestias excesivas. Además, la ley 24.449 de Accesibilidad y las normas sobre discapacidad garantizan el derecho a estar acompañado por un perro guía en cualquier espacio público o privado. Asegurate de cumplir con las obligaciones de cuidado y limpieza para evitar conflictos. Si tenés problemas, consultá a un abogado para defender tus derechos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 52,
+        "rag": 0,
+        "llm": 2500,
+        "total": 2552
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-09",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo alquilar por habitación?",
+      "keywords_esperadas": [
+        "parte",
+        "material",
+        "1187"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés alquilar por habitación, siempre que quede claro en el contrato quién es el locatario de cada una. Es importante detallar las condiciones de uso de las áreas comunes y las responsabilidades de cada inquilino. Esto es solo orientación; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 67,
+        "rag": 0,
+        "llm": 1714,
+        "total": 1781
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-10",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "El inmueble está en sucesión, ¿puedo seguir alquilando?",
+      "keywords_esperadas": [
+        "declaratoria",
+        "herederos"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si el inmueble está en sucesión, podés seguir alquilando, pero es importante que todos los herederos estén de acuerdo y que se respeten los derechos de los inquilinos actuales. Es recomendable consultar con un abogado para asegurarte de que el proceso se realice según la ley.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 62,
+        "rag": 0,
+        "llm": 1118,
+        "total": 1180
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-01",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Qué es el score que aparece en AlquilApp?",
+      "keywords_esperadas": [
+        "0",
+        "1000",
+        "bilateral",
+        "comportamiento"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El score de AlquilApp es una herramienta que ayuda a evaluar la solvencia y confiabilidad de los inquilinos. Se basa en información financiera, historial de pagos y otros datos relevantes para asignar una puntuación que refleja el riesgo de alquilarle a esa persona. Cuanto más alto el score, mejor el perfil del inquilino.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 1549,
+        "total": 1605
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-02",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo subo mi score?",
+      "keywords_esperadas": [
+        "pag",
+        "tiempo",
+        "calificaciones"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para mejorar tu score en AlquilApp, asegurate de completar tu perfil con toda la información requerida, como datos personales, ingresos y referencias. También podés verificar tu identidad y aumentar tu historial de alquileres pagando a tiempo y manteniendo una buena relación con los propietarios. Cuanto más activo y confiable seas, mejor será tu score.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 61,
+        "rag": 0,
+        "llm": 1823,
+        "total": 1884
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-03",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Qué significa que mi contrato está anclado en Bitcoin?",
+      "keywords_esperadas": [
+        "hash",
+        "inmutab",
+        "blockchain",
+        "OpenTimestamps"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"86a0faf6-ed91-4b9e-a2a2-496fd442d1ef\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 40,
+        "rag": 0,
+        "llm": 15189,
+        "total": 15229
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-04",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo califico a mi inquilino?",
+      "keywords_esperadas": [
+        "estrellas",
+        "calificar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"7418f18f-a090-499f-83a7-50ed648dd0b4\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 47,
+        "rag": 0,
+        "llm": 15176,
+        "total": 15223
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-05",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo creo un reclamo de mantenimiento?",
+      "keywords_esperadas": [
+        "ticket",
+        "reclamo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"36c3d2bd-fb60-4811-9651-daf09a62d364\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 64,
+        "rag": 0,
+        "llm": 15230,
+        "total": 15295
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-06",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Cuánto cuesta AlquilApp?",
+      "keywords_esperadas": [
+        "gratuit",
+        "gratis"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"a797a6a9-5f75-4779-8828-1c5237c9bdea\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 61,
+        "rag": 0,
+        "llm": 15176,
+        "total": 15237
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-07",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo firmo el contrato electrónicamente?",
+      "keywords_esperadas": [
+        "firma",
+        "electrónica"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para firmar el contrato electrónicamente, podés usar plataformas como AlquilApp, que permiten la firma digital de ambos lados. Asegurate de que la plataforma cumpla con las normas legales argentinas. Si usás otro método, verificá que sea válido según el Código Civil y Comercial. Siempre recomendamos asesoramiento legal para casos puntuales.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 66,
+        "rag": 0,
+        "llm": 16677,
+        "total": 16743
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-08",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "Quiero pagar el alquiler, ¿cómo hago?",
+      "keywords_esperadas": [
+        "pag",
+        "transfer"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El pago del alquiler se realiza directamente al propietario o a la inmobiliaria que administra la propiedad, según lo acordado en el contrato. Verificá los detalles de pago en tu contrato y realizá la transferencia o depósito según lo indicado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 54,
+        "rag": 0,
+        "llm": 16135,
+        "total": 16189
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-09",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo invito a un administrador a mi cuenta?",
+      "keywords_esperadas": [
+        "delega",
+        "invitar",
+        "admin"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para invitar a un administrador a tu cuenta de AlquilApp, seguí estos pasos:\n\n1. Ingresá a tu cuenta y andá a \"Configuración\".\n2. Seleccioná \"Administradores\" y después \"Agregar administrador\".\n3. Ingresá el correo electrónico de la persona que querés invitar y seleccioná el nivel de acceso que querés darle (puede ser \"Administrador\" o \"Solo lectura\").\n4. Haga clic en \"Enviar invitación\".\n\nLa persona que invitaste recibirá un correo electrónico con un enlace para aceptar la invitación y crear una cuenta en AlquilApp si aún no tiene una. Una vez que acepte, tendrá acceso a tu cuenta con el nivel de acceso que le hayas asignado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 70,
+        "rag": 0,
+        "llm": 3262,
+        "total": 3332
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-10",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo descargo el dossier de un contrato?",
+      "keywords_esperadas": [
+        "PDF",
+        "dossier",
+        "descargar"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para descargar el dossier de un contrato, iniciá sesión en tu cuenta de AlquilApp, andá a la sección \"Mis Contratos\", seleccioná el contrato que te interesa y buscá la opción \"Descargar Dossier\" o \"Exportar\". Si no lo encontrás, avisame y te doy más detalles.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 57,
+        "rag": 0,
+        "llm": 3882,
+        "total": 3939
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-01",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que estar en Monotributo para alquilar mi departamento?",
+      "keywords_esperadas": [
+        "opción",
+        "Monotributo",
+        "Responsable"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, no es obligatorio estar en Monotributo para alquilar un departamento. Sin embargo, los ingresos por alquileres deben declararse en el Impuesto a las Ganancias o en el régimen simplificado (Monotributo) si correspondiera según la categoría y otros ingresos. Consultá con un contador para determinar tu situación fiscal.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 1438,
+        "total": 1498
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-02",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler de vivienda paga IVA?",
+      "keywords_esperadas": [
+        "exento",
+        "art",
+        "7"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Los alquileres de viviendas están exentos de IVA según la Ley de Impuesto al Valor Agregado (IVA). Esta exención se aplica a los contratos de locación de inmuebles destinados a vivienda, siempre que no se trate de un alquiler con fines comerciales o turísticos. Es importante tener en cuenta que esta información es de carácter general y que para casos específicos es recomendable consultar con un profesional impositivo o abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 51,
+        "rag": 0,
+        "llm": 1857,
+        "total": 1908
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-03",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el RELI?",
+      "keywords_esperadas": [
+        "registro",
+        "locaciones",
+        "ARCA",
+        "AFIP"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El RELI (Registro de Locaciones Inmobiliarias) es una base de datos pública donde se registran los contratos de alquiler. Su objetivo es transparentar el mercado y evitar fraudes. No es obligatorio, pero es recomendable para ambas partes.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 55,
+        "rag": 0,
+        "llm": 1315,
+        "total": 1370
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-04",
+      "bloque": "impuestos",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo deducir el alquiler del impuesto a las ganancias?",
+      "keywords_esperadas": [
+        "40",
+        "RELI",
+        "registrado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, el alquiler no es deducible del impuesto a las ganancias en Argentina. Esta disposición está establecida en la legislación vigente. Es importante tener en cuenta que las leyes fiscales pueden cambiar, por lo que siempre es recomendable consultar con un profesional para obtener información actualizada.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 41,
+        "rag": 0,
+        "llm": 1387,
+        "total": 1428
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-05",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Me pueden retener ganancias al pagarme el alquiler?",
+      "keywords_esperadas": [
+        "830",
+        "6",
+        "28"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el inquilino puede retener ganancias al pagarte el alquiler si corresponde al Impuesto a las Ganancias. El locatario debe aplicar la alícuota correspondiente y depositar el saldo en la AFIP a tu nombre. Es importante que verifiques que esté cumpliendo con esta obligación para evitar problemas legales. Si tenés dudas específicas, consultá a un contador o abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 3463,
+        "total": 3523
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-06",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler comercial lleva IVA?",
+      "keywords_esperadas": [
+        "21",
+        "gravado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, los alquileres comerciales están gravados con IVA en Argentina. El propietario debe facturar y pagar el impuesto correspondiente. Es importante que consultes con un contador o abogado para entender las obligaciones fiscales específicas en tu caso.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 51,
+        "rag": 0,
+        "llm": 1822,
+        "total": 1873
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-07",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Pago Bienes Personales por un inmueble que alquilo?",
+      "keywords_esperadas": [
+        "sí",
+        "patrimonio",
+        "mínimo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, los inmuebles alquilados están alcanzados por el impuesto a los Bienes Personales. El valor imponible es el de la propiedad en sí, no el de los ingresos por alquiler. Recordá que esto es orientación general; para detalles específicos, consultá a un contador o asesor impositivo.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 57,
+        "rag": 0,
+        "llm": 1440,
+        "total": 1497
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-01",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿La cláusula que prohíbe tener chicos es válida?",
+      "keywords_esperadas": [
+        "no",
+        "discriminatori",
+        "niño"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, esa cláusula no sería válida. El Código Civil y Comercial no permite la discriminación por composición familiar. Igual, si tenés dudas sobre un contrato específico, lo mejor es que consultes con un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 47,
+        "rag": 0,
+        "llm": 976,
+        "total": 1023
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-02",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo hacer arreglos urgentes yo mismo y descontarlos del alquiler?",
+      "keywords_esperadas": [
+        "urgente",
+        "intimación",
+        "reembolso"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés hacer reparaciones urgentes y reclamar el reembolso al propietario si no responde. Asegurate de documentar todo y guardar comprobantes. Es recomendable consultar a un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 55,
+        "rag": 0,
+        "llm": 1128,
+        "total": 1183
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-03",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden no devolver el depósito si rompí un vidrio?",
+      "keywords_esperadas": [
+        "daño",
+        "descontar",
+        "reparación"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Depende de lo que se haya pactado en el contrato. Si se considera un daño normal de uso, el propietario no puede descontarlo del depósito. Pero si es un daño por mal uso o negligencia, sí puede retener parte o todo el depósito para cubrir la reparación. Siempre es recomendable documentar el estado del inmueble al ingresar y salir, para evitar conflictos. Esto es una orientación, para casos específicos consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 51,
+        "rag": 0,
+        "llm": 1994,
+        "total": 2045
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-01",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "¿Cómo se hace un asado correctamente?",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No puedo ayudarte con eso. Solo me ocupo de temas relacionados con alquileres y AlquilApp.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 49,
+        "rag": 0,
+        "llm": 848,
+        "total": 897
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-02",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "ganador del mundial 2022",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No puedo ayudarte con eso. Solo respondo consultas sobre alquileres y AlquilApp.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 43,
+        "rag": 0,
+        "llm": 708,
+        "total": 751
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-03",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "alquiler",
+      "keywords_esperadas": [
+        "AlquilApp"
+      ],
+      "ambigua": true,
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Podés pactar la duración, el precio, los ajustes, la moneda, el depósito y las garantías como quieras con el inquilino. La comisión inmobiliaria también es a libre acuerdo. Recordá que el inquilino puede rescindir el contrato desde el sexto mes con 30 días de aviso, pero con penalidades si sale antes de tiempo. Siempre es recomendable consultar a un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 62,
+        "rag": 0,
+        "llm": 1946,
+        "total": 2008
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-04",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "dónde queda la sección de cobros en la página",
+      "keywords_esperadas": [
+        "Cobros",
+        "menú"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "En la página de AlquilApp, la sección de cobros se encuentra en tu perfil de inquilino. Entrá a tu cuenta, buscá el menú de \"Configuración\" o \"Mi cuenta\" y ahí vas a encontrar la opción de \"Cobros\" o \"Pagos\". Ahí podés gestionar todo lo relacionado con tus pagos de alquiler.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 59,
+        "rag": 0,
+        "llm": 1294,
+        "total": 1353
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-05",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "",
+      "keywords_esperadas": [],
+      "vacia": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 400,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 95
+      },
+      "raw": "{\"error\":\"Falta pregunta\"}",
+      "clasificacion": "⚪",
+      "matcher_warning": "pregunta vacía o marcada vacia=true — test inválido, excluido del total real"
+    },
+    {
+      "id": "ccyc-01",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Qué dice el art. 1198 del CCyC?",
+      "keywords_esperadas": [
+        "1198"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "El artículo 1198 del Código Civil y Comercial de la Nación establece las obligaciones del locador (propietario) en un contrato de locación. Entre ellas, se destacan: entregar el inmueble en condiciones de habitabilidad, garantizar al inquilino el uso pacífico del mismo, realizar las reparaciones necesarias para mantenerlo en buen estado y responder por los vicios o defectos que tenga la propiedad. Siempre es recomendable consultar a un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 47,
+        "rag": 0,
+        "llm": 2454,
+        "total": 2501
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-02",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Cuándo puedo resolver el contrato por culpa del inquilino?",
+      "keywords_esperadas": [
+        "1219"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Podés resolver el contrato por culpa del inquilino si incumple alguna de las obligaciones pactadas, como por ejemplo, no pagar el alquiler, dañar la propiedad, subalquilar sin autorización, o usar la propiedad para fines no permitidos. El proceso de resolución debe seguir lo establecido en el contrato y el Código Civil y Comercial (arts. 1187-1226). Es importante documentar el incumplimiento y enviar una intimación formal antes de iniciar cualquier acción legal. Recordá que esto es orientación informativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 60,
+        "rag": 0,
+        "llm": 3956,
+        "total": 4016
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-03",
+      "bloque": "ccyc_articulos",
+      "rol": "inquilino",
+      "pregunta": "¿Cuáles son mis obligaciones como inquilino según el Código Civil?",
+      "keywords_esperadas": [
+        "1206",
+        "conservar",
+        "pagar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c91d5cb3-a830-4ff0-87c6-5b169e03b618\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 15200,
+        "total": 15256
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-neu-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cómo funciona el sellado de un alquiler en Neuquén?",
+      "keywords_esperadas": [
+        "sellado",
+        "Neuquén",
+        "DPR"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"5551dc6b-7b7b-4039-9974-82302dda7157\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 51,
+        "rag": 0,
+        "llm": 15184,
+        "total": 15235
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-rio-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Río Negro hay que sellar el contrato de alquiler?",
+      "keywords_esperadas": [
+        "sellado",
+        "Río Negro"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"5a727ce8-4a99-4298-b2e0-3076a08423bd\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 65,
+        "rag": 0,
+        "llm": 15217,
+        "total": 15282
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-tuc-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en Tucumán?",
+      "keywords_esperadas": [
+        "Tucumán",
+        "sellado",
+        "alícuota"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"f294a27b-75d6-4233-ae69-79af974bbbb2\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 50,
+        "rag": 0,
+        "llm": 15189,
+        "total": 15239
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-sal-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Salta hay exención de sellado para vivienda única?",
+      "keywords_esperadas": [
+        "Salta",
+        "sellado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, en Salta hay exención del impuesto de sellado para contratos de alquiler de vivienda única, familiar y de ocupación permanente, según la Ley Provincial N° 7953. Esto aplica tanto para inquilinos como para propietarios. Igual, siempre es recomendable chequear los detalles específicos con un abogado o en el sitio oficial de la provincia, ya que las normativas pueden actualizarse.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 61,
+        "rag": 0,
+        "llm": 16637,
+        "total": 16698
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-cha-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Quién regula el sellado en Chaco?",
+      "keywords_esperadas": [
+        "Chaco",
+        "sellado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "En Chaco, el sellado de los contratos de alquiler es regulado por la Dirección General de Rentas de la Provincia del Chaco. Es un impuesto provincial que debe abonarse para validar el contrato. Siempre recomendamos consultar con un abogado para detalles específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 49,
+        "rag": 0,
+        "llm": 16686,
+        "total": 16735
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-01",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un alquiler temporario turístico y por cuánto tiempo se puede pactar?",
+      "keywords_esperadas": [
+        "temporario",
+        "tres meses",
+        "1199"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Un alquiler temporario turístico es un contrato de locación de un inmueble amueblado para uso habitacional por un período corto, generalmente asociado a fines turísticos o vacacionales. La duración se pacta libremente entre las partes, sin un mínimo ni máximo legal establecido. Sin embargo, es importante distinguirlo de un alquiler común, ya que este tipo de contrato no está regulado por el Código Civil y Comercial, sino por las normas específicas de cada jurisdicción. Siempre es recomendable consultar a un abogado para casos particulares.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 66,
+        "rag": 0,
+        "llm": 2129,
+        "total": 2195
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-02",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Necesito habilitación municipal para alquilar mi depto por Airbnb?",
+      "keywords_esperadas": [
+        "registr",
+        "RUPT",
+        "Turismo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Depende del municipio y la normativa local. Algunos exigen habilitación o inscripción para alquileres temporarios. Consultá en tu municipio para estar seguro.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 45,
+        "rag": 0,
+        "llm": 878,
+        "total": 923
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-03",
+      "bloque": "alquiler_temporario",
+      "rol": "inquilino",
+      "pregunta": "Si alquilo por 6 meses por temporada, ¿se aplica el régimen de vivienda?",
+      "keywords_esperadas": [
+        "temporario",
+        "vivienda"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, el régimen de vivienda no se aplica a alquileres temporarios o de corta duración. Este tipo de contratos se rige por las condiciones pactadas entre las partes, sin las protecciones del régimen general. Siempre recomendamos asesoramiento legal para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 49,
+        "rag": 0,
+        "llm": 1393,
+        "total": 1442
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-04",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que registrar el alquiler temporario en ARCA?",
+      "keywords_esperadas": [
+        "registro",
+        "temporario"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No es necesario registrar el contrato de alquiler temporario en ARCA (Agencia de Recaudación de la Ciudad de Buenos Aires), ya que este registro es para contratos de alquiler tradicionales con una duración mínima de un año. Los alquileres temporarios, al tener una duración menor, no están sujetos a las mismas regulaciones. Sin embargo, siempre es recomendable consultar con un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 49,
+        "rag": 0,
+        "llm": 1456,
+        "total": 1505
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-01",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿La mediación previa es obligatoria para iniciar un desalojo?",
+      "keywords_esperadas": [
+        "26.589",
+        "exenta",
+        "desalojo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, la mediación previa no es obligatoria para iniciar un desalojo. El propietario puede iniciar directamente la acción judicial de desalojo sin necesidad de pasar por un proceso de mediación. Sin embargo, es importante tener en cuenta que el proceso de desalojo está regulado por el Código Civil y Comercial (arts. 1187-1226) y que es recomendable consultar a un abogado para casos puntuales.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 254,
+        "rag": 0,
+        "llm": 1509,
+        "total": 1763
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-02",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que mediar antes de demandar el cobro de alquileres atrasados?",
+      "keywords_esperadas": [
+        "26.589",
+        "mediación",
+        "obligatoria"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, no es obligatorio mediar antes de iniciar una demanda por cobro de alquileres atrasados. Podés directamente iniciar acciones legales para reclamar las sumas adeudadas. Sin embargo, siempre es recomendable intentar una solución extrajudicial primero, ya sea mediante un acuerdo directo o con la intervención de un abogado. Recordá que esto es orientación informativa, para casos puntuales consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 54,
+        "rag": 0,
+        "llm": 1600,
+        "total": 1654
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-03",
+      "bloque": "mediacion",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto cuesta una mediación previa en CABA?",
+      "keywords_esperadas": [
+        "mediación",
+        "honorarios"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "En CABA, la mediación previa es gratuita si se realiza en el Centro de Mediación del Ministerio de Justicia y Seguridad. Si se hace de forma privada, el costo varía según el mediador, pero suele rondar entre $10.000 y $20.000 por parte. Es un paso obligatorio antes de iniciar un juicio, según el Código Civil y Comercial. Recomiendo consultar a un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 48,
+        "rag": 0,
+        "llm": 1664,
+        "total": 1712
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-04",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si el inquilino no se presenta a la mediación?",
+      "keywords_esperadas": [
+        "acta",
+        "incomparecencia"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si el inquilino no se presenta a la mediación, el proceso puede continuar de todas formas. El mediador puede emitir un acta de ausencia y el propietario puede solicitar la ejecución del acuerdo o la resolución del contrato ante el juez, quien decidirá según la documentación presentada. Es importante que el propietario documente todos los intentos de comunicación y el incumplimiento del inquilino. Recordá que esto es orientación informativa; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 44,
+        "rag": 0,
+        "llm": 1956,
+        "total": 2000
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-01",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Puedo iniciar un juicio ejecutivo por alquileres impagos?",
+      "keywords_esperadas": [
+        "ejecutivo",
+        "título",
+        "contrato"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés iniciar un juicio ejecutivo por alquileres impagos, siempre que el contrato esté debidamente registrado y haya un título ejecutivo que respalde la deuda (por ejemplo, un pagaré o una cláusula de confesión de deuda en el contrato). Recordá que esto es una orientación general; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 62,
+        "rag": 0,
+        "llm": 1525,
+        "total": 1587
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-02",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Qué documentos preparo para un juicio ejecutivo de alquileres?",
+      "keywords_esperadas": [
+        "contrato",
+        "intimación",
+        "carta documento"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para iniciar un juicio ejecutivo de alquileres, necesitás preparar los siguientes documentos:\n\n1. **Demanda ejecutiva**: Escrito que detalla el reclamo, monto adeudado, cláusula penal (si corresponde) y fundamento legal.\n2. **Contrato de locación**: Original o copia certificada, donde consten las partes, el inmueble y las condiciones pactadas.\n3. **Documentos que acrediten la deuda**: Recibos impagos, intimaciones fehacientes (carta documento, telegrama) y cualquier prueba de la mora.\n4. **Título de propiedad**: Certificación que acredite que sos el titular del inmueble.\n5. **Documento de identidad**: Copia de tu DNI o constancia de CUIL/CUIT.\n\nRecordá que esto es orientación general. Cada caso es particular, así que consultá a un abogado para ajustar la estrategia legal.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 55,
+        "rag": 0,
+        "llm": 3825,
+        "total": 3880
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-03",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Es más rápido el ejecutivo que el desalojo?",
+      "keywords_esperadas": [
+        "plazos",
+        "ejecutivo",
+        "desalojo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el juicio ejecutivo es más rápido que el juicio de desalojo. El ejecutivo suele resolverse en 3 a 6 meses, mientras que el desalojo puede llevar entre 6 y 12 meses. Sin embargo, los tiempos varían según cada caso.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 51,
+        "rag": 0,
+        "llm": 1370,
+        "total": 1421
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-01",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambia en un alquiler comercial respecto a uno de vivienda?",
+      "keywords_esperadas": [
+        "comercial",
+        "destino",
+        "1187"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Los alquileres comerciales tienen reglas más flexibles que los de vivienda, ya que no están protegidos por normas específicas para inquilinos residenciales. En un contrato comercial, las partes pueden pactar libremente casi todas las condiciones: duración, ajustes de precio, moneda, depósito y garantías. Además, no hay límites legales para la rescisión anticipada ni protecciones especiales para el inquilino. Es clave que todo quede claro por escrito, ya que el marco legal es más laxo y prioriza la autonomía de las partes. Siempre recomendable asesoramiento legal para casos puntuales.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 43,
+        "rag": 0,
+        "llm": 2361,
+        "total": 2405
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-02",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino se va y deja la clientela del local, ¿hay transferencia de fondo de comercio?",
+      "keywords_esperadas": [
+        "fondo",
+        "comercio",
+        "Ley 11.867"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "La transferencia de fondo de comercio no es automática cuando un inquilino se va. Si el contrato no lo especifica, el fondo de comercio pertenece al inquilino, no al local. Para que haya transferencia, debe haber un acuerdo entre el inquilino saliente, el entrante y vos como propietario. Esto suele implicar una compensación económica al inquilino que deja el local. Consultá a un abogado para asesorarte según tu caso.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 42,
+        "rag": 0,
+        "llm": 1978,
+        "total": 2020
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-03",
+      "bloque": "locacion_comercial",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo modificar el local que alquilo para mi negocio?",
+      "keywords_esperadas": [
+        "mejoras",
+        "autoriz",
+        "1211"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Podés hacer modificaciones, pero siempre con autorización escrita del propietario. Cualquier cambio sin su consentimiento puede generar problemas legales y la obligación de devolver el local a su estado original. Si tenés dudas, consultá a un abogado para evitar conflictos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 52,
+        "rag": 0,
+        "llm": 1194,
+        "total": 1246
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-04",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿El IVA se cobra en alquiler comercial?",
+      "keywords_esperadas": [
+        "IVA",
+        "comercial",
+        "21"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, el IVA se aplica a los alquileres comerciales, a menos que el locador sea monotributista o esté exento por alguna razón específica. Es importante que revises tu situación fiscal y consultes con un contador para estar seguro de las obligaciones impositivas.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 57,
+        "rag": 0,
+        "llm": 2585,
+        "total": 2642
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-01",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "Mi garante quiere vender el inmueble que dio en garantía, ¿puedo oponerme?",
+      "keywords_esperadas": [
+        "garantía",
+        "venta",
+        "preferencia"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No podés oponerte a la venta del inmueble que tu garante dio en garantía, ya que es una operación independiente del contrato de alquiler. Sin embargo, la venta no libera al garante de su responsabilidad mientras el contrato esté vigente. Si el inmueble se vende, el garante debe ofrecer una garantía alternativa para cubrir el alquiler. Para casos puntuales, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 4988,
+        "total": 5026
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-02",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "¿Puedo cambiar al garante a mitad del contrato si no me deja tranquilo?",
+      "keywords_esperadas": [
+        "contrato",
+        "garantía",
+        "abogado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés cambiar al garante durante el contrato, pero necesitás el acuerdo del inquilino y que el nuevo garante cumpla con los requisitos que hayas establecido. El marco legal actual permite la libertad de pactar garantías, así que es una cuestión de negociación entre las partes. Recomiendo documentar cualquier cambio por escrito para evitar conflictos futuros.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 1410,
+        "total": 1466
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-03",
+      "bloque": "garante_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi garante me llamó porque el banco le bloqueó la cuenta por una deuda mía, ¿es legal?",
+      "keywords_esperadas": [
+        "solidari",
+        "1591"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "No, no es legal que el banco bloquee la cuenta de tu garante por una deuda tuya. El garante solo responde por las obligaciones pactadas en el contrato de alquiler, y su responsabilidad está limitada a lo acordado. El banco no puede tomar medidas directas contra el garante sin un proceso legal previo. Si el garante no ha incumplido sus propias obligaciones, debe consultar a un abogado para defender sus derechos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 59,
+        "rag": 0,
+        "llm": 1836,
+        "total": 1895
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "fam-01",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja era titular del contrato y falleció, no tenemos pacto de convivencia. ¿Puedo seguir en el depto?",
+      "keywords_esperadas": [
+        "1190",
+        "convivencia",
+        "continuación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"aa873a70-430a-40e7-ac39-d451468647ab\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 40,
+        "rag": 0,
+        "llm": 15192,
+        "total": 15232
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fam-02",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Tengo un hijo menor a cargo. Si nos separamos con mi marido, ¿quién se queda con el alquiler?",
+      "keywords_esperadas": [
+        "443",
+        "vivienda familiar",
+        "atribución"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"d5207e65-65a3-4960-8f42-59712b523671\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 56,
+        "rag": 0,
+        "llm": 15182,
+        "total": 15238
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-01",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "el depto se viene abajo, hay humedad por todos lados que hago",
+      "keywords_esperadas": [
+        "intim",
+        "reparación",
+        "1201"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"b1166dea-dbbf-40af-8129-7023ac31aae7\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 63,
+        "rag": 0,
+        "llm": 15771,
+        "total": 15834
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-02",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "no me devuelven el deposito, que onda",
+      "keywords_esperadas": [
+        "deposito",
+        "intim",
+        "devolu"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"46b487fb-f444-49a1-80c4-d117958f1c89\",\"message\":\"You are using a Trial key, which is limited to 20 API calls / mi",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 43,
+        "rag": 0,
+        "llm": 15186,
+        "total": 15229
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-03",
+      "bloque": "coloquial",
+      "rol": "propietario",
+      "pregunta": "el inkilino me debe 3 meses q hago",
+      "keywords_esperadas": [
+        "intimar",
+        "10 días",
+        "carta"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si el inquilino te debe tres meses de alquiler, lo primero es enviar una intimación formal por escrito (carta documento o correo electrónico certificado) exigiendo el pago de la deuda. Si no responde o no paga, podés iniciar una demanda por desalojo y cobro de rentas adeudadas según el Código Civil y Comercial (arts. 1197-1200). Recordá que esto es orientación general; para tu caso específico, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 64,
+        "rag": 0,
+        "llm": 17229,
+        "total": 17293
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-04",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "puedo tener una mascota o no",
+      "keywords_esperadas": [
+        "mascota",
+        "contrato",
+        "permitida"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Depende de lo que hayas pactado con el propietario. El DNU 70/2023 no regula específicamente el tema de las mascotas, por lo que queda a libre acuerdo entre las partes. Si no hay una cláusula que lo prohíba en el contrato, podés tener una mascota. Siempre es recomendable consultar con un abogado para casos específicos.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 51,
+        "rag": 0,
+        "llm": 16802,
+        "total": 16853
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-05",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "se rompio la heladera quien paga",
+      "keywords_esperadas": [
+        "reparación",
+        "1201"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si la heladera se rompió por desgaste normal o falta de mantenimiento, el responsable de repararla o reemplazarla es el propietario. Si fue por mal uso del inquilino, este podría tener que hacerse cargo. Es importante revisar el contrato para ver si hay cláusulas específicas sobre electrodomésticos. Siempre es recomendable consultar a un abogado para casos puntuales.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 66,
+        "rag": 0,
+        "llm": 1499,
+        "total": 1565
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-01",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si recibo la casa en mal estado?",
+      "keywords_esperadas": [
+        "acta",
+        "estado",
+        "entrega"
+      ],
+      "no_debe_decir": [
+        "recibo de pago",
+        "generar recibo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si recibís la casa en mal estado, es fundamental documentar todo con fotos y videos antes de firmar el contrato. Luego, exigí al propietario que realice las reparaciones necesarias o, en su defecto, pacten por escrito quién se hará cargo de los arreglos y los costos. Si no hay acuerdo, podés negarte a firmar el contrato. Si ya lo firmaste, podés reclamar las reparaciones urgentes según el DNU 70/2023 y, si el propietario no responde, hacerlas vos y pedir reembolso. Siempre recomendable asesorarte con un abogado para casos puntuales.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 55,
+        "rag": 0,
+        "llm": 2170,
+        "total": 2225
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-02",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "Nunca recibo respuesta del propietario, ¿puedo intimarlo?",
+      "keywords_esperadas": [
+        "intim",
+        "fehacient"
+      ],
+      "no_debe_decir": [
+        "generando tu recibo"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Sí, podés intimar al propietario para que responda. Si no lo hace, podrías llegar a rescindir el contrato y reclamar una indemnización. Pero antes de llegar a eso, te conviene enviar una carta documento o un reclamo formal por escrito. Si el problema persiste, consultá a un abogado para que te asesore sobre los pasos a seguir.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 45,
+        "rag": 0,
+        "llm": 2011,
+        "total": 2056
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-03",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué es una boleta de sellado?",
+      "keywords_esperadas": [
+        "sellado",
+        "provincia"
+      ],
+      "no_debe_decir": [
+        "enviando factura"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Es un comprobante que se emite para registrar el pago del impuesto de sellos, que se aplica a los contratos de alquiler en Argentina. Este impuesto es un tributo provincial que grava los actos jurídicos documentados, como los contratos. La boleta de sellado es una prueba de que se ha abonado este impuesto y es necesaria para validar el contrato ante las autoridades. El monto a pagar varía según la provincia y el valor del contrato. Recordá que esto es solo orientación, para detalles específicos consultá a un profesional.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 55,
+        "rag": 0,
+        "llm": 2605,
+        "total": 2660
+      },
+      "clasificacion": "🟢",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-04",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿cómo hago un reclamo de mantenimiento por la app?",
+      "keywords_esperadas": [
+        "ticket",
+        "reclamo",
+        "AlquilApp"
+      ],
+      "no_debe_decir": [
+        "nuevo reclamo creado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Para hacer un reclamo de mantenimiento en AlquilApp, ingresá a tu contrato activo, seleccioná la opción de \"Reclamos\" y completá el formulario con los detalles del problema. Asegurate de adjuntar fotos o videos si es necesario. El propietario recibirá el reclamo y tendrá un plazo para responder. Si no lo hace, podés avanzar con las reparaciones urgentes y reclamar el reembolso según lo establecido en el DNU 70/2023. Recordá que esto es orientación general; para casos específicos, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 51,
+        "rag": 0,
+        "llm": 2113,
+        "total": 2164
+      },
+      "clasificacion": "🟡",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-05",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si no pago un mes de alquiler?",
+      "keywords_esperadas": [
+        "intimación",
+        "1222",
+        "10 días"
+      ],
+      "no_debe_decir": [
+        "pago confirmado"
+      ],
+      "ok": true,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "Si no pagás un mes de alquiler, el propietario puede intimarte a pagar y, si no lo hacés, iniciar acciones legales para reclamar la deuda y eventualmente desalojarte. Es importante cumplir con los pagos para evitar problemas legales y afectar tu historial crediticio. Siempre es mejor comunicarse con el propietario o inmobiliaria para buscar una solución si tenés dificultades. Recordá que esta es orientación informativa; para casos puntuales, consultá a un abogado.",
+      "llm_error": null,
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 50,
+        "rag": 0,
+        "llm": 1898,
+        "total": 1948
+      },
+      "clasificacion": "🟠",
+      "matcher_warning": null
+    }
+  ]
+}
