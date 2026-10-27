@@ -1,0 +1,3154 @@
+{
+  "version_banco": "1.3",
+  "actualizado_banco": "2026-04-26",
+  "bot_url": "https://alquilapp-whatsapp-bot.onrender.com",
+  "corrida_iniciada": "2026-10-27T08:31:25.205Z",
+  "corrida_duracion_ms": 799559,
+  "total_preguntas": 105,
+  "total_evaluable": 104,
+  "excluidos": 1,
+  "matcher_warnings": 1,
+  "por_clasificacion": {
+    "🟢": 0,
+    "🟡": 0,
+    "🟠": 0,
+    "🔴": 104,
+    "⚫": 0,
+    "⚪": 1
+  },
+  "promedio_tiempo_ms": 15158,
+  "promedio_docs_rag": 0,
+  "resultados": [
+    {
+      "id": "loc-01",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto puede durar como mínimo un contrato de alquiler de vivienda?",
+      "keywords_esperadas": [
+        "mínimo",
+        "supletori",
+        "1198"
+      ],
+      "no_debe_decir": [
+        "Ley 27.551 vigente",
+        "mínimo obligatorio de 3 años"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"6bda0128-3205-4037-9cf1-ba75d2c7059e\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 126,
+        "rag": 0,
+        "llm": 15443,
+        "total": 15569
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-02",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme 6 meses de depósito de garantía?",
+      "keywords_esperadas": [
+        "libre",
+        "acuerdo",
+        "DNU"
+      ],
+      "no_debe_decir": [
+        "máximo 1 mes"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"2bef99f2-77d9-4c7d-9336-386f98ebd8bd\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 211,
+        "rag": 0,
+        "llm": 15408,
+        "total": 15620
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-03",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿En qué moneda me pueden cobrar el alquiler?",
+      "keywords_esperadas": [
+        "dólares",
+        "moneda",
+        "acuerdo",
+        "DNU"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c6c76689-1d9d-487d-9edc-f8ef598b7081\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 33,
+        "rag": 0,
+        "llm": 15226,
+        "total": 15259
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-04",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Cada cuánto puedo actualizar el canon?",
+      "keywords_esperadas": [
+        "pact",
+        "libre",
+        "contrato"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"dc0050bc-2a8a-4eb9-a358-e094dd46347a\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 21,
+        "rag": 0,
+        "llm": 15181,
+        "total": 15202
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-05",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "¿Qué índices de ajuste puedo usar en un contrato nuevo?",
+      "keywords_esperadas": [
+        "ICL",
+        "IPC",
+        "Casa Propia",
+        "UVA"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"457dee09-3875-420c-9c2e-50f87da97908\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15616,
+        "total": 15654
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-06",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden cobrar comisión inmobiliaria a mí?",
+      "keywords_esperadas": [
+        "derogada",
+        "libre"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"99b7903b-ab97-4f93-8de0-f0b56c6d060c\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 93,
+        "rag": 0,
+        "llm": 15860,
+        "total": 15953
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-07",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Quiero irme antes del contrato, ¿qué penalidad pago?",
+      "keywords_esperadas": [
+        "10%",
+        "canon",
+        "1221",
+        "1 mes"
+      ],
+      "no_debe_decir": [
+        "1,5 meses",
+        "un mes y medio como regla vigente"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"982aa643-70f4-4be7-a34a-452dc55f9ece\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 29,
+        "rag": 0,
+        "llm": 15247,
+        "total": 15276
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-08",
+      "bloque": "locacion_basica",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 2 meses, ¿qué tengo que hacer primero?",
+      "keywords_esperadas": [
+        "intimar",
+        "10 días",
+        "carta documento"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"bc6fad5e-7e2c-4a1b-8c82-2236908de167\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 21,
+        "rag": 0,
+        "llm": 15166,
+        "total": 15187
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-09",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "Hay una filtración en el baño, ¿quién la arregla?",
+      "keywords_esperadas": [
+        "propietario",
+        "urgente",
+        "reparación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"1f19d9c3-812d-4be9-a0f1-d7e943d17a62\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15208,
+        "total": 15246
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "loc-10",
+      "bloque": "locacion_basica",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo subalquilar una habitación?",
+      "keywords_esperadas": [
+        "autoriz",
+        "locador",
+        "contrato"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"2ffdbda5-ecf5-4778-8267-814836404a51\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 26,
+        "rag": 0,
+        "llm": 15150,
+        "total": 15176
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-01",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿La Ley 27.551 sigue vigente?",
+      "keywords_esperadas": [
+        "derogada",
+        "DNU",
+        "70"
+      ],
+      "no_debe_decir": [
+        "vigente",
+        "aplica"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"b3acecb8-3ce4-45d5-b5a1-ee2168a098a9\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 34,
+        "rag": 0,
+        "llm": 18566,
+        "total": 18600
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-02",
+      "bloque": "dnu_70",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambió con el DNU 70/2023?",
+      "keywords_esperadas": [
+        "plazo",
+        "libre",
+        "ajuste",
+        "depósito"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c36d607e-acb8-4316-bc87-6ad40e005fc5\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 23,
+        "rag": 0,
+        "llm": 15183,
+        "total": 15206
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-03",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Pueden pedirme varias garantías a la vez?",
+      "keywords_esperadas": [
+        "libertad",
+        "DNU",
+        "sí"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"e76f3067-5fc5-445f-bcc8-498ee5480bff\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 28,
+        "rag": 0,
+        "llm": 15218,
+        "total": 15246
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "dnu-04",
+      "bloque": "dnu_70",
+      "rol": "inquilino",
+      "pregunta": "¿Se puede pactar en dólares?",
+      "keywords_esperadas": [
+        "sí",
+        "DNU",
+        "moneda extranjera"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"49b74bcb-a864-4e75-8eb9-e4566c305575\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 18,
+        "rag": 0,
+        "llm": 15159,
+        "total": 15177
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-01",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuánto se paga de sellado de un contrato de alquiler de vivienda en CABA?",
+      "keywords_esperadas": [
+        "exent",
+        "vivienda única"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"674c9cdc-2e3c-4d20-bd28-c35114a4a4eb\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 34,
+        "rag": 0,
+        "llm": 15188,
+        "total": 15222
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-02",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en provincia de Buenos Aires?",
+      "keywords_esperadas": [
+        "ARBA",
+        "1,2"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"5453ea1d-0d96-4d33-bb86-e1f68a27bcf0\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 28,
+        "rag": 0,
+        "llm": 15158,
+        "total": 15186
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-03",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿En Córdoba hay exención de sellado?",
+      "keywords_esperadas": [
+        "vivienda única",
+        "exento",
+        "DGR"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"aa660c09-1b7e-496f-91bb-4f65de16d0aa\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15202,
+        "total": 15240
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-04",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "¿Quién paga el sellado, yo o el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "50",
+        "pacto"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"f6fee71c-2901-4c8f-b402-ef99133f88ba\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 21,
+        "rag": 0,
+        "llm": 15148,
+        "total": 15169
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-05",
+      "bloque": "sellado_provincial",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto tengo para sellar el contrato?",
+      "keywords_esperadas": [
+        "15",
+        "días",
+        "corridos"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"cdcf9b3c-33d8-4694-ab0e-bfe476546bfb\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 30,
+        "rag": 0,
+        "llm": 15475,
+        "total": 15505
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-06",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "Alquilo en Rosario, ¿dónde hago el sellado?",
+      "keywords_esperadas": [
+        "API",
+        "Santa Fe"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"34014477-8a1d-4a8e-863e-96fe20738877\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 17,
+        "rag": 0,
+        "llm": 15167,
+        "total": 15184
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "sell-07",
+      "bloque": "sellado_provincial",
+      "rol": "propietario",
+      "pregunta": "En Mendoza, ¿cuánto se paga de sellado por un alquiler comercial?",
+      "keywords_esperadas": [
+        "1,5",
+        "ATM"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"fdc18b77-c8b0-42fe-b9e9-81e4e1ae5651\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 32,
+        "rag": 0,
+        "llm": 15196,
+        "total": 15228
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-01",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino no paga hace 3 meses, ¿cuánto tarda el desalojo?",
+      "keywords_esperadas": [
+        "intimación",
+        "10 días",
+        "meses"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c8d81ccf-99d4-4b71-92b2-f7fad37d8e2a\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 21,
+        "rag": 0,
+        "llm": 15160,
+        "total": 15181
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-02",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el desalojo exprés?",
+      "keywords_esperadas": [
+        "intruso",
+        "684"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"19cef46a-22e6-4825-8755-748f3cbe4158\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15586,
+        "total": 15624
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-03",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "El contrato venció y no se quieren ir, ¿qué hago?",
+      "keywords_esperadas": [
+        "vencimiento",
+        "intimación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"a33dfd88-964e-4781-bc56-dbc6688a170d\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 12,
+        "rag": 0,
+        "llm": 15144,
+        "total": 15156
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-04",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Necesito mediación previa antes de iniciar el desalojo?",
+      "keywords_esperadas": [
+        "26.589"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"9d23548e-2ad7-4a53-9691-e48da3a06271\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 35,
+        "rag": 0,
+        "llm": 15242,
+        "total": 15277
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "des-05",
+      "bloque": "desalojo",
+      "rol": "propietario",
+      "pregunta": "¿Qué es una carta documento?",
+      "keywords_esperadas": [
+        "fehaciente",
+        "correo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"1676cca7-c36d-4c4c-a10c-858994abb78b\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 14,
+        "rag": 0,
+        "llm": 15157,
+        "total": 15171
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-01",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué requisitos debe tener un garante?",
+      "keywords_esperadas": [
+        "propiedad",
+        "inmueble",
+        "solvencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"87954ed1-8244-4e41-867c-c982b19d4398\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 33,
+        "rag": 0,
+        "llm": 15195,
+        "total": 15228
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-02",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿El garante queda liberado si venden el inmueble de garantía?",
+      "keywords_esperadas": [
+        "preferencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c50e72da-c5cb-4c95-b59c-7bce01ca128a\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 12,
+        "rag": 0,
+        "llm": 15150,
+        "total": 15162
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-03",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo demandar al garante directamente sin pasar por el inquilino?",
+      "keywords_esperadas": [
+        "solidari",
+        "excusión"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"8c2e6f75-133b-41c9-b4e0-f85de6b6d2ef\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 32,
+        "rag": 0,
+        "llm": 15213,
+        "total": 15245
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-04",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si se muere el fiador?",
+      "keywords_esperadas": [
+        "herederos",
+        "1594"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"83728c8c-2de6-404f-8f94-1c2f0088fbfa\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 24,
+        "rag": 0,
+        "llm": 15205,
+        "total": 15229
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-05",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un seguro de caución?",
+      "keywords_esperadas": [
+        "aseguradora",
+        "4",
+        "6"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"9a02b922-12cc-4c1f-a96b-67e04617280c\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15190,
+        "total": 15228
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fia-06",
+      "bloque": "fianza",
+      "rol": "propietario",
+      "pregunta": "¿Puedo exigir fiador + depósito + caución al mismo tiempo?",
+      "keywords_esperadas": [
+        "DNU",
+        "sí",
+        "derogó"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"f27ba08e-a1a4-43c9-b080-e3969b205107\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 17,
+        "rag": 0,
+        "llm": 15176,
+        "total": 15193
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-01",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Se murió mi inquilino, ¿qué hago con el contrato?",
+      "keywords_esperadas": [
+        "1190",
+        "continuación",
+        "familiar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"4c5b67fc-6bf0-4cb0-b312-d8ff339c45e0\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 28,
+        "rag": 0,
+        "llm": 15212,
+        "total": 15240
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-02",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo prohibirle al inquilino tener perro en el contrato?",
+      "keywords_esperadas": [
+        "DNU",
+        "1204 bis",
+        "sí"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"3c06de1d-8d2b-48dc-bbc1-84d9e4ebd179\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 25,
+        "rag": 0,
+        "llm": 15146,
+        "total": 15171
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-03",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Soy extranjero sin DNI, ¿me pueden alquilar?",
+      "keywords_esperadas": [
+        "sí",
+        "pasaporte",
+        "garantía"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"1b703c9d-7cee-4c85-a569-dcb8ce2b30ce\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 31,
+        "rag": 0,
+        "llm": 15199,
+        "total": 15230
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-04",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Me estoy divorciando y el inmueble alquilado es ganancial, ¿qué pasa con el contrato?",
+      "keywords_esperadas": [
+        "sigue",
+        "subroga"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"1bb0d43d-ba24-4cc3-a682-4af8c59ce6f3\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 21,
+        "rag": 0,
+        "llm": 15142,
+        "total": 15163
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-05",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "Quiero vender el inmueble que tengo alquilado, ¿puedo echar al inquilino?",
+      "keywords_esperadas": [
+        "no",
+        "1189",
+        "continúa"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"02c8546c-bd8a-4d21-9ad7-5f023176be09\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 36,
+        "rag": 0,
+        "llm": 15215,
+        "total": 15251
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-06",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja y yo firmamos juntos el alquiler y nos separamos, ¿puedo irme sin pagar nada?",
+      "keywords_esperadas": [
+        "solidari",
+        "cesión"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c87a0914-bd66-4de4-9942-c8f5b5ce078b\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 11,
+        "rag": 0,
+        "llm": 15148,
+        "total": 15159
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-07",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo trabajar desde casa si mi contrato dice que es vivienda?",
+      "keywords_esperadas": [
+        "home office",
+        "destino",
+        "público"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"24efab8b-0d44-4180-b9da-065fcfe62445\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 37,
+        "rag": 0,
+        "llm": 15188,
+        "total": 15225
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-08",
+      "bloque": "casos_especiales",
+      "rol": "inquilino",
+      "pregunta": "Tengo un perro guía por mi discapacidad, ¿me pueden prohibir entrar con él?",
+      "keywords_esperadas": [
+        "no",
+        "discriminación",
+        "26.378"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c1df47ab-ecd9-404a-b12c-38b61a24ddaa\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 21,
+        "rag": 0,
+        "llm": 15157,
+        "total": 15178
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-09",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "¿Puedo alquilar por habitación?",
+      "keywords_esperadas": [
+        "parte",
+        "material",
+        "1187"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"a09448fd-5399-4395-a3ef-0c59a4fc2838\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 35,
+        "rag": 0,
+        "llm": 15231,
+        "total": 15266
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "esp-10",
+      "bloque": "casos_especiales",
+      "rol": "propietario",
+      "pregunta": "El inmueble está en sucesión, ¿puedo seguir alquilando?",
+      "keywords_esperadas": [
+        "declaratoria",
+        "herederos"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"7fb8a349-85c9-458a-bc3a-c786a6262b0d\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 24,
+        "rag": 0,
+        "llm": 15185,
+        "total": 15209
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-01",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Qué es el score que aparece en AlquilApp?",
+      "keywords_esperadas": [
+        "0",
+        "1000",
+        "bilateral",
+        "comportamiento"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"d4f1d2bc-fdfa-4b4a-8683-2544de352917\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 36,
+        "rag": 0,
+        "llm": 15240,
+        "total": 15276
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-02",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo subo mi score?",
+      "keywords_esperadas": [
+        "pag",
+        "tiempo",
+        "calificaciones"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"afc14e4b-c50c-47e4-90f1-2f3ac6dde097\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 24,
+        "rag": 0,
+        "llm": 15165,
+        "total": 15189
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-03",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Qué significa que mi contrato está anclado en Bitcoin?",
+      "keywords_esperadas": [
+        "hash",
+        "inmutab",
+        "blockchain",
+        "OpenTimestamps"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"f29d581e-88df-4693-aebb-639732d8f88d\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15205,
+        "total": 15243
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-04",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo califico a mi inquilino?",
+      "keywords_esperadas": [
+        "estrellas",
+        "calificar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"9b4b69c8-bc61-4b3c-aadf-b74476a380bb\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 20,
+        "rag": 0,
+        "llm": 15154,
+        "total": 15174
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-05",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "¿Cómo creo un reclamo de mantenimiento?",
+      "keywords_esperadas": [
+        "ticket",
+        "reclamo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"253f2e5c-486a-41d6-b82c-d6f6fb53f77c\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 36,
+        "rag": 0,
+        "llm": 15254,
+        "total": 15290
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-06",
+      "bloque": "features_alquilapp",
+      "rol": "visitante",
+      "pregunta": "¿Cuánto cuesta AlquilApp?",
+      "keywords_esperadas": [
+        "gratuit",
+        "gratis"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"270b1f2b-deae-4909-b4af-cbdc963cbfae\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 15,
+        "rag": 0,
+        "llm": 15152,
+        "total": 15167
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-07",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo firmo el contrato electrónicamente?",
+      "keywords_esperadas": [
+        "firma",
+        "electrónica"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"fadc79a3-a57a-4655-94eb-2c11796168a0\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 37,
+        "rag": 0,
+        "llm": 15189,
+        "total": 15226
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-08",
+      "bloque": "features_alquilapp",
+      "rol": "inquilino",
+      "pregunta": "Quiero pagar el alquiler, ¿cómo hago?",
+      "keywords_esperadas": [
+        "pag",
+        "transfer"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"97101952-5044-4d45-b611-aaae2d02ef0f\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 20,
+        "rag": 0,
+        "llm": 15189,
+        "total": 15209
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-09",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo invito a un administrador a mi cuenta?",
+      "keywords_esperadas": [
+        "delega",
+        "invitar",
+        "admin"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"9a514046-23ba-48a7-bca3-b7fe55fa87b8\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 41,
+        "rag": 0,
+        "llm": 15214,
+        "total": 15255
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fea-10",
+      "bloque": "features_alquilapp",
+      "rol": "propietario",
+      "pregunta": "¿Cómo descargo el dossier de un contrato?",
+      "keywords_esperadas": [
+        "PDF",
+        "dossier",
+        "descargar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"5c7c8871-d9ae-40c9-a260-798b7481e3b9\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 12,
+        "rag": 0,
+        "llm": 15159,
+        "total": 15171
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-01",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que estar en Monotributo para alquilar mi departamento?",
+      "keywords_esperadas": [
+        "opción",
+        "Monotributo",
+        "Responsable"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"19dbd672-fdcb-4ab2-aa8b-595faad4d0fc\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 32,
+        "rag": 0,
+        "llm": 15188,
+        "total": 15220
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-02",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler de vivienda paga IVA?",
+      "keywords_esperadas": [
+        "exento",
+        "art",
+        "7"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"330c83fe-4986-42bf-ba98-8da36b995102\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 20,
+        "rag": 0,
+        "llm": 15152,
+        "total": 15172
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-03",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Qué es el RELI?",
+      "keywords_esperadas": [
+        "registro",
+        "locaciones",
+        "ARCA",
+        "AFIP"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"8f55d36d-4d4c-40c6-b69c-def9ca87229c\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 36,
+        "rag": 0,
+        "llm": 15298,
+        "total": 15334
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-04",
+      "bloque": "impuestos",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo deducir el alquiler del impuesto a las ganancias?",
+      "keywords_esperadas": [
+        "40",
+        "RELI",
+        "registrado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"d85537f8-2bab-4d30-af69-0d99fba59ccc\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 19,
+        "rag": 0,
+        "llm": 15405,
+        "total": 15424
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-05",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Me pueden retener ganancias al pagarme el alquiler?",
+      "keywords_esperadas": [
+        "830",
+        "6",
+        "28"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"8c8244e8-28af-4079-ba65-d6e23df3c30c\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 37,
+        "rag": 0,
+        "llm": 15227,
+        "total": 15265
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-06",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿El alquiler comercial lleva IVA?",
+      "keywords_esperadas": [
+        "21",
+        "gravado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"5e8b968b-85b1-4aab-9f6a-593483197ed8\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 22,
+        "rag": 0,
+        "llm": 15191,
+        "total": 15213
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "imp-07",
+      "bloque": "impuestos",
+      "rol": "propietario",
+      "pregunta": "¿Pago Bienes Personales por un inmueble que alquilo?",
+      "keywords_esperadas": [
+        "sí",
+        "patrimonio",
+        "mínimo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"b236ebbd-a9a3-42d1-bdef-626683c5f68f\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 27,
+        "rag": 0,
+        "llm": 15190,
+        "total": 15217
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-01",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿La cláusula que prohíbe tener chicos es válida?",
+      "keywords_esperadas": [
+        "no",
+        "discriminatori",
+        "niño"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"736f1dd8-068f-46cc-88f8-a60d311363b5\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 14,
+        "rag": 0,
+        "llm": 15157,
+        "total": 15171
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-02",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo hacer arreglos urgentes yo mismo y descontarlos del alquiler?",
+      "keywords_esperadas": [
+        "urgente",
+        "intimación",
+        "reembolso"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"3b9c9ba3-7d1d-4251-999e-11342787b76a\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 41,
+        "rag": 0,
+        "llm": 15416,
+        "total": 15458
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "jur-03",
+      "bloque": "jurisprudencia",
+      "rol": "inquilino",
+      "pregunta": "¿Me pueden no devolver el depósito si rompí un vidrio?",
+      "keywords_esperadas": [
+        "daño",
+        "descontar",
+        "reparación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"af2cd083-8130-46d3-a58e-93c9ae0b1791\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 11,
+        "rag": 0,
+        "llm": 15160,
+        "total": 15171
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-01",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "¿Cómo se hace un asado correctamente?",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"3b938026-f2f2-43c4-b20c-afb5106e5a52\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 26,
+        "rag": 0,
+        "llm": 15214,
+        "total": 15240
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-02",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "ganador del mundial 2022",
+      "keywords_esperadas": [],
+      "debe_rechazar": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"05e0b260-d768-4c47-8aef-9f5463c68782\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 26,
+        "rag": 0,
+        "llm": 15156,
+        "total": 15182
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-03",
+      "bloque": "edge_cases",
+      "rol": "visitante",
+      "pregunta": "alquiler",
+      "keywords_esperadas": [
+        "AlquilApp"
+      ],
+      "ambigua": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"4e9b877d-ad6e-42b5-8b66-a8bedb38db51\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 30,
+        "rag": 0,
+        "llm": 15208,
+        "total": 15238
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-04",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "dónde queda la sección de cobros en la página",
+      "keywords_esperadas": [
+        "Cobros",
+        "menú"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"3acbdea2-c92a-4f7f-b3fc-09f578f0a521\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 14,
+        "rag": 0,
+        "llm": 15146,
+        "total": 15160
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "edge-05",
+      "bloque": "edge_cases",
+      "rol": "inquilino",
+      "pregunta": "",
+      "keywords_esperadas": [],
+      "vacia": true,
+      "ok": false,
+      "network_error": null,
+      "http_status": 400,
+      "respuesta": "",
+      "rag": null,
+      "tiempos_ms": {
+        "total": 65
+      },
+      "raw": "{\"error\":\"Falta pregunta\"}",
+      "clasificacion": "⚪",
+      "matcher_warning": "pregunta vacía o marcada vacia=true — test inválido, excluido del total real"
+    },
+    {
+      "id": "ccyc-01",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Qué dice el art. 1198 del CCyC?",
+      "keywords_esperadas": [
+        "1198"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"ed7e25b4-d2ba-404a-8b1a-2b8495ac8d48\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 39,
+        "rag": 0,
+        "llm": 15184,
+        "total": 15223
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-02",
+      "bloque": "ccyc_articulos",
+      "rol": "propietario",
+      "pregunta": "¿Cuándo puedo resolver el contrato por culpa del inquilino?",
+      "keywords_esperadas": [
+        "1219"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"64353cb1-a025-49e0-9ddd-531e3edea169\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 22,
+        "rag": 0,
+        "llm": 15148,
+        "total": 15170
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ccyc-03",
+      "bloque": "ccyc_articulos",
+      "rol": "inquilino",
+      "pregunta": "¿Cuáles son mis obligaciones como inquilino según el Código Civil?",
+      "keywords_esperadas": [
+        "1206",
+        "conservar",
+        "pagar"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"247656fa-e9b8-4095-af5b-71199b851646\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15515,
+        "total": 15553
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-neu-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cómo funciona el sellado de un alquiler en Neuquén?",
+      "keywords_esperadas": [
+        "sellado",
+        "Neuquén",
+        "DPR"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"8eb62bcd-ad76-47ec-b3df-ceb5e1d61b5e\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 11,
+        "rag": 0,
+        "llm": 15152,
+        "total": 15163
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-rio-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Río Negro hay que sellar el contrato de alquiler?",
+      "keywords_esperadas": [
+        "sellado",
+        "Río Negro"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"50b34e03-2570-4314-8257-fb9a0e4744f4\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 38,
+        "rag": 0,
+        "llm": 15191,
+        "total": 15229
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-tuc-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Cuál es la alícuota de sellado en Tucumán?",
+      "keywords_esperadas": [
+        "Tucumán",
+        "sellado",
+        "alícuota"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"c24b211d-fc66-4ee5-90d0-6c75048ea0f1\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 25,
+        "rag": 0,
+        "llm": 15148,
+        "total": 15173
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-sal-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿En Salta hay exención de sellado para vivienda única?",
+      "keywords_esperadas": [
+        "Salta",
+        "sellado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"f2623f6c-a537-4944-848e-ea1f76d83b96\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 32,
+        "rag": 0,
+        "llm": 15176,
+        "total": 15208
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "prov-cha-01",
+      "bloque": "provincias_extra",
+      "rol": "propietario",
+      "pregunta": "¿Quién regula el sellado en Chaco?",
+      "keywords_esperadas": [
+        "Chaco",
+        "sellado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"f79f0be7-f8b5-480d-a25c-7d089596c9ba\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 21,
+        "rag": 0,
+        "llm": 15150,
+        "total": 15171
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-01",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Qué es un alquiler temporario turístico y por cuánto tiempo se puede pactar?",
+      "keywords_esperadas": [
+        "temporario",
+        "tres meses",
+        "1199"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"f5f51388-4793-4ed9-896e-32c5da6b41ad\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 43,
+        "rag": 0,
+        "llm": 15193,
+        "total": 15236
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-02",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Necesito habilitación municipal para alquilar mi depto por Airbnb?",
+      "keywords_esperadas": [
+        "registr",
+        "RUPT",
+        "Turismo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"a2b74058-37eb-43ae-ae37-14ed7c5be382\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 16,
+        "rag": 0,
+        "llm": 15145,
+        "total": 15161
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-03",
+      "bloque": "alquiler_temporario",
+      "rol": "inquilino",
+      "pregunta": "Si alquilo por 6 meses por temporada, ¿se aplica el régimen de vivienda?",
+      "keywords_esperadas": [
+        "temporario",
+        "vivienda"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"980beaef-1458-4a0f-b65f-2d3e24f1793b\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 25,
+        "rag": 0,
+        "llm": 15250,
+        "total": 15275
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "tem-04",
+      "bloque": "alquiler_temporario",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que registrar el alquiler temporario en ARCA?",
+      "keywords_esperadas": [
+        "registro",
+        "temporario"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"6abeac6c-0905-48a3-b492-d9385e46f559\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 20,
+        "rag": 0,
+        "llm": 15142,
+        "total": 15162
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-01",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿La mediación previa es obligatoria para iniciar un desalojo?",
+      "keywords_esperadas": [
+        "26.589",
+        "exenta",
+        "desalojo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"7d657142-9ef7-4944-bad7-bc2d04128e31\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 39,
+        "rag": 0,
+        "llm": 15196,
+        "total": 15235
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-02",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Tengo que mediar antes de demandar el cobro de alquileres atrasados?",
+      "keywords_esperadas": [
+        "26.589",
+        "mediación",
+        "obligatoria"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"87d960cd-b664-45ee-99d4-581b4d865be2\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 29,
+        "rag": 0,
+        "llm": 15145,
+        "total": 15174
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-03",
+      "bloque": "mediacion",
+      "rol": "inquilino",
+      "pregunta": "¿Cuánto cuesta una mediación previa en CABA?",
+      "keywords_esperadas": [
+        "mediación",
+        "honorarios"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"2157a314-a90a-49f1-bc56-cfc9c3e817ad\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 34,
+        "rag": 0,
+        "llm": 15203,
+        "total": 15237
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "med-04",
+      "bloque": "mediacion",
+      "rol": "propietario",
+      "pregunta": "¿Qué pasa si el inquilino no se presenta a la mediación?",
+      "keywords_esperadas": [
+        "acta",
+        "incomparecencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"6087e60e-4c7f-4f0c-9b85-585aa8d61707\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 24,
+        "rag": 0,
+        "llm": 15158,
+        "total": 15182
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-01",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Puedo iniciar un juicio ejecutivo por alquileres impagos?",
+      "keywords_esperadas": [
+        "ejecutivo",
+        "título",
+        "contrato"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"aff440de-5c4a-446e-8a00-4be7f0a84bf7\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 36,
+        "rag": 0,
+        "llm": 15214,
+        "total": 15250
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-02",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Qué documentos preparo para un juicio ejecutivo de alquileres?",
+      "keywords_esperadas": [
+        "contrato",
+        "intimación",
+        "carta documento"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"17e53a88-850f-45a9-9e40-50a6d31e0999\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 22,
+        "rag": 0,
+        "llm": 15225,
+        "total": 15247
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "ejec-03",
+      "bloque": "juicio_ejecutivo",
+      "rol": "propietario",
+      "pregunta": "¿Es más rápido el ejecutivo que el desalojo?",
+      "keywords_esperadas": [
+        "plazos",
+        "ejecutivo",
+        "desalojo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"5aeb5064-b3f6-45ae-ba13-d7511bb25e17\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 36,
+        "rag": 0,
+        "llm": 15288,
+        "total": 15324
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-01",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿Qué cambia en un alquiler comercial respecto a uno de vivienda?",
+      "keywords_esperadas": [
+        "comercial",
+        "destino",
+        "1187"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"bfc3a6fb-e075-4712-b634-a4847349ead7\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 24,
+        "rag": 0,
+        "llm": 15153,
+        "total": 15177
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-02",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "Mi inquilino se va y deja la clientela del local, ¿hay transferencia de fondo de comercio?",
+      "keywords_esperadas": [
+        "fondo",
+        "comercio",
+        "Ley 11.867"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"36c15a92-8cc7-41df-be39-feedcc5e14d9\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 32,
+        "rag": 0,
+        "llm": 15619,
+        "total": 15651
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-03",
+      "bloque": "locacion_comercial",
+      "rol": "inquilino",
+      "pregunta": "¿Puedo modificar el local que alquilo para mi negocio?",
+      "keywords_esperadas": [
+        "mejoras",
+        "autoriz",
+        "1211"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"4e5e4ea0-e3f0-45d5-9d0b-61937fb4acd5\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 201,
+        "rag": 0,
+        "llm": 15227,
+        "total": 15428
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "comer-04",
+      "bloque": "locacion_comercial",
+      "rol": "propietario",
+      "pregunta": "¿El IVA se cobra en alquiler comercial?",
+      "keywords_esperadas": [
+        "IVA",
+        "comercial",
+        "21"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"41248723-90cc-4faa-9100-0f8dad00f99d\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 87,
+        "rag": 0,
+        "llm": 15280,
+        "total": 15367
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-01",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "Mi garante quiere vender el inmueble que dio en garantía, ¿puedo oponerme?",
+      "keywords_esperadas": [
+        "garantía",
+        "venta",
+        "preferencia"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"53b64950-f70b-4df9-b95e-55dfbd864c50\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 33,
+        "rag": 0,
+        "llm": 15224,
+        "total": 15257
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-02",
+      "bloque": "garante_avanzado",
+      "rol": "propietario",
+      "pregunta": "¿Puedo cambiar al garante a mitad del contrato si no me deja tranquilo?",
+      "keywords_esperadas": [
+        "contrato",
+        "garantía",
+        "abogado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"3ec68a1a-4105-4c82-aad7-8eb293242d45\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 32,
+        "rag": 0,
+        "llm": 15310,
+        "total": 15342
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "gar-03",
+      "bloque": "garante_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi garante me llamó porque el banco le bloqueó la cuenta por una deuda mía, ¿es legal?",
+      "keywords_esperadas": [
+        "solidari",
+        "1591"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"02f97081-f421-4195-a656-03e44316751d\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 29,
+        "rag": 0,
+        "llm": 15323,
+        "total": 15352
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fam-01",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Mi pareja era titular del contrato y falleció, no tenemos pacto de convivencia. ¿Puedo seguir en el depto?",
+      "keywords_esperadas": [
+        "1190",
+        "convivencia",
+        "continuación"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"ee242580-5cb3-48c8-a568-49b7d44131b5\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 39,
+        "rag": 0,
+        "llm": 15245,
+        "total": 15284
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "fam-02",
+      "bloque": "familia_avanzado",
+      "rol": "inquilino",
+      "pregunta": "Tengo un hijo menor a cargo. Si nos separamos con mi marido, ¿quién se queda con el alquiler?",
+      "keywords_esperadas": [
+        "443",
+        "vivienda familiar",
+        "atribución"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"083362c1-2080-45c5-963b-8ac4c1988dac\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 37,
+        "rag": 0,
+        "llm": 15253,
+        "total": 15290
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-01",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "el depto se viene abajo, hay humedad por todos lados que hago",
+      "keywords_esperadas": [
+        "intim",
+        "reparación",
+        "1201"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"eb5e0c8c-7ddb-4508-967e-e468ae72868d\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 169,
+        "rag": 0,
+        "llm": 15414,
+        "total": 15583
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-02",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "no me devuelven el deposito, que onda",
+      "keywords_esperadas": [
+        "deposito",
+        "intim",
+        "devolu"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"b7c4d5ce-6947-4da7-b30c-38b9444c76c2\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 124,
+        "rag": 0,
+        "llm": 15332,
+        "total": 15456
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-03",
+      "bloque": "coloquial",
+      "rol": "propietario",
+      "pregunta": "el inkilino me debe 3 meses q hago",
+      "keywords_esperadas": [
+        "intimar",
+        "10 días",
+        "carta"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"77becf9b-b438-4888-bd0d-8594424deafb\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 79,
+        "rag": 0,
+        "llm": 15262,
+        "total": 15341
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-04",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "puedo tener una mascota o no",
+      "keywords_esperadas": [
+        "mascota",
+        "contrato",
+        "permitida"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"52588dc2-5aab-4541-8786-e669c822fd1e\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 19,
+        "rag": 0,
+        "llm": 15219,
+        "total": 15238
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "coloq-05",
+      "bloque": "coloquial",
+      "rol": "inquilino",
+      "pregunta": "se rompio la heladera quien paga",
+      "keywords_esperadas": [
+        "reparación",
+        "1201"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"e3b06c11-d801-4ee2-9f9f-2923590565d6\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 33,
+        "rag": 0,
+        "llm": 15314,
+        "total": 15347
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-01",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si recibo la casa en mal estado?",
+      "keywords_esperadas": [
+        "acta",
+        "estado",
+        "entrega"
+      ],
+      "no_debe_decir": [
+        "recibo de pago",
+        "generar recibo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"428df5da-9a08-4872-9b35-ddc5845bf767\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 9,
+        "rag": 0,
+        "llm": 15284,
+        "total": 15293
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-02",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "Nunca recibo respuesta del propietario, ¿puedo intimarlo?",
+      "keywords_esperadas": [
+        "intim",
+        "fehacient"
+      ],
+      "no_debe_decir": [
+        "generando tu recibo"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"520d7176-52ec-4a5d-8a33-c383f1586af7\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 27,
+        "rag": 0,
+        "llm": 15268,
+        "total": 15295
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-03",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué es una boleta de sellado?",
+      "keywords_esperadas": [
+        "sellado",
+        "provincia"
+      ],
+      "no_debe_decir": [
+        "enviando factura"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"573b29c9-6f45-4c95-a8a9-11a3f656a8d9\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 12,
+        "rag": 0,
+        "llm": 15275,
+        "total": 15287
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-04",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿cómo hago un reclamo de mantenimiento por la app?",
+      "keywords_esperadas": [
+        "ticket",
+        "reclamo",
+        "AlquilApp"
+      ],
+      "no_debe_decir": [
+        "nuevo reclamo creado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"271ae5bf-68e2-479e-840c-12c4bd0fcbf4\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 24,
+        "rag": 0,
+        "llm": 15273,
+        "total": 15297
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    },
+    {
+      "id": "intent-05",
+      "bloque": "intent_classifier",
+      "rol": "inquilino",
+      "pregunta": "¿qué pasa si no pago un mes de alquiler?",
+      "keywords_esperadas": [
+        "intimación",
+        "1222",
+        "10 días"
+      ],
+      "no_debe_decir": [
+        "pago confirmado"
+      ],
+      "ok": false,
+      "network_error": null,
+      "http_status": 200,
+      "respuesta": "",
+      "llm_error": "gemini: HTTP 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Gemini API has not been used in project 989951120881 before or it is dis | groq: HTTP 404 {\"error\":{\"message\":\"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.\",\"type\":\"invali | cohere: HTTP 429 {\"id\":\"5961e532-2faf-4d80-8244-8494792f70f2\",\"message\":\"You are using a Trial key, which is limited to 1000 API calls / ",
+      "rag": {
+        "docs_recuperados": 0,
+        "umbral": 0.5,
+        "k": 8,
+        "docs": []
+      },
+      "tiempos_ms": {
+        "embedding": 26,
+        "rag": 0,
+        "llm": 15236,
+        "total": 15262
+      },
+      "clasificacion": "🔴",
+      "matcher_warning": null
+    }
+  ]
+}
